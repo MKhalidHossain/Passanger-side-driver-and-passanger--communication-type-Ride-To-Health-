@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:rideztohealth/core/onboarding/presentation/screens/onboarding1.dart';
+
+import 'core/onboarding/presentation/screens/spashScreen.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(
+          0xFF303644,
+        ), // background color here
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+
+        //background: const Color(0xFF303644), // Optional: sets default background in color scheme
+      ),
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(nextScreen: Onboarding1()),
+    );
+  }
+}
