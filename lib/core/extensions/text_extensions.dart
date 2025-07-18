@@ -111,6 +111,7 @@ extension TextStylingExtension on String {
   // TextSize 16
   Text text16White() => Text(
     this,
+    textAlign: TextAlign.justify,
     style: const TextStyle(
       fontSize: 16,
       fontFamily: _fontFamily,

@@ -26,10 +26,9 @@ class MyApp extends StatelessWidget {
         //background: const Color(0xFF303644), // Optional: sets default background in color scheme
       ),
       debugShowCheckedModeBanner: false,
-      home:
-      // AppMain(),
+      home: AppMain(),
 
-      SplashScreen(nextScreen: Onboarding1()),
+      //SplashScreen(nextScreen: Onboarding1()),
     );
   }
 }

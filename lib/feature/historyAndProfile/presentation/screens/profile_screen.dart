@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/edit_profile_screen.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import 'terms_and_condition.dart';
+import 'wallet_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -33,39 +37,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white10,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey[200],
-                      child: ClipOval(
-                        child: Image.network(
-                          '',
-                          width: 60,
-                          height: 60,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.person_outline,
-                                size: 30,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
+                    Container(
+                      width: 80,
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            Color(0xffCE0000).withOpacity(0.8),
+                            // Color(0xFFCE0000),
+                            Color(0xff7B0100).withOpacity(0.8),
+                          ],
                         ),
+                      ),
+                      child: ClipOval(
+                        child:
+                            Image.asset('assets/images/user5.png') ??
+                            Image.network(
+                              '',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Icon(
+                                    Icons.person_outline,
+                                    size: 30,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
                       ),
                     ),
                     SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: ['John Doe'.text22White(), SizedBox(height: 4)],
-                    ),
+                    'John Doe'.text22White(),
+                    SizedBox(height: 4),
                     Spacer(),
                   ],
                 ),
@@ -73,41 +91,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
                 child: ListView(
                   children: [
-                    SizedBox(height: 30),
+                    //SizedBox(height: 12),
                     _buildMenuItem(
-                      Icons.info_outline,
+                      Icons.person_outline,
                       "Profile",
                       "Customize your profile",
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => EditProfile());
+                      },
                     ),
                     _divider(),
                     _buildMenuItem(
-                      Icons.info_outline,
+                      Icons.wallet_outlined,
                       "Wallet",
                       "Term of services",
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => WalletScreen());
+                      },
                     ),
 
                     _divider(),
                     _buildMenuItem(
-                      Icons.article_outlined,
+                      Icons.notifications_outlined,
                       "Manage Notifications",
                       "Customize alerts",
                       onTap: () {},
                     ),
                     _divider(),
                     _buildMenuItem(
-                      Icons.lock_outline,
+                      Icons.help_outline,
                       "Terms & Conditions",
                       "Terms & Services",
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(TermsAndCondition());
+                      },
                     ),
                     _divider(),
                     _buildMenuItem(
-                      Icons.notifications_outlined,
+                      Icons.shield_outlined,
                       "Privacy policy",
                       'Privacy policy',
                       onTap: () {},
@@ -117,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Icons.logout,
                       "Log Out",
                       'Sign out of your account',
-                      color: Colors.red,
+                      color: Color(0xffCE0000).withOpacity(0.8),
                       onTap: () {},
                     ),
                     _divider(),
@@ -153,7 +177,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Text(
           title,
           style: TextStyle(
-            color: color == Colors.red ? Colors.red : Colors.white,
+            color: color == Color(0xffCE0000).withOpacity(0.8)
+                ? Color(0xffCE0000).withOpacity(0.8)
+                : Colors.white,
             fontSize: 16,
             fontFamily: 'outfit',
             fontWeight: FontWeight.bold,
