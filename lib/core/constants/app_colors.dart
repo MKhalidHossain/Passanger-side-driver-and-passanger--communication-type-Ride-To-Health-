@@ -3,24 +3,27 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const Color background = Color(0xFFF5F5F5);
 
-  static final Color _primaryColor = Color(
-    0xFFFF3951,
+  static final Color primaryColorStatic = const Color(
+    0xFFea0001,
   ); //Color.fromARGB(255, 58, 64, 234);
 
   static const Color secondaryColor = Color(0xFF282828);
   static const Color _secondaryActionColor = Color.fromARGB(255, 94, 68, 238);
   //Color.fromARGB(255, 58, 64, 234);
   //static const Color _actionColor =  Colors.orange;
+  static Color hindTextColorForTextFromField = Color(
+    0xFFFFFFFF,
+  ).withOpacity(0.3);
 
   //a colors
   static const Color primaryTextBlack = secondaryColor;
-  static Color primaryTextRed = _primaryColor;
+  static Color primaryTextRed = primaryColorStatic;
   static const Color secondayText = Color(0xFF666666);
   static const Color textfieldBg = Color(0xFFE9E9E9);
   static const Color scaffoldBackgroundColor = Color(0xFF303644);
 
   /// [Other Colors]
-  static Color error = _primaryColor;
+  static Color error = primaryColorStatic;
 
   static final AppColors _lightInstance = AppColors._internalLight();
   static final AppColors _darkInstance = AppColors._internalDark();
@@ -34,11 +37,11 @@ class AppColors {
 
   // final Color primaryColor;
 
-  Color get primaryColor => _primaryColor;
+  Color get primaryColor => primaryColorStatic;
   final Color secondaryAccentColor;
   final Color buttonContentColor;
 
-  Color activeButtonColor = _primaryColor;
+  Color activeButtonColor = primaryColorStatic;
   final Color activeButtonContentColor;
   final Color inActiveButtonColor;
   final Color inActiveButtonContentColor;
@@ -68,7 +71,7 @@ class AppColors {
       contentBoxColor = Colors.grey.shade100,
       contentBoxGreyColor = Colors.grey.shade300,
       backgroundColor = Colors.white,
-      iconColor = Colors.black,
+      iconColor = Colors.white,
       secondaryAccentColor = _secondaryActionColor,
       buttonColor = Colors.black45,
       buttonContentColor = Colors.white,
@@ -81,7 +84,7 @@ class AppColors {
       labelColor = Colors.grey.shade800,
       focusedBorderColor = Colors.black, // same as text color
       enabledBorderColor = Colors.grey.shade700,
-      borderColor = Color(0xff438B92),
+      borderColor = Color(0xffFDE6E680).withOpacity(0.5),
       dividerColor = Colors.grey.shade200,
       popupBackgroundColor = Colors.grey.shade200,
       popupContentColor = Colors.black,

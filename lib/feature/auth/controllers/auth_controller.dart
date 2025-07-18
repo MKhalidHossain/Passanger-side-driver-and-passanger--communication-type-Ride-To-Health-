@@ -9,7 +9,7 @@ import '../../../helpers/remote/data/api_client.dart';
 
 import '../../../utils/app_constants.dart';
 import '../domain/model/login_response_model.dart';
-import '../presentation/screens/change_password_screen.dart';
+import '../presentation/screens/reset_password_screen.dart';
 import '../presentation/screens/tourist_or_local_screen.dart';
 import '../presentation/screens/user_login_screen.dart';
 import '../presentation/screens/user_signup_screen.dart';
@@ -256,7 +256,7 @@ class AuthController extends GetxController implements GetxService {
     Response? response = await authServiceInterface.verifyCode(otp, email);
     if (response!.body['success'] == true) {
       showCustomSnackBar('Otp verification has been successful');
-      Get.to(ChangePassword(userEmail: email));
+      Get.to(ResetChangePassword(userEmail: email));
     } else {
       showCustomSnackBar('There is a problem in sending OTP');
       // Get.find<AuthController>().logOut();
@@ -385,8 +385,8 @@ class AuthController extends GetxController implements GetxService {
   bool updateFcm = false;
 
   Future<void> updateAccessAndRefreshToken() async {
-    Response? response =
-        await authServiceInterface.updateAccessAndRefreshToken();
+    Response? response = await authServiceInterface
+        .updateAccessAndRefreshToken();
     if (response?.statusCode == 200) {
       String token = response!.body['accessToken'];
       String refreshToken = response.body['refreshToken'];

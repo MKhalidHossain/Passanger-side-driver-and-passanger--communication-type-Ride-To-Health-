@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/app.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import '../../../../core/validation/validators.dart';
@@ -8,8 +9,6 @@ import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import 'forgot_password_screen.dart';
 import 'user_signup_screen.dart';
-
-//import '../widgets/app_scaffold.dart';
 
 class UserLoginScreen extends StatefulWidget {
   const UserLoginScreen({super.key});
@@ -192,9 +191,9 @@ class UserLoginScreenState extends State<UserLoginScreen> {
                         WideCustomButton(
                           text: 'Sign in',
                           onPressed: () {
-                            // onPressed: () {
-                            //   Get.to(() => ());
-                            // };
+                            //Get.to(() => BottomNavBar());
+
+                            Get.to(() => AppMain());
                           },
                         ),
                         // context.primaryButton(
