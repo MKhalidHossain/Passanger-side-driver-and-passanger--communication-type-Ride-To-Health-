@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import '../widgets/payment_method_card.dart';
 import 'add_card_screen.dart';
 import 'add_funds_screen.dart';
@@ -58,10 +59,11 @@ class _WalletScreenState extends State<WalletScreen> {
           _buildBalanceSection(),
           SizedBox(height: 40),
           _buildPaymentMethodsSection(),
-          SizedBox(height: 20),
-          _buildAddNewCardButton(),
           Spacer(),
-          _buildRemoveCardButton(),
+          WideCustomButton(
+            text: '+  Add Payment Method',
+            onPressed: () => _showRemoveCardDialog(),
+          ),
         ],
       ),
     );
@@ -146,54 +148,30 @@ class _WalletScreenState extends State<WalletScreen> {
             onTap: () => _handlePaymentMethodTap(method),
           ),
         ),
+        const SizedBox(height: 20),
+
+        Container(
+          width: double.infinity,
+          child: TextButton(
+            onPressed: () => _navigateToAddCard(),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.red),
+              ),
+            ),
+            child: Text(
+              '+ Add new card/method',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _buildAddNewCardButton() {
-    return Container(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: () => _navigateToAddCard(),
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(color: Colors.red),
-          ),
-        ),
-        child: Text(
-          '+ Add new card/method',
-          style: TextStyle(
-            color: Colors.red,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRemoveCardButton() {
-    return Container(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => _showRemoveCardDialog(),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          elevation: 2,
-        ),
-        child: Text(
-          'Remove Card',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 
