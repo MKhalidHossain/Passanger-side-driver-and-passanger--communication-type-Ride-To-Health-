@@ -15,6 +15,9 @@ class UserSignupScreen extends StatefulWidget {
 
 class UserSignupScreenState extends State<UserSignupScreen> {
   bool value = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _phoneFocus = FocusNode();
@@ -31,7 +34,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
   void initState() {
     _nameController = TextEditingController();
     _emailController = TextEditingController();
-    _passwordController = TextEditingController();
     _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
@@ -51,7 +53,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    bool value = false;
 
     return AppScaffold(
       body: SafeArea(
@@ -70,7 +71,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const SizedBox(height: 32),
-
                           Center(
                             child: Text(
                               'Create Your Account',
@@ -90,6 +90,7 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                             controller: _nameController,
                             icon: Icons.person_outline,
                             focusNode: _nameFocus,
+                            nextFocusNode: _emailFocus,
                             validator: Validators.name,
                           ),
 
@@ -100,6 +101,7 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                             controller: _emailController,
                             icon: Icons.email_outlined,
                             focusNode: _emailFocus,
+                            nextFocusNode: _phoneFocus,
                             validator: Validators.email,
                           ),
 
@@ -110,6 +112,7 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                             controller: _phoneController,
                             icon: Icons.phone_outlined,
                             focusNode: _phoneFocus,
+                            nextFocusNode: _passwordFocus,
                             validator: Validators.phone,
                           ),
 
@@ -120,7 +123,14 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                             controller: _passwordController,
                             icon: Icons.lock_outline,
                             focusNode: _passwordFocus,
+                            nextFocusNode: _confirmPasswordFocus,
                             validator: Validators.password,
+                            obscureText: _obscurePassword,
+                            toggleObscureText: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
 
                           _buildCustomTextField(
@@ -130,10 +140,17 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                             controller: _confirmPasswordController,
                             icon: Icons.lock_outline,
                             focusNode: _confirmPasswordFocus,
+                            nextFocusNode: _nameFocus,
                             validator: Validators.password,
+                            obscureText: _obscureConfirmPassword,
+                            toggleObscureText: () {
+                              setState(() {
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
+                              });
+                            },
                           ),
 
-                          /// Email
                           Row(
                             children: [
                               Checkbox(
@@ -149,7 +166,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                                   maxLines: 3,
                                   text: TextSpan(
                                     text: 'By Registration, You agree to the',
-
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -172,7 +188,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                                           fontSize: 16,
                                         ),
                                       ),
-
                                       TextSpan(
                                         text: ' privacy policy. ',
                                         style: TextStyle(
@@ -191,41 +206,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
 
                           WideCustomButton(text: 'Sign Up', onPressed: () {}),
 
-                          /// Sign Up button
-                          // context.primaryButton(
-                          //   onPressed: () {
-                          //     String email = _emailController.text;
-                          //     String password = _passwordController.text;
-                          //     String confirmPassword =
-                          //         _confirmPasswordController.text;
-
-                          //     if (email.isEmpty) {
-                          //       showCustomSnackBar('email is required'.tr);
-                          //     } else if (password.isEmpty &&
-                          //         confirmPassword.isEmpty) {
-                          //       showCustomSnackBar(
-                          //         'Password  and confirm password is required'
-                          //             .tr,
-                          //       );
-                          //     } else if (password.length < 5) {
-                          //       showCustomSnackBar(
-                          //         'minimum password length is 8',
-                          //       );
-                          //     } else if (password != confirmPassword) {
-                          //       showCustomSnackBar('Passwords do not match');
-                          //     } else {
-                          //       // authController.register(
-                          //       //   email,
-                          //       //   password,
-                          //       //   confirmPassword,
-                          //       // );
-                          //     }
-                          //   },
-                          //   text: "Sign up",
-                          //   backgroundColor: AppColors.context(
-                          //     context,
-                          //   ).primaryColor,
-                          // ),
                           const SizedBox(height: 16),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 16),
@@ -245,12 +225,6 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     Get.to(UserLoginScreen());
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //   ),
-                                    // );
                                   },
                                   child: Text(
                                     'Sign in',
@@ -326,8 +300,11 @@ Widget _buildCustomTextField({
   required TextEditingController controller,
   required IconData icon,
   required FocusNode focusNode,
+  required FocusNode? nextFocusNode,
   TextInputType keyboardType = TextInputType.text,
   required String? Function(String?) validator,
+  bool obscureText = false,
+  VoidCallback? toggleObscureText,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,16 +317,6 @@ Widget _buildCustomTextField({
             fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
-          children: const [
-            TextSpan(
-              text: ' *',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-            ),
-          ],
         ),
       ),
       const SizedBox(height: 8),
@@ -358,36 +325,134 @@ Widget _buildCustomTextField({
         focusNode: focusNode,
         keyboardType: keyboardType,
         validator: validator,
+        obscureText: obscureText,
+        textInputAction: nextFocusNode != null
+            ? TextInputAction.next
+            : TextInputAction.done,
+        onFieldSubmitted: (_) {
+          if (nextFocusNode != null) {
+            FocusScope.of(context).requestFocus(nextFocusNode);
+          } else {
+            FocusScope.of(context).unfocus();
+          }
+        },
         cursorColor: Colors.grey,
-        decoration: InputDecoration(
-          prefixIcon: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Icon(icon, color: Colors.grey, size: 24),
-
-            // Image.asset(
-            //   iconPath,
-            //   fit: BoxFit.contain,
-            //   width: 24,
-            //   height: 24,
-            //   color: Colors.grey,
-            // ),
-          ),
-          hintText: label,
-          hintStyle: TextStyle(color: Colors.grey),
-          filled: true,
-          fillColor: Colors.grey.withOpacity(0.1),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-        ),
         style: TextStyle(
           color: AppColors.context(context).textColor,
           fontSize: 16,
           fontWeight: FontWeight.w400,
+        ),
+        decoration: InputDecoration(
+          prefixIcon: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Icon(icon, color: Colors.grey, size: 24),
+          ),
+          suffixIcon: obscureText && toggleObscureText != null
+              ? IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                  onPressed: toggleObscureText,
+                )
+              : null,
+          hintText: label,
+          hintStyle: const TextStyle(color: Colors.grey),
+          filled: true,
+          fillColor: Colors.grey.withOpacity(0.1),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.green[800]!, width: 1.5),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          ),
         ),
       ),
       const SizedBox(height: 24),
     ],
   );
 }
+
+// Widget _buildCustomTextField({
+//   required String title,
+//   required BuildContext context,
+//   required String label,
+//   required TextEditingController controller,
+//   required IconData icon,
+//   required FocusNode focusNode,
+//   TextInputType keyboardType = TextInputType.text,
+//   required String? Function(String?) validator,
+// }) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       RichText(
+//         text: TextSpan(
+//           text: title,
+//           style: const TextStyle(
+//             color: Colors.white,
+//             fontSize: 16,
+//             fontWeight: FontWeight.w400,
+//           ),
+//           children: const [
+//             TextSpan(
+//               text: ' *',
+//               style: TextStyle(
+//                 color: Colors.red,
+//                 fontWeight: FontWeight.w700,
+//                 fontSize: 16,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       const SizedBox(height: 8),
+//       TextFormField(
+//         controller: controller,
+//         focusNode: focusNode,
+//         keyboardType: keyboardType,
+//         validator: validator,
+//         cursorColor: Colors.grey,
+//         decoration: InputDecoration(
+//           prefixIcon: Padding(
+//             padding: const EdgeInsets.all(12.0),
+//             child: Icon(icon, color: Colors.grey, size: 24),
+
+//             // Image.asset(
+//             //   iconPath,
+//             //   fit: BoxFit.contain,
+//             //   width: 24,
+//             //   height: 24,
+//             //   color: Colors.grey,
+//             // ),
+//           ),
+//           hintText: label,
+//           hintStyle: TextStyle(color: Colors.grey),
+//           filled: true,
+//           fillColor: Colors.grey.withOpacity(0.1),
+//           border: OutlineInputBorder(
+//             borderRadius: BorderRadius.circular(10),
+//             borderSide: BorderSide.none,
+//           ),
+//         ),
+//         onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(focusNode),
+//         style: TextStyle(
+//           color: AppColors.context(context).textColor,
+//           fontSize: 16,
+//           fontWeight: FontWeight.w400,
+//         ),
+//       ),
+//       const SizedBox(height: 24),
+//     ],
+//   );
+// }

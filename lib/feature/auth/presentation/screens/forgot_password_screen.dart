@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
-import '../../../../core/constants/app_colors.dart';
+import 'package:rideztohealth/feature/auth/presentation/screens/verify_otp_screen.dart';
+import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/validation/validators.dart';
+import '../../../../core/widgets/app_logo.dart';
+import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
-import '../../../../helpers/custom_snackbar.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   // final String emailFocus;
@@ -42,175 +44,291 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final focusedBorderColor = AppColors.context(context).primaryColor;
-    // const fillColor = AppColors.background;
-    // const borderColor = AppColors.secondayText;
+    final size = MediaQuery.of(context).size;
 
-    // final defaultPinTheme = PinTheme(
-    //   width: 56,
-    //   height: 56,
-    //   textStyle: TextStyle(fontSize: 22, color: AppColors.primaryTextBlack),
-    //   decoration: BoxDecoration(
-    //     borderRadius: BorderRadius.circular(8),
-    //     border: Border.all(color: borderColor),
-    //   ),
-    // );
-
-    return Scaffold(
-          backgroundColor: AppColors.background,
-          appBar: AppBar(
-            backgroundColor: AppColors.background,
-            elevation: 0,
-            leading: BackButton(color: Colors.black),
-            centerTitle: false,
-            title: Text(
-              "Forgot Password",
-              style: TextStyle(
-                color: AppColors.primaryTextBlack,
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          body: SafeArea(
+    return AppScaffold(
+      body: Column(
+        children: [
+          Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12.0,
-                vertical: 24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  /// Info Text
-                  'Select which contact details should we use to reset your password'
-                      .text14Grey(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: size.height),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // 🔥 Center vertically
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        AppLogo(),
+                        const SizedBox(height: 32),
+                        Center(
+                          child: Text(
+                            'Reset password',
 
-                  const SizedBox(height: 28),
-
-                  /// Title
-                  TextFormField(
-                    controller: _emailController,
-                    focusNode: _emailFocus,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Image.asset(
-                          'assets/images/email.png',
-                          width: 24,
-                          height: 24,
+                            style: TextStyle(
+                              color: AppColors.context(context).textColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 24,
+                            ),
+                          ),
                         ),
-                      ),
-                      hint: Text(
-                        'Email',
-                        style: TextStyle(color: AppColors.secondayText),
-                      ),
+                        Center(
+                          child: Text(
+                            'Enter your email to receive the OTP',
+                            style: TextStyle(
+                              color: Color(0xffD1D5DB),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        const SizedBox(height: 12),
+
+                        /// Email
+                        TextFormField(
+                          controller: _emailController,
+                          focusNode: _emailFocus,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Image.asset(
+                                'assets/images/email.png',
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            hint: Text(
+                              'Enter your email',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFFFFFFFF).withOpacity(0.3),
+                              ),
+                            ),
+
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ),
+                          onFieldSubmitted: (_) =>
+                              FocusScope.of(context).requestFocus(_emailFocus),
+                          textInputAction: TextInputAction.done,
+                          validator: Validators.email,
+                          style: TextStyle(
+                            color: AppColors.context(context).textColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          autofillHints: const [AutofillHints.email],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        /// Password
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Get.to(ForgotPasswordScreen());
+                            },
+                            child: 'Forgot Password ?'.text14Blue(),
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        /// Login button
+                        WideCustomButton(
+                          text: 'Send OTP',
+                          onPressed: () {
+                            //Get.to(() => BottomNavBar());
+                            onPressed:
+                            () {
+                              Get.to(
+                                () => VerifyOtpScreen(
+                                  email: _emailController.text,
+                                ),
+                              );
+                              // Get.to(
+                              //   () => VerifyOtpScreen(
+                              //     email: _emailController.text,
+                              //   ),
+                              // );
+                            };
+                          },
+                        ),
+                        // context.primaryButton(
+                        //   onPressed: () {
+                        //     String email = _emailController.text;
+                        //     String password = _passwordController.text;
+                        //     if (email.isEmpty) {
+                        //       showCustomSnackBar('email is required'.tr);
+                        //     } else if (password.isEmpty) {
+                        //       showCustomSnackBar('password_is_required'.tr);
+                        //     } else if (password.length < 5) {
+                        //       showCustomSnackBar(
+                        //         'minimum password length is 8',
+                        //       );
+                        //     } else {
+                        //       // authController.login(email, password);
+                        //     }
+
+                        //     // Navigator.push(
+                        //     //   context,
+                        //     //   MaterialPageRoute(
+                        //     //     builder: (context) => BottomNavigationBar(),
+                        //     //   ),
+                        //     // );
+                        //   },
+                        //   text: "Login",
+                        // ),
+                        // const SizedBox(height: 8),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     'New To our Platform?'.text12White(),
+                        //     TextButton(
+                        //       child: Text(
+                        //         "Sign Up Here",
+                        //         style: TextStyle(
+                        //           color: Colors.red,
+                        //           fontSize: 12,
+                        //           fontWeight: FontWeight.w600,
+                        //         ),
+                        //       ),
+                        //       onPressed: () {
+                        //         Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (context) => UserSignupScreen(),
+                        //           ),
+                        //         );
+                        //       },
+                        //     ),
+                        //   ],
+                        // ),
+
+                        // const SizedBox(height: 16),
+
+                        /// Google
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   child: ElevatedButton.icon(
+                        //     onPressed: () {},
+                        //     icon: Image.asset(
+                        //       'assets/images/google.png',
+                        //       height: 24,
+                        //       width: 24,
+                        //     ),
+                        //     label: Text(
+                        //       "Continue With Google",
+                        //       style: TextStyle(
+                        //         fontSize: 16,
+                        //         fontWeight: FontWeight.w500,
+                        //       ),
+                        //     ),
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: AppColors.context(
+                        //         context,
+                        //       ).backgroundColor,
+                        //       foregroundColor: AppColors.context(
+                        //         context,
+                        //       ).popupBackgroundColor,
+                        //       elevation: 1,
+                        //       padding: EdgeInsets.symmetric(vertical: 16),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(12),
+                        //         side: BorderSide(color: Colors.grey, width: 1),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 12),
+
+                        // /// Apple
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   child: ElevatedButton.icon(
+                        //     onPressed: () {},
+                        //     icon: Image.asset(
+                        //       'assets/images/apple.png',
+                        //       height: 24,
+                        //       width: 24,
+                        //     ),
+                        //     label: Text(
+                        //       "Continue With Apple",
+                        //       style: TextStyle(
+                        //         fontSize: 16,
+                        //         fontWeight: FontWeight.w500,
+                        //       ),
+                        //     ),
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: AppColors.context(
+                        //         context,
+                        //       ).backgroundColor,
+                        //       foregroundColor: AppColors.context(
+                        //         context,
+                        //       ).textColor,
+                        //       elevation: 1,
+                        //       padding: EdgeInsets.symmetric(vertical: 16),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(12),
+                        //         side: BorderSide(color: Colors.grey, width: 1),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                    onFieldSubmitted:
-                        (_) => FocusScope.of(context).requestFocus(_emailFocus),
-                    textInputAction: TextInputAction.done,
-                    validator: Validators.email,
-                    style: TextStyle(
-                      color: AppColors.secondayText,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    autofillHints: const [AutofillHints.email],
                   ),
-
-                  const SizedBox(height: 36),
-
-                  /// OTP Input
-                  // Pinput(
-                  //   length: 6,
-                  //   controller: pinController,
-                  //   focusNode: focusNode,
-                  //   defaultPinTheme: defaultPinTheme,
-                  //   hapticFeedbackType: HapticFeedbackType.lightImpact,
-                  //   onCompleted: (pin) => debugPrint('Completed: $pin'),
-                  //   onChanged: (value) => debugPrint('Changed: $value'),
-                  //   focusedPinTheme: defaultPinTheme.copyWith(
-                  //     decoration: defaultPinTheme.decoration!.copyWith(
-                  //       borderRadius: BorderRadius.circular(8),
-                  //       border: Border.all(color: focusedBorderColor),
-                  //     ),
-                  //   ),
-                  //   submittedPinTheme: defaultPinTheme.copyWith(
-                  //     decoration: defaultPinTheme.decoration!.copyWith(
-                  //       color: fillColor,
-                  //       borderRadius: BorderRadius.circular(8),
-                  //       border: Border.all(color: focusedBorderColor),
-                  //     ),
-                  //   ),
-                  //   errorPinTheme: defaultPinTheme.copyBorderWith(
-                  //     border: Border.all(color: Colors.red),
-                  //   ),
-                  // ),
-                  //const SizedBox(height: 12),
-
-                  /// Resend
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       "Didn't Receive OTP",
-                  //       style: TextStyle(color: AppColors.secondayText),
-                  //     ),
-                  //     TextButton(
-                  //       onPressed: () {
-                  //         // Resend logic here
-                  //       },
-                  //       child: Text(
-                  //         "RESEND OTP",
-                  //         style: TextStyle(
-                  //           color: AppColors.context(context).primaryColor,
-                  //           fontSize: 12,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  //const SizedBox(height: 4),
-                  WideCustomButton(
-                    
-                    text: 'Continue',
-                    onPressed: () {
-                      final fEmail = _emailController.text;
-                      if (fEmail.isEmpty) {
-                        showCustomSnackBar('email is required'.tr);
-                      }
-                      // else if (email.isEmail) {
-                      //   showCustomSnackBar('email is not valid'.tr);
-                      // }
-                      else {
-                       // AuthController.forgetPassword(fEmail);
-                      }
-                    },
-                  ),
-
-                  // context.primaryButton(
-                  //   onPressed: () {
-                  //     // final otp = pinController.text;
-                  //     // if (otp.length == 6) {
-                  //     //   Navigator.push(
-                  //     //     context,
-                  //     //     MaterialPageRoute(builder: (context) => Scaffold()),
-                  //     //   );
-                  //     // } else {
-                  //     //   ScaffoldMessenger.of(context).showSnackBar(
-                  //     //     const SnackBar(
-                  //     //       content: Text('Please enter a valid 6-digit code.'),
-                  //     //     ),
-                  //     //   );
-                  //     // }
-                  //   },
-                  //   text: "Continue",
-                  // ),
-                ],
+                ),
               ),
             ),
           ),
-        );
-   
+
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Your Profile helps us customize your experience",
+                  style: TextStyle(
+                    color: AppColors.context(context).textColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/lockk.png', height: 16),
+                    Text(
+                      "Your data is secure and private",
+                      style: TextStyle(
+                        color: AppColors.context(context).textColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
   }
 }

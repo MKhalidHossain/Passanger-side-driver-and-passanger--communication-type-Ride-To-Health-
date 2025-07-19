@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
-import 'package:rideztohealth/core/onboarding/presentation/screens/onboarding1.dart';
-
+import 'package:rideztohealth/app.dart';
+import 'core/onboarding/presentation/screens/onboarding1.dart';
 import 'core/onboarding/presentation/screens/spashScreen.dart';
+import 'navigation/bottom_nav_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +26,9 @@ class MyApp extends StatelessWidget {
         //background: const Color(0xFF303644), // Optional: sets default background in color scheme
       ),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(nextScreen: Onboarding1()),
+      home: AppMain(),
+
+      //SplashScreen(nextScreen: Onboarding1()),
     );
   }
 }

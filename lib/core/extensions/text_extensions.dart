@@ -46,6 +46,16 @@ extension TextStylingExtension on String {
     ),
   );
 
+  Text text22White() => Text(
+    this,
+    style: const TextStyle(
+      fontSize: 22,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFFFFFFFF),
+    ),
+  );
+
   // TextSize 20
   Text text20Black() => Text(
     this,
@@ -86,13 +96,38 @@ extension TextStylingExtension on String {
     ),
   );
 
+  Text text18White500() => Text(
+    maxLines: 15,
+    this,
+    textAlign: TextAlign.center,
+    style: const TextStyle(
+      fontSize: 18,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w500,
+      color: Color(0xFFFFFFFF),
+    ),
+  );
+
   // TextSize 16
   Text text16White() => Text(
     this,
+    textAlign: TextAlign.justify,
     style: const TextStyle(
       fontSize: 16,
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
+      color: Color(0xFFFFFFFF),
+    ),
+  );
+
+  Text text16White500() => Text(
+    maxLines: 15,
+    this,
+    textAlign: TextAlign.center,
+    style: const TextStyle(
+      fontSize: 16,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w500,
       color: Color(0xFFFFFFFF),
     ),
   );
@@ -172,6 +207,18 @@ extension TextStylingExtension on String {
     ),
   );
 
+  Text text14White500() => Text(
+    maxLines: 15,
+    this,
+    textAlign: TextAlign.center,
+    style: const TextStyle(
+      fontSize: 14,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w500,
+      color: Color(0xFFFFFFFF),
+    ),
+  );
+
   Text text14Grey() => Text(
     maxLines: 15,
     this,
@@ -216,6 +263,17 @@ extension TextStylingExtension on String {
   //     color: Color(0xFFFF3951),
   //   ),
   // );
+
+  Text text12Grey() => Text(
+    this,
+    style: const TextStyle(
+      fontSize: 12,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w400,
+      color: Colors.white70,
+    ),
+  );
+
   Text text12DarkGrey() => Text(
     this,
     style: const TextStyle(
@@ -264,6 +322,16 @@ extension TextStylingExtension on String {
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
       color: const Color(0xFF737373),
+    ),
+  );
+
+  Text textColorWhite(double size) => Text(
+    this,
+    style: TextStyle(
+      fontSize: size,
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w400,
+      color: const Color(0xFFFFFFFF),
     ),
   );
 

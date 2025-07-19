@@ -52,6 +52,7 @@ class AppColors {
   final Color filterSelectedTextColor;
   final Color filterUnselectedTextColor;
 
+
   AppColors._internalLight()
     : textColor = Colors.white,
       textGreyColor = Colors.grey.shade700,

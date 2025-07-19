@@ -20,9 +20,9 @@ class CustomBottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _buildNavItem(Icons.home, "Home", 0),
-          _buildNavItem(Icons.emoji_events, "Leaderboard", 1),
-          _buildNavItem(Icons.groups, "Commanders", 2),
-          _buildNavItem(Icons.more_horiz, "More", 3),
+          _buildNavItem(Icons.emoji_events, "Service", 1),
+          _buildNavItem(Icons.groups, "History", 2),
+          _buildNavItem(Icons.more_horiz, "Profile", 3),
         ],
       ),
     );
@@ -40,12 +40,15 @@ class CustomBottomNavBar extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: isSelected ? Colors.yellow : Colors.white),
+              Icon(
+                icon,
+                color: isSelected ? const Color(0xFFea0001) : Colors.white,
+              ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? Colors.yellow : Colors.white,
+                  color: isSelected ? const Color(0xFFea0001) : Colors.white,
                   fontSize: 12,
                 ),
               ),
@@ -54,6 +57,5 @@ class CustomBottomNavBar extends StatelessWidget {
         },
       ),
     );
-    
   }
 }
