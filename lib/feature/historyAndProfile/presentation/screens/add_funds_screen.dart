@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/core/widgets/normal_custom_button.dart';
 
 class AddFundsScreen extends StatefulWidget {
   final double currentBalance;
@@ -38,52 +40,54 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF34495E),
-      appBar: _buildAppBar(),
+      //backgroundColor: Color(0xFF34495E),
+      // appBar: _buildAppBar(),
       body: _buildBody(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: Color(0xFF2C3E50),
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: Text(
-        'Add Funds',
-        style: TextStyle(
-          color: Colors.white, 
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      centerTitle: true,
-    );
-  }
+  //
+
+  // Need to show figma when Api Integration
+
+  //
 
   Widget _buildBody() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildCurrentBalanceCard(),
-          SizedBox(height: 20),
-          _buildWarningMessage(),
-          SizedBox(height: 30),
-          _buildAmountSelection(),
-          SizedBox(height: 30),
-          _buildPaymentMethodSection(),
-          SizedBox(height: 20),
-          _buildCustomAmountSection(),
-          SizedBox(height: 30),
-          _buildFundMethodSelector(),
-          SizedBox(height: 40),
-          _buildActionButtons(),
-        ],
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BackButton(color: Colors.white),
+                // IconButton(
+                //   icon: Icon(Icons.arrow_back, color: Colors.white),
+                //   onPressed: () => Navigator.pop(context),
+                // ),
+                'Add Funds'.text20white(),
+
+                SizedBox(width: 50),
+              ],
+            ),
+            SizedBox(height: 20),
+            _buildCurrentBalanceCard(),
+            SizedBox(height: 20),
+            _buildWarningMessage(),
+            SizedBox(height: 30),
+            _buildAmountSelection(),
+            SizedBox(height: 30),
+            _buildPaymentMethodSection(),
+            SizedBox(height: 20),
+            _buildCustomAmountSection(),
+            SizedBox(height: 30),
+            _buildFundMethodSelector(),
+            SizedBox(height: 40),
+            _buildActionButtons(),
+          ],
+        ),
       ),
     );
   }
@@ -93,7 +97,8 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
       width: double.infinity,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Color(0xFF2C3E50),
+        color: Colors.white10,
+        //Color(0xFF2C3E50),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey[600]!),
       ),
@@ -121,9 +126,9 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        //color: Colors.red.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.withOpacity(0.3)),
+        border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Row(
         children: [
@@ -170,9 +175,15 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
     );
   }
 
-  Widget _buildAmountOption(int amount, String type, int index, {bool isPopular = false}) {
-    bool isSelected = selectedAmount == amount && _customAmountController.text.isEmpty;
-    
+  Widget _buildAmountOption(
+    int amount,
+    String type,
+    int index, {
+    bool isPopular = false,
+  }) {
+    bool isSelected =
+        selectedAmount == amount && _customAmountController.text.isEmpty;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -194,7 +205,9 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
           children: [
             Radio<int>(
               value: amount,
-              groupValue: _customAmountController.text.isEmpty ? selectedAmount : null,
+              groupValue: _customAmountController.text.isEmpty
+                  ? selectedAmount
+                  : null,
               onChanged: (value) {
                 setState(() {
                   selectedAmount = value!;
@@ -221,7 +234,10 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
                       if (isPopular) ...[
                         SizedBox(width: 8),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(10),
@@ -286,10 +302,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
         Spacer(),
         TextButton(
           onPressed: _showPaymentMethodSelector,
-          child: Text(
-            'Change',
-            style: TextStyle(color: Colors.red),
-          ),
+          child: Text('Change', style: TextStyle(color: Colors.red)),
         ),
       ],
     );
@@ -379,7 +392,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Icon(Icons.keyboard_arrow_down, color: Colors.red),
+            Icon(Icons.keyboard_arrow_down, color: Colors.white),
           ],
         ),
       ),
@@ -393,52 +406,54 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
           child: ElevatedButton(
             onPressed: () => Navigator.pop(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey[600],
+              backgroundColor: Color(0xffBFC1C5),
               padding: EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: "Cancel".text16Black(),
           ),
         ),
         SizedBox(width: 15),
         Expanded(
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _confirmAddFunds,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              elevation: 2,
-            ),
-            child: _isLoading
-                ? SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Text(
-                    'Confirm',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+          child: NormalCustomButton(
+            text: 'Confirm',
+            textColor: Colors.white,
+            fontSize: 16,
+            onPressed: () {},
+            height: 51,
           ),
+          // ElevatedButton(
+          //   onPressed: _isLoading ? null : _confirmAddFunds,
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor:
+
+          //     Color(0xffCE0000),
+          //     padding: EdgeInsets.symmetric(vertical: 15),
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(8),
+          //     ),
+          //     elevation: 2,
+          //   ),
+          //   child: _isLoading
+          //       ? SizedBox(
+          //           height: 20,
+          //           width: 20,
+          //           child: CircularProgressIndicator(
+          //             color: Colors.white,
+          //             strokeWidth: 2,
+          //           ),
+          //         )
+          //       : Text(
+          //           'Confirm',
+          //           style: TextStyle(
+          //             color: Colors.white,
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.w600,
+          //           ),
+          //         ),
+          // ),
         ),
       ],
     );
@@ -467,39 +482,38 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              ...paymentMethods.map((method) => ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 25,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text(
-                      method,
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: _getPaymentMethodColorForMethod(method),
+              ...paymentMethods.map(
+                (method) => ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Text(
+                        method,
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: _getPaymentMethodColorForMethod(method),
+                        ),
                       ),
                     ),
                   ),
+                  title: Text(method, style: TextStyle(color: Colors.white)),
+                  trailing: selectedPaymentMethod == method
+                      ? Icon(Icons.check_circle, color: Colors.red)
+                      : null,
+                  onTap: () {
+                    setState(() {
+                      selectedPaymentMethod = method;
+                    });
+                    Navigator.pop(context);
+                  },
                 ),
-                title: Text(
-                  method,
-                  style: TextStyle(color: Colors.white),
-                ),
-                trailing: selectedPaymentMethod == method
-                    ? Icon(Icons.check_circle, color: Colors.red)
-                    : null,
-                onTap: () {
-                  setState(() {
-                    selectedPaymentMethod = method;
-                  });
-                  Navigator.pop(context);
-                },
-              )),
+              ),
             ],
           ),
         );
@@ -566,10 +580,16 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildConfirmationRow('Amount:', '\$${amount.toStringAsFixed(2)}'),
+              _buildConfirmationRow(
+                'Amount:',
+                '\$${amount.toStringAsFixed(2)}',
+              ),
               _buildConfirmationRow('Payment Method:', selectedPaymentMethod),
               _buildConfirmationRow('Destination:', 'Rider Cash'),
-              _buildConfirmationRow('New Balance:', '\$${(widget.currentBalance + amount).toStringAsFixed(2)}'),
+              _buildConfirmationRow(
+                'New Balance:',
+                '\$${(widget.currentBalance + amount).toStringAsFixed(2)}',
+              ),
             ],
           ),
           actions: [
@@ -581,11 +601,11 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
               onPressed: () {
                 Navigator.pop(context); // Close dialog
                 Navigator.pop(context); // Go back to wallet
-                
+
                 if (widget.onFundsAdded != null) {
                   widget.onFundsAdded!(amount);
                 }
-                
+
                 _showSuccessMessage(amount);
               },
               child: Text(
@@ -608,10 +628,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey[400], fontSize: 14),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[400], fontSize: 14)),
           Text(
             value,
             style: TextStyle(
@@ -642,9 +659,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
         ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         duration: Duration(seconds: 4),
       ),
     );
@@ -662,9 +677,7 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

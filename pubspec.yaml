@@ -48,6 +48,10 @@ dependencies:
   motion_tab_bar: ^2.0.4
   #pin_code_fields: ^8.0.0
   pinput: ^5.0.1
+  google_maps_flutter: ^2.12.3
+  location: ^8.0.1
+ # google_maps_webservice: ^0.0.20-nullsafety.5
+ # flutter_google_places: ^0.3.0
   
   
 

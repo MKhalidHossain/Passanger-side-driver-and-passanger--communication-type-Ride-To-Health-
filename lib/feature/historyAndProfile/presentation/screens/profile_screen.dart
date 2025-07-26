@@ -4,6 +4,7 @@ import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/edit_profile_screen.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import 'notifications_screen.dart';
 import 'terms_and_condition.dart';
 import 'wallet_screen.dart';
 
@@ -118,7 +119,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Icons.notifications_outlined,
                       "Manage Notifications",
                       "Customize alerts",
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(NotificationsScreen());
+                      },
                     ),
                     _divider(),
                     _buildMenuItem(

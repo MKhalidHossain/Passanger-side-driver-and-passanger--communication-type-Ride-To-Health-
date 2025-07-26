@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'RidezToHealth',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(
           0xFF303644,
@@ -25,10 +25,13 @@ class MyApp extends StatelessWidget {
 
         //background: const Color(0xFF303644), // Optional: sets default background in color scheme
       ),
+      // initialBinding: InitialBinding(),
+      // initialRoute: AppRoutes.SEARCH,
+      // getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
-      home: AppMain(),
-
-      //SplashScreen(nextScreen: Onboarding1()),
+      home:
+          // AppMain(),
+          SplashScreen(nextScreen: Onboarding1()),
     );
   }
 }

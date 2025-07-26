@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/widgets/app_scaffold.dart';
-import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget nextScreen;
