@@ -1,22 +1,17 @@
-
-
-
-
-
-
-
-// lib/feature/map/presentation/screens/map_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
+import 'finding_your_driver_screen.dart';
 import '../location_confirmation_screen.dart';
+import '../ride_confirmed_screen.dart';
 // import 'chat_screen.dart'; // Uncomment if you use these
 // import 'call_screen.dart'; // Uncomment if you use these
 // import 'payment_screen.dart'; // Uncomment if you use these// Import the new search screen
 
+// ignore: use_key_in_widget_constructors
 class ConfirmYourLocationScreen extends StatelessWidget {
   final LocationController locationController = Get.find<LocationController>();
   final BookingController bookingController = Get.find<BookingController>();
@@ -310,7 +305,8 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                           appController.setCurrentScreen(
                             'confirm',
                           ); // Your existing logic
-                          Get.to(() => LocationConfirmationScreen());
+                          // Get.to(() => LocationConfirmationScreen());
+                          Get.to(() => FindingYourDriverScreen());
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFC0392B), // Red color

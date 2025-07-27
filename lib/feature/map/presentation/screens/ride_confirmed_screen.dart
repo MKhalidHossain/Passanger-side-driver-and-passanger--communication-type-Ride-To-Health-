@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import '../../controllers/app_controller.dart'; // Uncomment if needed
-// import '../../controllers/booking_controller.dart'; // Uncomment if needed
+
 import 'payment_details_screen.dart'; // Navigate to payment screen
 
 class RideConfirmedScreen extends StatelessWidget {
-  // final AppController appController = Get.find<AppController>(); // Example
-  // final BookingController bookingController = Get.find<BookingController>(); // Example
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +15,10 @@ class RideConfirmedScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Get.back(),
         ),
-        title: Text('Your driver is coming in 3:00', style: TextStyle(color: Colors.white)),
+        title: Text(
+          'Your driver is coming in 3:00',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -37,7 +36,10 @@ class RideConfirmedScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage('assets/images/driver_avatar.jpg'), // Replace with actual image
+
+                    backgroundImage: AssetImage(
+                      'assets/images/user6.png',
+                    ), // Replace with actual image
                     backgroundColor: Colors.grey,
                   ),
                   SizedBox(width: 15),
@@ -45,7 +47,14 @@ class RideConfirmedScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Max Johnson', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Max Johnson',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         Row(
                           children: [
                             Icon(Icons.star, color: Colors.amber, size: 16),
@@ -57,7 +66,7 @@ class RideConfirmedScreen extends StatelessWidget {
                     ),
                   ),
                   Image.asset(
-                    'assets/images/copen_gr_sport.png', // Car icon
+                    'assets/images/privet_car.png', // Car icon
                     width: 60,
                     height: 40,
                     fit: BoxFit.contain,
@@ -76,23 +85,44 @@ class RideConfirmedScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Payment method', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                  Text(
+                    'Payment method',
+                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
                   SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.money, color: Colors.green, size: 24), // Cash icon
+                      Icon(
+                        Icons.money,
+                        color: Colors.green,
+                        size: 24,
+                      ), // Cash icon
                       SizedBox(width: 10),
-                      Text('Cash', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      Text(
+                        'Cash',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                       Spacer(),
-                      Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.grey,
+                        size: 16,
+                      ),
                     ],
                   ),
                   Divider(color: Colors.grey[700], height: 20),
                   Row(
                     children: [
-                      Icon(Icons.account_balance_wallet, color: Colors.blue, size: 24), // Wallet icon
+                      Icon(
+                        Icons.account_balance_wallet,
+                        color: Colors.blue,
+                        size: 24,
+                      ), // Wallet icon
                       SizedBox(width: 10),
-                      Text('Wallet', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      Text(
+                        'Wallet',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                       Spacer(),
                       ElevatedButton(
                         onPressed: () {
@@ -100,10 +130,18 @@ class RideConfirmedScreen extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
-                          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        child: Text('Apply', style: TextStyle(color: Colors.white)),
+                        child: Text(
+                          'Apply',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -121,8 +159,18 @@ class RideConfirmedScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total', style: TextStyle(color: Colors.grey, fontSize: 16)),
-                  Text('\$32.50', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(
+                    'Total',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  Text(
+                    '\$32.50',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -138,7 +186,9 @@ class RideConfirmedScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3B3B42),
                       padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     child: Icon(Icons.call, color: Colors.white),
                   ),
@@ -153,9 +203,18 @@ class RideConfirmedScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       padding: EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: Text('Cancel Ride', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Cancel Ride',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
