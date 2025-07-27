@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/history_screen.dart';
 import 'package:rideztohealth/feature/home/presentation/widgets/recent_single_contianer.dart';
-import 'package:rideztohealth/feature/map/presentation/screens/search_destination_screen.dart';
+import 'package:rideztohealth/feature/map/presentation/screens/work/search_destination_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/promo_banner_widget.dart';
 import '../../../historyAndProfile/presentation/screens/saved_places_screen.dart';
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         child: SearchDestinationScreen(
-                          scrollController: controller,
+                          // scrollController: controller,
                         ),
                       ),
                     ),
