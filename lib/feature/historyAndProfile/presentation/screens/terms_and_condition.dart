@@ -65,11 +65,12 @@ class TermsAndCondition extends StatelessWidget {
   Widget _buildParagraph(String text) {
     return Text(
       text,
+      maxLines: 20,
       textAlign: TextAlign.justify, // 👈 Makes all lines end equally
       style: const TextStyle(
         fontSize: 16,
         fontFamily: 'Poppins',
-        color: Colors.white70,
+        color: Colors.white,
         height: 1.6, // line height
         letterSpacing: 0.2, // subtle letter spacing
       ),
@@ -89,9 +90,10 @@ class TermsAndCondition extends StatelessWidget {
             fontSize: 18,
             fontFamily: 'Poppins',
             fontWeight: FontWeight.bold,
-            color: Color(0xFF00FFB0), // Stylish light green
+            color: Colors.white, // Stylish light green
           ),
         ),
+
         const SizedBox(height: 8),
         _buildParagraph(text),
       ],

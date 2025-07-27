@@ -34,7 +34,7 @@ class NormalCustomButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(8),
             gradient: LinearGradient(
               stops: [0.0, 0.4, 9.0],
               colors: [

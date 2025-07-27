@@ -4,7 +4,6 @@ import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
 import '../../../common/button/rounded_button_with_arrow_and_progress.dart';
 import '../../../widgets/app_scaffold.dart';
-import '../../../widgets/wide_custom_button.dart';
 
 class Onboarding3 extends StatelessWidget {
   const Onboarding3({super.key});

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import '../widgets/payment_method_card.dart';
 import 'add_card_screen.dart';
@@ -23,48 +25,70 @@ class _WalletScreenState extends State<WalletScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       //  backgroundColor: Color(0xFF34495E),
-      appBar: _buildAppBar(),
+      // appBar: _buildAppBar(),
       body: _buildBody(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: BackButton(color: Colors.white),
-      title: Text(
-        'Wallet',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.more_vert, color: Colors.white),
-          onPressed: () => _showOptionsMenu(),
-        ),
-      ],
-    );
-  }
+  // PreferredSizeWidget _buildAppBar() {
+  //   return AppBar(
+  //     backgroundColor: Colors.transparent,
+  //     elevation: 0,
+  //     leading: BackButton(color: Colors.white),
+  //     title: Text(
+  //       'Wallet',
+  //       style: TextStyle(
+  //         color: Colors.white,
+  //         fontSize: 18,
+  //         fontWeight: FontWeight.w600,
+  //       ),
+  //     ),
+  //     centerTitle: true,
+  //     actions: [
+  //       IconButton(
+  //         icon: Icon(Icons.more_vert, color: Colors.white),
+  //         onPressed: () => _showOptionsMenu(),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildBody() {
     return Padding(
       padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          _buildBalanceSection(),
-          SizedBox(height: 40),
-          _buildPaymentMethodsSection(),
-          Spacer(),
-          WideCustomButton(
-            text: '+  Add Payment Method',
-            onPressed: () => _showRemoveCardDialog(),
-          ),
-        ],
+      child: SafeArea(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                BackButton(color: Colors.white),
+                Text(
+                  'Wallet',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                IconButton(
+                  icon: Icon(Icons.more_vert, color: Colors.white),
+                  onPressed: () => _showOptionsMenu(),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            _buildBalanceSection(),
+            SizedBox(height: 40),
+            _buildPaymentMethodsSection(),
+            Spacer(),
+            WideCustomButton(
+              text: '+  Add Payment Method',
+              onPressed: () => _showRemoveCardDialog(),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -79,6 +103,7 @@ class _WalletScreenState extends State<WalletScreen> {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // SizedBox(height: 40),
           Text(
@@ -93,14 +118,25 @@ class _WalletScreenState extends State<WalletScreen> {
             'Rider Cash',
             style: TextStyle(color: Colors.grey[400], fontSize: 16),
           ),
-          SizedBox(height: 30),
-          Container(
+          SizedBox(height: 20),
+          SizedBox(
             width: size.width * 0.5,
             child: ElevatedButton(
-              onPressed: () => _navigateToAddFunds(),
+              onPressed: () {
+                Get.to(
+                  AddFundsScreen(
+                    currentBalance: balance,
+                    onFundsAdded: (amount) {
+                      setState(() {
+                        balance += amount;
+                      });
+                    },
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white12,
-                padding: EdgeInsets.symmetric(vertical: 15),
+                padding: EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
                   side: BorderSide(color: Colors.grey[600]!),
@@ -110,16 +146,17 @@ class _WalletScreenState extends State<WalletScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: Colors.white),
+                  Icon(Icons.add, color: Colors.white, size: 25),
                   SizedBox(width: 8),
-                  Text(
-                    'Add Money',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  'Add Money'.text18White500(),
+                  // Text(
+                  //   'Add Money',
+                  //   style: TextStyle(
+                  //     color: Colors.white,
+                  //     fontSize: 18,
+                  //     fontWeight: FontWeight.w500,
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -175,21 +212,21 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
-  void _navigateToAddFunds() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddFundsScreen(
-          currentBalance: balance,
-          onFundsAdded: (amount) {
-            setState(() {
-              balance += amount;
-            });
-          },
-        ),
-      ),
-    );
-  }
+  // void _navigateToAddFunds() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => AddFundsScreen(
+  //         currentBalance: balance,
+  //         onFundsAdded: (amount) {
+  //           setState(() {
+  //             balance += amount;
+  //           });
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _navigateToAddCard() {
     Navigator.push(
