@@ -152,19 +152,19 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                 controller: widget.scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  _buildLocationItem(
+                  _buildPaymentItem(
                     icon: Icons.home,
                     title: 'Home',
                     subtitle: locationController.homeAddress.value,
                     onTap: () => goToMap(locationController.homeAddress.value),
                   ),
-                  _buildLocationItem(
+                  _buildPaymentItem(
                     icon: Icons.work,
                     title: 'Work',
                     subtitle: locationController.workAddress.value,
                     onTap: () => goToMap(locationController.workAddress.value),
                   ),
-                  _buildLocationItem(
+                  _buildPaymentItem(
                     icon: Icons.star,
                     title: 'Favorite Location',
                     subtitle: locationController.favoriteAddress.value,
@@ -179,7 +179,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     );
   }
 
-  Widget _buildLocationItem({
+  Widget _buildPaymentItem({
     required IconData icon,
     required String title,
     required String subtitle,
@@ -342,7 +342,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 //                 controller: scrollController,
 //                 padding: EdgeInsets.symmetric(horizontal: 16),
 //                 children: [
-//                   // _buildLocationItem(
+//                   // _buildPaymentItem(
 //                   //   icon: Icons.location_on,
 //                   //   title: 'Current Location',
 //                   //   subtitle: locationController.pickupAddress.value.isEmpty
@@ -350,19 +350,19 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 //                   //       : locationController.pickupAddress.value,
 //                   //   onTap: () => locationController.getCurrentLocation(),
 //                   // ),
-//                   _buildLocationItem(
+//                   _buildPaymentItem(
 //                     icon: Icons.access_time,
 //                     title: 'Home',
 //                     subtitle: locationController.homeAddress.value,
 //                     onTap: () => locationController.selectSavedLocation('home'),
 //                   ),
-//                   _buildLocationItem(
+//                   _buildPaymentItem(
 //                     icon: Icons.access_time,
 //                     title: 'Work',
 //                     subtitle: locationController.workAddress.value,
 //                     onTap: () => locationController.selectSavedLocation('work'),
 //                   ),
-//                   _buildLocationItem(
+//                   _buildPaymentItem(
 //                     icon: Icons.access_time,
 //                     title: 'Favorite Location',
 //                     subtitle: locationController.favoriteAddress.value,
@@ -409,7 +409,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 //     );
 //   }
 
-//   Widget _buildLocationItem({
+//   Widget _buildPaymentItem({
 //     required IconData icon,
 //     required String title,
 //     required String subtitle,
