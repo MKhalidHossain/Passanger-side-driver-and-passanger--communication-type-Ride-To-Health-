@@ -4,7 +4,7 @@ class AppColors {
   static const Color background = Color(0xFFF5F5F5);
 
   static final Color primaryColorStatic = const Color(
-    0xFFea0001,
+    0xFF7B0100,
   ); //Color.fromARGB(255, 58, 64, 234);
 
   static const Color secondaryColor = Color(0xFF282828);
@@ -66,7 +66,7 @@ class AppColors {
   final Color filterUnselectedTextColor;
 
   AppColors._internalLight()
-    : textColor = Colors.black,
+    : textColor = Colors.white,
       textGreyColor = Colors.grey.shade700,
       contentBoxColor = Colors.grey.shade100,
       contentBoxGreyColor = Colors.grey.shade300,

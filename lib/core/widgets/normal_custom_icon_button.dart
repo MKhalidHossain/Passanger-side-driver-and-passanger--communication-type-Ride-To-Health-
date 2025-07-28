@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class NormalCustomButton extends StatelessWidget {
-  final String text;
+class NormalCustomIconButton extends StatelessWidget {
+  //final String text;
+  final IconData icon;
+  final double iconSize;
   final VoidCallback onPressed;
   final double height;
   final double weight;
@@ -10,11 +12,12 @@ class NormalCustomButton extends StatelessWidget {
   final Color fillColor;
   final bool showIcon;
   final IconData? sufixIcon;
-  final double circularRadious;
 
-  const NormalCustomButton({
+  const NormalCustomIconButton({
     super.key,
-    required this.text,
+    required this.icon,
+    required this.iconSize,
+    //  required this.text,
     required this.onPressed,
     this.height = 40,
     this.weight = 140,
@@ -23,20 +26,20 @@ class NormalCustomButton extends StatelessWidget {
     this.fillColor = Colors.red,
     this.showIcon = false,
     this.sufixIcon,
-    this.circularRadious = 8,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height,
-      width: weight,
+      // height: height,
+      // width: weight,
       child: InkWell(
         onTap: onPressed,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(circularRadious),
+            shape: BoxShape.circle,
+            // borderRadius: BorderRadius.circular(8),
             gradient: LinearGradient(
               stops: [0.0, 0.4, 9.0],
               colors: [
@@ -49,13 +52,9 @@ class NormalCustomButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                text,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(icon, color: Colors.white, size: iconSize),
               ),
               if (showIcon && sufixIcon != null) ...[
                 const SizedBox(width: 5),
@@ -69,24 +68,24 @@ class NormalCustomButton extends StatelessWidget {
   }
 }
 
-class SmallSemiTranparentButton extends StatelessWidget {
-  final String text;
+class SmallSemiTranparentIconButton extends StatelessWidget {
+  final IconData icon;
   final VoidCallback onPressed;
   final double height;
   final double weight;
-  final double fontSize;
+  final double iconSize;
   final Color textColor;
   final Color fillColor;
   final bool showIcon;
   final IconData? sufixIcon;
 
-  const SmallSemiTranparentButton({
+  const SmallSemiTranparentIconButton({
     super.key,
-    required this.text,
+    required this.icon,
     required this.onPressed,
     this.height = 30,
     this.weight = 90,
-    this.fontSize = 12,
+    this.iconSize = 20,
     this.textColor = Colors.white,
     this.fillColor = Colors.white12,
     this.showIcon = false,
@@ -112,14 +111,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Icon(icon, color: Colors.white, size: iconSize),
             ),
             if (showIcon && sufixIcon != null) ...[
               const SizedBox(width: 0),
