@@ -207,7 +207,7 @@ class LocationConfirmationScreen extends StatelessWidget {
                         appController.showLoading(); // Corrected method call
                         Future.delayed(Duration(seconds: 2), () {
                           appController.hideLoading(); // Corrected method call
-                          Get.to(() => RideConfirmedScreen()); // Navigate to ride confirmed screen
+                       //  Get.to(() => RideConfirmedScreen()); // Navigate to ride confirmed screen
                         });
                       },
                 style: ElevatedButton.styleFrom(

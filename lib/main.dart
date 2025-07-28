@@ -5,6 +5,7 @@ import 'package:rideztohealth/feature/map/presentation/screens/map_screen_test.d
 import 'core/onboarding/presentation/screens/onboarding1.dart';
 import 'core/onboarding/presentation/screens/spashScreen.dart';
 import 'feature/map/bindings/initial_binding.dart';
+import 'feature/map/presentation/screens/ride_confirmed_screen.dart';
 import 'feature/map/presentation/screens/work/search_destination_screen.dart';
 import 'navigation/bottom_nav_bar.dart';
 
@@ -34,8 +35,9 @@ class MyApp extends StatelessWidget {
       home:
           //MapScreenTest(),
           // SearchDestinationScreen(),
+          // RideConfirmedScreen(),
           AppMain(),
-         // SplashScreen(nextScreen: Onboarding1()),
+      // SplashScreen(nextScreen: Onboarding1()),
     );
   }
 }
