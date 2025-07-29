@@ -21,9 +21,9 @@
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
-            <meta-data
+            <!-- <meta-data
               android:name="com.google.android.geo.API_KEY"
-              android:value="AIzaSyBW_TkB-KM-3JR7GDIMsQmjl85jTFZRoKY"/>
+              android:value="AIzaSyBW_TkB-KM-3JR7GDIMsQmjl85jTFZRoKY"/> -->
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -35,6 +35,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              android:value="AIzaSyBW_TkB-KM-3JR7GDIMsQmjl85jTFZRoKY"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

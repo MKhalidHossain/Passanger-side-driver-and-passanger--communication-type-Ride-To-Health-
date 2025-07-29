@@ -5,10 +5,7 @@ import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'confirm_location_map_screen.dart';
-import '../location_confirmation_screen.dart';
-import '../chat_screen.dart';
-import '../call_screen.dart';
-import '../payment_screen.dart';
+
 
 class CarSelectionMapScreen extends StatelessWidget {
   final LocationController locationController = Get.find<LocationController>();
@@ -23,6 +20,7 @@ class CarSelectionMapScreen extends StatelessWidget {
     zoom: 14.0,
   );
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
