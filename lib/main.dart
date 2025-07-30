@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
           //MapScreenTest(),
           // SearchDestinationScreen(),
           // RideConfirmedScreen(),
-         AppMain(),
-     // SplashScreen(nextScreen: Onboarding1()),
+        // AppMain(),
+      SplashScreen(nextScreen: Onboarding1()),
     );
   }
 }
