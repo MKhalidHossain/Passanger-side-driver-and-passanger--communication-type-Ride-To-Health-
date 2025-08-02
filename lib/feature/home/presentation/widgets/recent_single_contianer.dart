@@ -43,7 +43,7 @@ class SingleActivityContainer extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 16),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

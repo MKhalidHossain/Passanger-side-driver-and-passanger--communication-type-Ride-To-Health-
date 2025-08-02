@@ -68,7 +68,6 @@ class NormalCustomButton extends StatelessWidget {
     );
   }
 }
-
 class SmallSemiTranparentButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -85,7 +84,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.height = 30,
-    this.weight = 90,
+    this.weight = 95,
     this.fontSize = 12,
     this.textColor = Colors.white,
     this.fillColor = Colors.white12,
@@ -100,7 +99,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
       width: weight,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: fillColor, // Make it red like in your design
+          backgroundColor: fillColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -110,10 +109,11 @@ class SmallSemiTranparentButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            Flexible(
               child: Text(
                 text,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
                 style: TextStyle(
                   color: textColor,
                   fontSize: fontSize,
@@ -122,8 +122,8 @@ class SmallSemiTranparentButton extends StatelessWidget {
               ),
             ),
             if (showIcon && sufixIcon != null) ...[
-              const SizedBox(width: 0),
-              Icon(sufixIcon, color: Colors.white),
+              const SizedBox(width: 4),
+              Icon(sufixIcon, color: Colors.white, size: fontSize + 2),
             ],
           ],
         ),
