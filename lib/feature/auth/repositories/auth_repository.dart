@@ -11,39 +11,79 @@ class AuthRepository implements AuthRepositoryInterface {
   AuthRepository({required this.apiClient, required this.sharedPreferences});
 
   @override
-  Future register(String email, String password, String confirmPassword) async {
-    return await apiClient.postData(Urls.register, {
-      "email": email,
-      "password": password,
-      "confirmPassword": confirmPassword,
+  Future accessAndRefreshToken(Pattern refreshToken) {
+    // TODO: implement accessAndRefreshToken
+    throw UnimplementedError();
+  }
+
+  @override
+  Future changePassword(String currentPassword, String newPassword) async {
+    return await apiClient.postData(Urls.changePassword, {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
     });
   }
 
   @override
-  Future accessAndRefreshToken(String refreshToken) async {
-    return await apiClient.postData(Urls.refreshAccessToken, {
-      "refreshToken": refreshToken,
-    });
+  bool clearSharedAddress() {
+    // TODO: implement clearSharedAddress
+    throw UnimplementedError();
   }
 
   @override
-  Future login(String email, String password) async {
+  Future<bool> clearUserCredentials() {
+    return sharedPreferences.remove(AppConstants.token);
+  }
+
+  @override
+  String getUserToken() {
+    return sharedPreferences.getString(AppConstants.token) ?? '';
+  }
+
+  @override
+  bool isFirstTimeInstall() {
+    return sharedPreferences.containsKey(AppConstants.token);
+  }
+
+  @override
+  bool isLoggedIn() {
+    return sharedPreferences.containsKey(AppConstants.token);
+  }
+
+  @override
+  Future login(String emailOrPhone, String password) async {
     return await apiClient.postData(Urls.login, {
-      "email": email,
-      "password": password,
+      'emailOrPhone': emailOrPhone,
+      'password': password,
     });
   }
 
   @override
-  Future forgetPassword(String? email) async {
-    return await apiClient.postData(Urls.forgetPassword, {"email": email});
+  Future logout() async {
+    return await apiClient.postData(Urls.logOut, {});
   }
 
   @override
-  Future verifyCode(String otp, String email) async {
-    return await apiClient.postData(Urls.verifyCode, {
-      "email": email,
-      "otp": int.tryParse(otp),
+  Future register(
+    String fullName,
+    String email,
+    String phoneNumber,
+    String password,
+    String role,
+  ) async {
+    return await apiClient.postData(Urls.register, {
+      'fullName': fullName,
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'password': password,
+      'role': role,
+    });
+  }
+
+  @override
+  Future requestPasswordReset(String? emailOrPhone) async {
+    return await apiClient.postData(Urls.requestPasswordReset, {
+      'emailOrPhone': emailOrPhone,
     });
   }
 
@@ -52,48 +92,27 @@ class AuthRepository implements AuthRepositoryInterface {
     String email,
     String newPassword,
     String repeatNewPassword,
+  ) {
+    // TODO: implement resetPassword
+    throw UnimplementedError();
+  }
+
+  @override
+  Future resetPasswordWithOtp(
+    String emailOrPhone,
+    String otp,
+    String newPassword,
   ) async {
-    return await apiClient.postData(Urls.resetPassword, {
-      "email": email,
-      "newPassword": newPassword,
-      "repeatNewPassword": repeatNewPassword,
+    return await apiClient.postData(Urls.resetPasswordWithOtp, {
+      'emailOrPhone': emailOrPhone,
+      'otp': otp,
+      'newPassword': newPassword,
     });
   }
 
   @override
-  bool isLoggedIn() {
-    sharedPreferences.getString(AppConstants.token);
-    bool isLoggedIn = sharedPreferences.getBool('IsLoggedIn') ?? false;
-    if (isLoggedIn) {
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  Future logout() {
-    sharedPreferences.setBool('IsLoggedIn', false);
-    return apiClient.postData(AppConstants.logout, {});
-  }
-
-  @override
   Future<bool?> saveUserToken(String token, String refreshToken) async {
-    print(
-      'User Token ${token.toString()} ================================== from Repository ',
-    );
-    apiClient.token = token;
-    apiClient.updateHeader(token);
-    await sharedPreferences.setString(AppConstants.refreshToken, token);
     return await sharedPreferences.setString(AppConstants.token, token);
-  }
-
-  @override
-  bool isFirstTimeInstall() {
-    if (sharedPreferences.getBool('firstTimeInstall') == true) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   @override
@@ -102,55 +121,24 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  bool clearSharedAddress() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> clearUserCredentials() {
-    throw UnimplementedError();
-  }
-
-  @override
-  String getUserToken() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future resendOtp(String email) {
-    return apiClient.postData(Urls.forgetPassword, {"email": email});
-  }
-
-  @override
-  Future sendOtp({required String phone}) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future updateToken() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future changePassword(
-    String currentPassword,
-    String newPassword,
-    String confirmPassword,
-  ) async {
-    return await apiClient.putData(Urls.changePassword, {
-      "currentPassword": currentPassword,
-      "newPassword": newPassword,
-      "confirmNewPassword": confirmPassword,
+  Future updateAccessAndRefreshToken() async {
+    return await apiClient.postData(Urls.refreshAccessToken, {
+      'refreshToken': sharedPreferences.getString(AppConstants.refreshToken),
     });
   }
 
   @override
-  Future updateAccessAndRefreshToken() {
+  Future updateToken() {
+    // TODO: implement updateToken
     throw UnimplementedError();
   }
 
   @override
-  Future chooseRole(String role) async {
-    return await apiClient.postData(Urls.chooseRole, {"role": role});
+  Future verifyOtpPhone(String userId, String otp, String type) async {
+    return await apiClient.postData(Urls.verifyOtpPhone, {
+      'userId': userId,
+      'otp': otp,
+      'type': type,
+    });
   }
 }

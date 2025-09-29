@@ -8,7 +8,7 @@ import '../../../helpers/remote/data/api_checker.dart';
 import '../../../helpers/remote/data/api_client.dart';
 
 import '../../../utils/app_constants.dart';
-import '../domain/model/login_response_model.dart';
+import '../domain/model/login_user_response_model.dart';
 import '../presentation/screens/reset_password_screen.dart';
 import '../presentation/screens/tourist_or_local_screen.dart';
 import '../presentation/screens/user_login_screen.dart';
