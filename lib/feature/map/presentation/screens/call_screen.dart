@@ -13,7 +13,7 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   final AppController appController = Get.find<AppController>();
   final BookingController bookingController = Get.find<BookingController>();
-  
+
   Timer? _callTimer;
   int _callDuration = 0;
   bool _isMuted = false;
@@ -59,7 +59,11 @@ class _CallScreenState extends State<CallScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 30),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                     onPressed: () => Get.back(),
                   ),
                   Spacer(),
@@ -67,10 +71,7 @@ class _CallScreenState extends State<CallScreen> {
                     children: [
                       Text(
                         _isCallActive ? 'Calling...' : 'Call Ended',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                       Text(
                         _formatCallDuration(_callDuration),
@@ -87,82 +88,83 @@ class _CallScreenState extends State<CallScreen> {
                 ],
               ),
             ),
-            
+
             Spacer(),
-            
+
             // Driver/Contact Info
-            Obx(() => Column(
-              children: [
-                // Profile Picture
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
-                  ),
-                  child: CircleAvatar(
-                    radius: 75,
-                    backgroundColor: Colors.grey[700],
-                    child: bookingController.driver.value != null
-                      ? Text(
-                          bookingController.driver.value!.name[0].toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : Icon(Icons.person, color: Colors.white, size: 60),
-                  ),
-                ),
-                
-                SizedBox(height: 24),
-                
-                // Name
-                Text(
-                  bookingController.driver.value?.name ?? 'Sergio Ramasis',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                
-                SizedBox(height: 8),
-                
-                // Phone number or status
-                Text(
-                  bookingController.driver.value?.phone ?? '+1 (555) 123-4567',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 18,
-                  ),
-                ),
-                
-                SizedBox(height: 16),
-                
-                // Car info
-                if (bookingController.driver.value != null)
+            Obx(
+              () => Column(
+                children: [
+                  // Profile Picture
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    width: 150,
+                    height: 150,
                     decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(20),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
                     ),
-                    child: Text(
-                      bookingController.driver.value!.carModel,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
+                    child: CircleAvatar(
+                      radius: 75,
+                      backgroundColor: Colors.grey[700],
+                      child: bookingController.driver.value != null
+                          ? Text(
+                              bookingController.driver.value!.name[0]
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 48,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : Icon(Icons.person, color: Colors.white, size: 60),
+                    ),
+                  ),
+
+                  SizedBox(height: 24),
+
+                  // Name
+                  Text(
+                    bookingController.driver.value?.name ?? 'Sergio Ramasis',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  SizedBox(height: 8),
+
+                  // Phone number or status
+                  Text(
+                    bookingController.driver.value?.phone ??
+                        '+1 (555) 123-4567',
+                    style: TextStyle(color: Colors.grey, fontSize: 18),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Car info
+                  if (bookingController.driver.value != null)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        bookingController.driver.value!.carModel,
+                        style: TextStyle(color: Colors.white, fontSize: 16),
                       ),
                     ),
-                  ),
-              ],
-            )),
-            
+                ],
+              ),
+            ),
+
             Spacer(),
-            
+
             // Call Controls
             Container(
               padding: EdgeInsets.symmetric(horizontal: 40, vertical: 30),
@@ -178,12 +180,12 @@ class _CallScreenState extends State<CallScreen> {
                         _isMuted = !_isMuted;
                       });
                       appController.showSnackbar(
-                        'Info', 
-                        _isMuted ? 'Microphone muted' : 'Microphone unmuted'
+                        'Info',
+                        _isMuted ? 'Microphone muted' : 'Microphone unmuted',
                       );
                     },
                   ),
-                  
+
                   // End call button
                   _buildCallButton(
                     icon: Icons.call_end,
@@ -196,32 +198,34 @@ class _CallScreenState extends State<CallScreen> {
                       });
                       _callTimer?.cancel();
                       appController.showSnackbar('Info', 'Call ended');
-                      
+
                       // Navigate back after a short delay
                       Future.delayed(Duration(seconds: 1), () {
                         Get.back();
                       });
                     },
                   ),
-                  
+
                   // Speaker button
                   _buildCallButton(
                     icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_down,
-                    backgroundColor: _isSpeakerOn ? Colors.blue : Colors.grey[700]!,
+                    backgroundColor: _isSpeakerOn
+                        ? Colors.blue
+                        : Colors.grey[700]!,
                     onPressed: () {
                       setState(() {
                         _isSpeakerOn = !_isSpeakerOn;
                       });
                       appController.showSnackbar(
-                        'Info', 
-                        _isSpeakerOn ? 'Speaker on' : 'Speaker off'
+                        'Info',
+                        _isSpeakerOn ? 'Speaker on' : 'Speaker off',
                       );
                     },
                   ),
                 ],
               ),
             ),
-            
+
             // Additional controls
             Container(
               padding: EdgeInsets.symmetric(horizontal: 60, vertical: 20),
@@ -232,26 +236,32 @@ class _CallScreenState extends State<CallScreen> {
                   _buildSecondaryButton(
                     icon: Icons.chat,
                     label: 'Chat',
-                    onPressed: () => Get.to(() => ChatScreen()),
+                    onPressed: () => Get.to(() => ChatScreenRTH()),
                   ),
-                  
+
                   // Keypad button
                   _buildSecondaryButton(
                     icon: Icons.dialpad,
                     label: 'Keypad',
-                    onPressed: () => appController.showSnackbar('Info', 'Keypad feature coming soon!'),
+                    onPressed: () => appController.showSnackbar(
+                      'Info',
+                      'Keypad feature coming soon!',
+                    ),
                   ),
-                  
+
                   // Add call button
                   _buildSecondaryButton(
                     icon: Icons.person_add,
                     label: 'Add',
-                    onPressed: () => appController.showSnackbar('Info', 'Add call feature coming soon!'),
+                    onPressed: () => appController.showSnackbar(
+                      'Info',
+                      'Add call feature coming soon!',
+                    ),
                   ),
                 ],
               ),
             ),
-            
+
             SizedBox(height: 20),
           ],
         ),
@@ -275,11 +285,7 @@ class _CallScreenState extends State<CallScreen> {
           color: backgroundColor,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: iconSize,
-        ),
+        child: Icon(icon, color: Colors.white, size: iconSize),
       ),
     );
   }
@@ -300,20 +306,10 @@ class _CallScreenState extends State<CallScreen> {
               color: Colors.grey[700],
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
           SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.white, fontSize: 14)),
         ],
       ),
     );
