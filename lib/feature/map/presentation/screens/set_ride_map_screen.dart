@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/booking_controller.dart';
 import '../../controllers/locaion_controller.dart';
-import 'work/confirm_location_map_screen.dart'; // Navigate to Confirm Location Map Screen
 
 class SetRideMapScreen extends StatelessWidget {
   final LocationController locationController = Get.find<LocationController>();

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../controllers/locaion_controller.dart';
 import '../../controllers/booking_controller.dart'; // Assuming bookingController holds price/time
 import '../../controllers/app_controller.dart';// Import the search screen
-import 'ride_confirmed_screen.dart'; // Next step after confirming
+
 
 class LocationConfirmationScreen extends StatelessWidget {
   const LocationConfirmationScreen({super.key});

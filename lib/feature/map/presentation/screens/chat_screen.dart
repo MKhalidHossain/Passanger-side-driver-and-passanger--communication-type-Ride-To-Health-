@@ -5,7 +5,7 @@ import '../../controllers/chat_controller.dart';
 import '../../domain/models/message.dart';
 import 'call_screen.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreenRTH extends StatelessWidget {
   final ChatController chatController = Get.find<ChatController>();
   final AppController appController = Get.find<AppController>();
   final TextEditingController messageController = TextEditingController();
@@ -33,21 +33,22 @@ class ChatScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Obx(() => Text(
-                    chatController.supportAgentName.value,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  Obx(
+                    () => Text(
+                      chatController.supportAgentName.value,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )),
-                  Obx(() => Text(
-                    chatController.supportAgentStatus.value,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
+                  ),
+                  Obx(
+                    () => Text(
+                      chatController.supportAgentStatus.value,
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),
@@ -67,53 +68,66 @@ class ChatScreen extends StatelessWidget {
       body: Column(
         children: [
           // Connection Status
-          Obx(() => !chatController.isConnected.value
-            ? Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(8),
-                color: Colors.orange,
-                child: Text(
-                  'Connection lost. Trying to reconnect...',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : SizedBox.shrink()),
-          
+          Obx(
+            () => !chatController.isConnected.value
+                ? Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(8),
+                    color: Colors.orange,
+                    child: Text(
+                      'Connection lost. Trying to reconnect...',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                : SizedBox.shrink(),
+          ),
+
           // Messages List
           Expanded(
-            child: Obx(() => ListView.builder(
-              controller: scrollController,
-              padding: EdgeInsets.all(16),
-              itemCount: chatController.messages.length,
-              itemBuilder: (context, index) {
-                final message = chatController.messages[index];
-                return _buildMessageBubble(message);
-              },
-            )),
+            child: Obx(
+              () => ListView.builder(
+                controller: scrollController,
+                padding: EdgeInsets.all(16),
+                itemCount: chatController.messages.length,
+                itemBuilder: (context, index) {
+                  final message = chatController.messages[index];
+                  return _buildMessageBubble(message);
+                },
+              ),
+            ),
           ),
-          
+
           // Typing Indicator
-          Obx(() => chatController.isTyping.value
-            ? Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.support_agent, color: Colors.white, size: 16),
+          Obx(
+            () => chatController.isTyping.value
+                ? Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.grey,
+                          child: Icon(
+                            Icons.support_agent,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Customer service is typing...',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Customer service is typing...',
-                      style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ),
-              )
-            : SizedBox.shrink()),
-          
+                  )
+                : SizedBox.shrink(),
+          ),
+
           // Message Input
           Container(
             padding: EdgeInsets.all(16),
@@ -125,7 +139,8 @@ class ChatScreen extends StatelessWidget {
               children: [
                 IconButton(
                   icon: Icon(Icons.attach_file, color: Colors.grey),
-                  onPressed: () => Get.snackbar('Info', 'File attachment coming soon!'),
+                  onPressed: () =>
+                      Get.snackbar('Info', 'File attachment coming soon!'),
                 ),
                 Expanded(
                   child: TextField(
@@ -140,7 +155,10 @@ class ChatScreen extends StatelessWidget {
                       ),
                       filled: true,
                       fillColor: Color(0xFF2C3E50),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                     maxLines: null,
                     onSubmitted: (text) => _sendMessage(),
@@ -170,9 +188,9 @@ class ChatScreen extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       child: Row(
-        mainAxisAlignment: message.isFromUser 
-          ? MainAxisAlignment.end 
-          : MainAxisAlignment.start,
+        mainAxisAlignment: message.isFromUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!message.isFromUser) ...[
@@ -195,18 +213,12 @@ class ChatScreen extends StatelessWidget {
                 children: [
                   Text(
                     message.text,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
                     _formatTime(message.timestamp),
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
               ),
@@ -232,7 +244,7 @@ class ChatScreen extends StatelessWidget {
     if (messageController.text.trim().isNotEmpty) {
       chatController.sendMessage(messageController.text);
       messageController.clear();
-      
+
       // Scroll to bottom
       Future.delayed(Duration(milliseconds: 100), () {
         scrollController.animateTo(
@@ -274,7 +286,10 @@ class ChatScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.report, color: Colors.orange),
-              title: Text('Report Issue', style: TextStyle(color: Colors.orange)),
+              title: Text(
+                'Report Issue',
+                style: TextStyle(color: Colors.orange),
+              ),
               onTap: () {
                 Get.back();
                 appController.showSnackbar('Info', 'Issue reported');
