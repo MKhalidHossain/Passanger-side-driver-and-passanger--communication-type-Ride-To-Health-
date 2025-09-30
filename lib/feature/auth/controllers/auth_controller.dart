@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rideztohealth/feature/auth/domain/model/change_password_response_model.dart';
+import 'package:rideztohealth/feature/auth/domain/model/request_password_reset_response_model.dart';
+import 'package:rideztohealth/feature/auth/domain/model/reset_password_with_otp_response_model.dart';
+import 'package:rideztohealth/feature/auth/domain/model/verify_otp_phone_response_model.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../app.dart';
 import '../../../helpers/custom_snackbar.dart';
 import '../../../helpers/remote/data/api_checker.dart';
 import '../../../helpers/remote/data/api_client.dart';
 
 import '../../../utils/app_constants.dart';
-import '../domain/model/login_response_model.dart';
+import '../domain/model/login_user_response_model.dart';
+import '../domain/model/registration_user_response_model.dart';
 import '../presentation/screens/reset_password_screen.dart';
 import '../presentation/screens/tourist_or_local_screen.dart';
 import '../presentation/screens/user_login_screen.dart';
@@ -60,8 +66,12 @@ class AuthController extends GetxController implements GetxService {
   FocusNode addressNode = FocusNode();
   FocusNode identityNumberNode = FocusNode();
 
+  RegistrationResponseModel? registrationResponseModel;
   LogInResponseModel? logInResponseModel;
-  // RegistrationResponseModel? registrationResponseModel;
+  ChangePasswordResponseModel? changePasswordResponseModel;
+  RequestPasswordResetResponseModel? requestPasswordResetResponseModel;
+  ResetPasswordWithOtpResponseModel? resetPasswordWithOtpResponseModel;
+  VerifyOtpPhoneResponseModel? verifyOtpPhoneResponseModel;
   // VerifyCodeResponseModel? verifyCodeResponseModel;
   // ChangePasswordResponseModel? changePasswordResponseModel;
   // ForgetPasswordResponseModel? forgetPasswordResponseModel;
@@ -110,25 +120,29 @@ class AuthController extends GetxController implements GetxService {
   }
 
   Future<void> register(
+    String fullName,
     String email,
+    String phoneNumber,
     String password,
-    String confirmPassword,
+    String role,
   ) async {
     _isLoading = true;
     update();
     print(
-      "REGISTER API BODY: {email: $email, password: $password, confirmPassword: $confirmPassword}",
+      "REGISTER API BODY: {fullNmae: $fullName, email: $email, phoneNumber: $phoneNumber, password: $password,  role : $role}",
     );
 
     Response? response = await authServiceInterface.register(
+      fullName,
       email,
+      phoneNumber,
       password,
-      confirmPassword,
+      role,
     );
     if (response!.statusCode == 201) {
-      print(
-        "REGISTER API BODY: {email: $email, password: $password, confirmPassword: $confirmPassword}",
-      );
+      // print(
+      //   "REGISTER API BODY: {email: $email, password: $password, confirmPassword: $confirmPassword}",
+      // );
       // registrationResponseModel = RegistrationResponseModel.fromJson(response.body);
 
       // _isLoading = false;
@@ -146,13 +160,16 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> login(String email, String password) async {
+  Future<void> login(String emailOrPhone, String password) async {
     _isLoading = true;
     update();
 
     // Response? response = Response();
 
-    Response? response = await authServiceInterface.login(email, password);
+    Response? response = await authServiceInterface.login(
+      emailOrPhone,
+      password,
+    );
 
     if (response == null) {
       print("No response found");
@@ -177,7 +194,7 @@ class AuthController extends GetxController implements GetxService {
       );
       setUserToken(token, refreshToken);
 
-      Get.offAll(() => TouristORLocal());
+      Get.offAll(() => AppMain());
 
       //Get.offAll(BottomNavbar());
 
@@ -232,28 +249,18 @@ class AuthController extends GetxController implements GetxService {
 
   Future<void> permanentDelete() async {
     logging = true;
-    update();
 
     update();
   }
 
-  Future<Response> sendOtp({
-    required String countryCode,
-    required String phone,
-  }) async {
+  Future<void> verifyOtpPhone(String userId, String otp, String type) async {
     _isLoading = true;
     update();
-
-    Response? response = Response();
-
-    update();
-    return response;
-  }
-
-  Future<void> otpVerification(String otp, String email) async {
-    _isLoading = true;
-    update();
-    Response? response = await authServiceInterface.verifyCode(otp, email);
+    Response? response = await authServiceInterface.verifyOtpPhone(
+      userId,
+      otp,
+      type,
+    );
     if (response!.body['success'] == true) {
       showCustomSnackBar('Otp verification has been successful');
       Get.to(ResetChangePassword(userEmail: email));
@@ -265,25 +272,26 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> resendOtp(String email) async {
+  // Future<void> resendOtp(String email) async {
+  //   _isLoading = true;
+  //   update();
+  //   Response? response = await authServiceInterface.resendOtp(email);
+  //   if (response!.body['status'] == true) {
+  //     showCustomSnackBar('Otp has been successful to your mail');
+
+  //     Get.to(VerifyOtpScreen(email: email));
+  //   }
+
+  //   update();
+  // }
+
+  Future<void> requestPasswordReset(String emailOrPhone) async {
     _isLoading = true;
     update();
-    Response? response = await authServiceInterface.resendOtp(email);
-    if (response!.body['status'] == true) {
-      showCustomSnackBar('Otp has been successful to your mail');
 
-      Get.to(VerifyOtpScreen(email: email));
-    }
-
-    update();
-  }
-
-  Future<void> forgetPassword(String emails) async {
-    email = emails;
-    _isLoading = true;
-    update();
-
-    Response? response = await authServiceInterface.forgetPassword(emails);
+    Response? response = await authServiceInterface.requestPasswordReset(
+      emailOrPhone,
+    );
 
     if (response?.statusCode == 200) {
       _isLoading = false;
@@ -319,7 +327,7 @@ class AuthController extends GetxController implements GetxService {
   //   update();
   // }
 
-  Future<void> resetPassword(
+  Future<void> resetPasswordWithOtp(
     String email,
     String newPassword,
     String repeatNewPassword,
@@ -327,7 +335,7 @@ class AuthController extends GetxController implements GetxService {
     _isLoading = true;
     update();
 
-    Response? response = await authServiceInterface.resetPassword(
+    Response? response = await authServiceInterface.resetPasswordWithOtp(
       email,
       newPassword,
       repeatNewPassword,
@@ -349,7 +357,6 @@ class AuthController extends GetxController implements GetxService {
   Future<void> changePassword(
     String currentPassword,
     String newPassword,
-    String confirmPassword,
   ) async {
     changePasswordIsLoading = true;
     update();
@@ -358,7 +365,6 @@ class AuthController extends GetxController implements GetxService {
       Response? response = await authServiceInterface.changePassword(
         currentPassword,
         newPassword,
-        confirmPassword,
       );
 
       print("Check the response data-> ${response}");
@@ -454,26 +460,5 @@ class AuthController extends GetxController implements GetxService {
 
   void setFirstTimeInstall() {
     return authServiceInterface.setFirstTimeInstall();
-  }
-
-  Future<void> chooseRole(String role) async {
-    _isLoading = true;
-    update();
-    Response? response = await authServiceInterface.chooseRole(role);
-    if (response!.statusCode == 200) {
-      showCustomSnackBar('You have successfully selected your role as $role');
-
-      // Get.to(BottomNavbar());
-      //Get.to(VerifyOtpScreen(role: role));
-    } else {
-      showCustomSnackBar(
-        response.body['message'] ?? 'Something went wrong',
-        isError: true,
-      );
-      ApiChecker.checkApi(response);
-    }
-
-    _isLoading = false;
-    update();
   }
 }

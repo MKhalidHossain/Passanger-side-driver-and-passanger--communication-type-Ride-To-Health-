@@ -1,67 +1,51 @@
 class RefreshTokenResponseModel {
-	bool? success;
-	String? message;
-	List<ErrorSources>? errorSources;
-	Err? err;
-	int? stack;
+  final bool success;
+  final String message;
+  final TokenData? data;
 
-	RefreshTokenResponseModel({this.success, this.message, this.errorSources, this.err, this.stack});
+  RefreshTokenResponseModel({
+    required this.success,
+    required this.message,
+    this.data,
+  });
 
-	RefreshTokenResponseModel.fromJson(Map<String, dynamic> json) {
-		success = json['success'];
-		message = json['message'];
-		if (json['errorSources'] != null) {
-			errorSources = <ErrorSources>[];
-			json['errorSources'].forEach((v) { errorSources!.add(new ErrorSources.fromJson(v)); });
-		}
-		err = json['err'] != null ? new Err.fromJson(json['err']) : null;
-		stack = json['stack'];
-	}
+  factory RefreshTokenResponseModel.fromJson(Map<String, dynamic> json) {
+    return RefreshTokenResponseModel(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: json['data'] != null ? TokenData.fromJson(json['data']) : null,
+    );
+  }
 
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['success'] = this.success;
-		data['message'] = this.message;
-		if (this.errorSources != null) {
-      data['errorSources'] = this.errorSources!.map((v) => v.toJson()).toList();
-    }
-		if (this.err != null) {
-      data['err'] = this.err!.toJson();
-    }
-		data['stack'] = this.stack;
-		return data;
-	}
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'message': message,
+      'data': data?.toJson(),
+    };
+  }
 }
 
-class ErrorSources {
-	String? path;
-	String? message;
+class TokenData {
+  final String accessToken;
+  final String refreshToken;
 
-	ErrorSources({this.path, this.message});
+  TokenData({
+    required this.accessToken,
+    required this.refreshToken,
+  });
 
-	ErrorSources.fromJson(Map<String, dynamic> json) {
-		path = json['path'];
-		message = json['message'];
-	}
+  factory TokenData.fromJson(Map<String, dynamic> json) {
+    return TokenData(
+      accessToken: json['accessToken'] ?? '',
+      refreshToken: json['refreshToken'] ?? '',
+    );
+  }
 
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		data['path'] = this.path;
-		data['message'] = this.message;
-		return data;
-	}
-}
-
-class Err {
-
-
-	Err();
-
-	Err.fromJson(Map<String, dynamic> json) {
-	}
-
-	Map<String, dynamic> toJson() {
-		final Map<String, dynamic> data = new Map<String, dynamic>();
-		return data;
-	}
+  Map<String, dynamic> toJson() {
+    return {
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+    };
+  }
 }

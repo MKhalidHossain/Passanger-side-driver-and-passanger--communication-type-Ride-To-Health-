@@ -7,13 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import '../../../core/constants/urls.dart';
 import '../../../utils/app_constants.dart';
 
-
 class ApiClient extends GetxService {
-
   final String appBaseUrl;
-  final String appBaseUrln = 'https://johnnybrutes.onrender.com';
+  final String appBaseUrln = Urls.baseUrl;
 
   final SharedPreferences sharedPreferences;
 
@@ -26,35 +25,37 @@ class ApiClient extends GetxService {
 
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
     token = sharedPreferences.getString(AppConstants.token) ?? '';
-    if(kDebugMode) {
+    if (kDebugMode) {
       print('Token: $token');
     }
-    updateHeader(
-      token,
-    );
+    updateHeader(token);
   }
 
   void updateHeader(String token) {
     Map<String, String> header = {
       'Content-Type': 'application/json; charset=UTF-8',
-      'Accept' : 'application/json',
+      'Accept': 'application/json',
       'Authorization': 'Bearer $token',
-
     };
 
-    print('User Token ${token.toString()} ================================== from api Client ');
+    print(
+      'User Token ${token.toString()} ================================== from api Client ',
+    );
     _mainHeaders = header;
   }
 
-  Future<Response> getData(String uri, {Map<String, dynamic>? query, Map<String, String>? headers}) async {
+  Future<Response> getData(
+    String uri, {
+    Map<String, dynamic>? query,
+    Map<String, String>? headers,
+  }) async {
     try {
-      if(kDebugMode) {
+      if (kDebugMode) {
         log('====> API Call: $uri\nHeader: $_mainHeaders');
       }
-      http.Response response = await http.get(
-        Uri.parse(appBaseUrln+uri),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http
+          .get(Uri.parse(appBaseUrln + uri), headers: headers ?? _mainHeaders)
+          .timeout(Duration(seconds: timeoutInSeconds));
       print('Commanders Calls');
       return handleResponse(response, uri);
     } catch (e) {
@@ -62,39 +63,45 @@ class ApiClient extends GetxService {
     }
   }
 
-  Future<Response> postData(String uri, dynamic body, {Map<String, String>? headers}) async {
+  Future<Response> postData(
+    String uri,
+    dynamic body, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      if(kDebugMode) {
+      if (kDebugMode) {
         log('====> API Call: $appBaseUrln$uri\nHeader: $_mainHeaders');
         log('====> API Body: $body');
       }
-      http.Response response = await http.post(
-        Uri.parse(appBaseUrln+uri),
-        body: jsonEncode(body),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http
+          .post(
+            Uri.parse(appBaseUrln + uri),
+            body: jsonEncode(body),
+            headers: headers ?? _mainHeaders,
+          )
+          .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
-
       print("$e---------------------------------------");
 
       return Response(statusCode: 1, statusText: noInternetMessage);
-
     }
   }
 
   Future<Response> postMultipartData(
-      String uri,
-      Map<String, String> body,
-      MultipartBody? profileImage, {
-        Map<String, String>? headers,
-      }
-      ) async {
+    String uri,
+    Map<String, String> body,
+    MultipartBody? profileImage, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      String apiUrl = "https://backend-david-weijian.onrender.com/api/v1/user/update-userProfile";
+      String apiUrl =
+          "https://backend-david-weijian.onrender.com/api/v1/user/update-userProfile";
 
       if (kDebugMode) {
-        log('API Call: $apiUrl\nHeaders: ${headers ?? _mainHeaders}\nBody: $body');
+        log(
+          'API Call: $apiUrl\nHeaders: ${headers ?? _mainHeaders}\nBody: $body',
+        );
       }
 
       var request = http.MultipartRequest('PUT', Uri.parse(apiUrl));
@@ -134,25 +141,30 @@ class ApiClient extends GetxService {
       return handleResponse(response, apiUrl);
     } catch (e) {
       print('Error: $e');
-      return Response(statusCode: 3000, statusText: "Failed to update profile. Server error.");
+      return Response(
+        statusCode: 3000,
+        statusText: "Failed to update profile. Server error.",
+      );
     }
   }
 
   Future<Response> postMultipartDataBug(
-      String uri,
-      Map<String, String> body,
-      MultipartBody? image, {
-        Map<String, String>? headers,
-      }
-      ) async {
+    String uri,
+    Map<String, String> body,
+    MultipartBody? image, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      String apiUrl = "https://backend-david-weijian.onrender.com/api/v1/user/update-userProfile";
+      String apiUrl =
+          "https://backend-david-weijian.onrender.com/api/v1/user/update-userProfile";
 
       if (kDebugMode) {
-        log('API Call: $appBaseUrln+$uri\nHeaders: ${headers ?? _mainHeaders}\nBody: $body');
+        log(
+          'API Call: $appBaseUrln+$uri\nHeaders: ${headers ?? _mainHeaders}\nBody: $body',
+        );
       }
 
-      var request = http.MultipartRequest('POST', Uri.parse(appBaseUrln+uri));
+      var request = http.MultipartRequest('POST', Uri.parse(appBaseUrln + uri));
 
       // Add headers
       request.headers.addAll(headers ?? _mainHeaders);
@@ -189,7 +201,10 @@ class ApiClient extends GetxService {
       return handleResponse(response, apiUrl);
     } catch (e) {
       print('Error: $e');
-      return Response(statusCode: 3000, statusText: "Failed to update profile. Server error.");
+      return Response(
+        statusCode: 3000,
+        statusText: "Failed to update profile. Server error.",
+      );
     }
   }
 
@@ -226,58 +241,83 @@ class ApiClient extends GetxService {
   //   }
   // }
 
-
   Future<Response> postMultipartDataConversation(
-      String? uri,
-      Map<String, String> body,
-      List<MultipartBody>? multipartBody,
-      {Map<String, String>? headers,PlatformFile? otherFile}) async {
-
-    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse(appBaseUrl+uri!));
+    String? uri,
+    Map<String, String> body,
+    List<MultipartBody>? multipartBody, {
+    Map<String, String>? headers,
+    PlatformFile? otherFile,
+  }) async {
+    http.MultipartRequest request = http.MultipartRequest(
+      'POST',
+      Uri.parse(appBaseUrl + uri!),
+    );
     request.headers.addAll(headers ?? _mainHeaders);
 
-    if(otherFile != null) {
-      request.files.add(http.MultipartFile('files[${multipartBody!.length}]', otherFile.readStream!, otherFile.size, filename: basename(otherFile.name)));
+    if (otherFile != null) {
+      request.files.add(
+        http.MultipartFile(
+          'files[${multipartBody!.length}]',
+          otherFile.readStream!,
+          otherFile.size,
+          filename: basename(otherFile.name),
+        ),
+      );
     }
-    if(multipartBody!=null){
-      for(MultipartBody multipart in multipartBody) {
+    if (multipartBody != null) {
+      for (MultipartBody multipart in multipartBody) {
         Uint8List list = await multipart.file!.readAsBytes();
-        request.files.add(http.MultipartFile(
-          multipart.key, multipart.file!.readAsBytes().asStream(), list.length, filename:'${DateTime.now().toString()}.png',
-        ));
+        request.files.add(
+          http.MultipartFile(
+            multipart.key,
+            multipart.file!.readAsBytes().asStream(),
+            list.length,
+            filename: '${DateTime.now().toString()}.png',
+          ),
+        );
       }
     }
     request.fields.addAll(body);
-    http.Response response = await http.Response.fromStream(await request.send());
+    http.Response response = await http.Response.fromStream(
+      await request.send(),
+    );
     return handleResponse(response, uri);
   }
 
-  Future<Response> putData(String uri, dynamic body, {Map<String, String>? headers}) async {
+  Future<Response> putData(
+    String uri,
+    dynamic body, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      if(kDebugMode) {
+      if (kDebugMode) {
         log('====> API Call: $uri\nHeader: $_mainHeaders');
         log('====> API Body: $body');
       }
-      http.Response response = await http.put(
-        Uri.parse(appBaseUrln+uri),
-        body: jsonEncode(body),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http
+          .put(
+            Uri.parse(appBaseUrln + uri),
+            body: jsonEncode(body),
+            headers: headers ?? _mainHeaders,
+          )
+          .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
 
-  Future<Response> deleteData(String uri, {Map<String, String>? headers}) async {
+  Future<Response> deleteData(
+    String uri, {
+    Map<String, String>? headers,
+  }) async {
     try {
-      if(kDebugMode) {
+      if (kDebugMode) {
         log('====> API Call: $uri\nHeader: $_mainHeaders');
       }
-      http.Response response = await http.delete(
-        Uri.parse(appBaseUrl+uri),
-        headers: headers ?? _mainHeaders,
-      ).timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http
+          .delete(Uri.parse(appBaseUrl + uri), headers: headers ?? _mainHeaders)
+          .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return Response(statusCode: 1, statusText: noInternetMessage);
@@ -290,21 +330,22 @@ class ApiClient extends GetxService {
     try {
       body = jsonDecode(response.body);
       print(body.toString());
-
-    }catch(e) {
+    } catch (e) {
       print(e.toString() + 'fuck you');
     }
     Response localResponse = Response(
-      body: body ?? response.body, bodyString: response.body.toString(),
+      body: body ?? response.body,
+      bodyString: response.body.toString(),
       //request: http.Request(headers: response.request!.headers, method: response.request!.method, url: response.request!.url),
-      headers: response.headers, statusCode: response.statusCode, statusText: response.reasonPhrase,
+      headers: response.headers,
+      statusCode: response.statusCode,
+      statusText: response.reasonPhrase,
     );
 
-    if(kDebugMode) {
-
+    if (kDebugMode) {
       // log('====> API Response: [${localResponse.statusCode}] $uri\n${localResponse.body} ==========');
     }
-   // log('====> API Response: [${localResponse.statusCode}] $uri\n${localResponse.body} ==========');
+    // log('====> API Response: [${localResponse.statusCode}] $uri\n${localResponse.body} ==========');
     return localResponse;
   }
 }
@@ -320,4 +361,3 @@ class MultipartDocument {
   PlatformFile? file;
   MultipartDocument(this.key, this.file);
 }
-

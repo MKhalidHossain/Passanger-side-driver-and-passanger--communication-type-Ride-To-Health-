@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 
 import '../../../../core/widgets/promo_banner_widget.dart';
-import '../../../../navigation/bottom_nav_bar.dart';
+
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
