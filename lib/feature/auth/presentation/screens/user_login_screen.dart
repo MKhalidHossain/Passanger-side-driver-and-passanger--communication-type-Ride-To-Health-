@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rideztohealth/app.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
+import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
 import '../../../../core/validation/validators.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_scaffold.dart';
@@ -18,6 +18,8 @@ class UserLoginScreen extends StatefulWidget {
 }
 
 class UserLoginScreenState extends State<UserLoginScreen> {
+  late AuthController authController;
+
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
@@ -28,6 +30,7 @@ class UserLoginScreenState extends State<UserLoginScreen> {
 
   @override
   void initState() {
+    authController = Get.find<AuthController>();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     super.initState();
@@ -46,159 +49,175 @@ class UserLoginScreenState extends State<UserLoginScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return AppScaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: size.height),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 40),
-                        AppLogo(),
-                        const SizedBox(height: 32),
-                        Center(
-                          child: Text(
-                            'Log In Your Account',
-                            style: TextStyle(
-                              color: AppColors.context(context).textColor,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        _buildCustomTextField(
-                          title: 'Email',
-                          context: context,
-                          label: 'Email',
-                          controller: _emailController,
-                          icon: Icons.email_outlined,
-                          focusNode: _emailFocus,
-                          nextFocusNode: _passwordFocus,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: Validators.email,
-                        ),
-
-                        _buildCustomTextField(
-                          title: 'Password',
-                          context: context,
-                          label: 'Password',
-                          controller: _passwordController,
-                          icon: Icons.lock_outline,
-                          focusNode: _passwordFocus,
-                          nextFocusNode: null,
-                          validator: Validators.password,
-                          obscureText: _obscurePassword,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                        ),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Get.to(ForgotPasswordScreen());
-                            },
-                            child: 'Forgot Password ?'.text14Blue(),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        WideCustomButton(
-                          text: 'Sign in',
-                          onPressed: () {
-                            Get.to(() => AppMain());
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            'New To our Platform?'.text12White(),
-                            TextButton(
-                              child: Text(
-                                "Sign Up Here",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UserSignupScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Your Profile helps us customize your experience",
-                  style: TextStyle(
-                    color: AppColors.context(context).textColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return GetBuilder<AuthController>(
+      builder: (authController) {
+        return authController.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : AppScaffold(
+                body: Column(
                   children: [
-                    Image.asset('assets/images/lockk.png', height: 16),
-                    Text(
-                      "Your data is secure and private",
-                      style: TextStyle(
-                        color: AppColors.context(context).textColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: size.height),
+                            child: IntrinsicHeight(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 40),
+                                  AppLogo(),
+                                  const SizedBox(height: 32),
+                                  Center(
+                                    child: Text(
+                                      'Log In Your Account',
+                                      style: TextStyle(
+                                        color: AppColors.context(
+                                          context,
+                                        ).textColor,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+
+                                  _buildCustomTextField(
+                                    title: 'Email',
+                                    context: context,
+                                    label: 'Email',
+                                    controller: _emailController,
+                                    icon: Icons.email_outlined,
+                                    focusNode: _emailFocus,
+                                    nextFocusNode: _passwordFocus,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: Validators.email,
+                                  ),
+
+                                  _buildCustomTextField(
+                                    title: 'Password',
+                                    context: context,
+                                    label: 'Password',
+                                    controller: _passwordController,
+                                    icon: Icons.lock_outline,
+                                    focusNode: _passwordFocus,
+                                    nextFocusNode: null,
+                                    validator: Validators.password,
+                                    obscureText: _obscurePassword,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _obscurePassword = !_obscurePassword;
+                                        });
+                                      },
+                                    ),
+                                  ),
+
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Get.to(ForgotPasswordScreen());
+                                      },
+                                      child: 'Forgot Password ?'.text14Blue(),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 12),
+
+                                  WideCustomButton(
+                                    text: 'Sign in',
+                                    onPressed: () {
+                                      authController.login(
+                                        _emailController.text,
+                                        _passwordController.text,
+                                      );
+                                      // Get.to(() => AppMain());
+                                    },
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      'New To our Platform?'.text12White(),
+                                      TextButton(
+                                        child: Text(
+                                          "Sign Up Here",
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UserSignupScreen(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 16),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Your Profile helps us customize your experience",
+                            style: TextStyle(
+                              color: AppColors.context(context).textColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/lockk.png',
+                                height: 16,
+                              ),
+                              Text(
+                                "Your data is secure and private",
+                                style: TextStyle(
+                                  color: AppColors.context(context).textColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 50),
                   ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 50),
-        ],
-      ),
+              );
+      },
     );
   }
 }

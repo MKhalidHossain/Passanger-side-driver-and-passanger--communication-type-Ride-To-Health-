@@ -1,6 +1,6 @@
 class Urls {
   // Base URL
-  static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'http://localhost:5000/api';
   // static const String baseUrl = 'https://kobeur.onrender.com/api/v1';
 
   // ------------------------ Authentication ------------------------

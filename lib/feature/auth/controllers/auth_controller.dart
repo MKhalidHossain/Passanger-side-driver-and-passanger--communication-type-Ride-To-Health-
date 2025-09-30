@@ -7,6 +7,7 @@ import 'package:rideztohealth/feature/auth/domain/model/reset_password_with_otp_
 import 'package:rideztohealth/feature/auth/domain/model/verify_otp_phone_response_model.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../app.dart';
 import '../../../helpers/custom_snackbar.dart';
 import '../../../helpers/remote/data/api_checker.dart';
 import '../../../helpers/remote/data/api_client.dart';
@@ -193,7 +194,7 @@ class AuthController extends GetxController implements GetxService {
       );
       setUserToken(token, refreshToken);
 
-      Get.offAll(() => TouristORLocal());
+      Get.offAll(() => AppMain());
 
       //Get.offAll(BottomNavbar());
 
