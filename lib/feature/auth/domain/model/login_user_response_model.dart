@@ -1,86 +1,78 @@
 class LogInResponseModel {
-  final bool success;
-  final String message;
-  final LogInData? data;
+  final bool? success;
+  final String? message;
+  final Data? data;
 
-  LogInResponseModel({
-    required this.success,
-    required this.message,
-    this.data,
-  });
+  LogInResponseModel({this.success, this.message, this.data});
 
   factory LogInResponseModel.fromJson(Map<String, dynamic> json) {
     return LogInResponseModel(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
-      data: json['data'] != null ? LogInData.fromJson(json['data']) : null,
+      success: json['success'] as bool?,
+      message: json['message'] as String?,
+      data: json['data'] != null ? Data.fromJson(json['data']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data?.toJson(),
-    };
+    return {'success': success, 'message': message, 'data': data?.toJson()};
   }
 }
 
-class LogInData {
-  final String token;
-  final User user;
+class Data {
+  final String? accessToken;
+  final String? refreshToken;
+  final User? user;
 
-  LogInData({
-    required this.token,
-    required this.user,
-  });
+  Data({this.accessToken, this.refreshToken, this.user});
 
-  factory LogInData.fromJson(Map<String, dynamic> json) {
-    return LogInData(
-      token: json['token'] ?? '',
-      user: User.fromJson(json['user'] ?? {}),
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      accessToken: json['token'] as String?,
+      refreshToken: json['refreshToken'] as String?,
+      user: json['user'] != null ? User.fromJson(json['user']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'token': token,
-      'user': user.toJson(),
+      'token': accessToken,
+      'refreshToken': refreshToken,
+      'user': user?.toJson(),
     };
   }
 }
 
 class User {
-  final String id;
-  final String fullName;
-  final String email;
-  final String phoneNumber;
-  final String role;
+  final String? id;
+  final String? fullName;
+  final String? email;
+  final String? phoneNumber;
+  final String? role;
   final String? profileImage;
-  final bool isEmailVerified;
-  final bool isPhoneVerified;
+  final bool? isEmailVerified;
+  final bool? isPhoneVerified;
 
   User({
-    required this.id,
-    required this.fullName,
-    required this.email,
-    required this.phoneNumber,
-    required this.role,
+    this.id,
+    this.fullName,
+    this.email,
+    this.phoneNumber,
+    this.role,
     this.profileImage,
-    required this.isEmailVerified,
-    required this.isPhoneVerified,
+    this.isEmailVerified,
+    this.isPhoneVerified,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] ?? '',
-      fullName: json['fullName'] ?? '',
-      email: json['email'] ?? '',
-      phoneNumber: json['phoneNumber'] ?? '',
-      role: json['role'] ?? '',
-      profileImage: json['profileImage'],
-      isEmailVerified: json['isEmailVerified'] ?? false,
-      isPhoneVerified: json['isPhoneVerified'] ?? false,
+      id: json['id'] as String?,
+      fullName: json['fullName'] as String?,
+      email: json['email'] as String?,
+      phoneNumber: json['phoneNumber'] as String?,
+      role: json['role'] as String?,
+      profileImage: json['profileImage'] as String?,
+      isEmailVerified: json['isEmailVerified'] as bool?,
+      isPhoneVerified: json['isPhoneVerified'] as bool?,
     );
   }
 
