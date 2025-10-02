@@ -40,12 +40,22 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AuthController authController = Get.find<AuthController>();
-  whichPageToNext() {
-    if (authController.isFirstTimeInstall()) {
+  Future<bool>? _isFirstTimeInstaled;
+  @override
+  void initState() {
+    super.initState();
+    _isFirstTimeInstaled = authController.isFirstTimeInstall();
+  }
+
+  // isFirstTimeInstall() async {
+  //   isFirstTimeInstaled = await authController.isFirstTimeInstall();
+  //   print("form mainScreen isFirstTimeInstaled $isFirstTimeInstaled");
+  //   return isFirstTimeInstaled;
+  // }
+
+  whichPageToNext(bool isFirstTimeInstaled) {
+    if (isFirstTimeInstaled) {
       return SplashScreen(nextScreen: Onboarding1());
-    }
-    if (authController.isLoading) {
-      return ConstantSplashScreen();
     } else if (authController.isLoggedIn()) {
       return AppMain();
     } else {
@@ -69,7 +79,18 @@ class _MyAppState extends State<MyApp> {
       // initialBinding: InitialBinding(),
       initialBinding: InitialBinding(),
       debugShowCheckedModeBanner: false,
-      home: whichPageToNext(),
+      home: FutureBuilder<bool>(
+        future: _isFirstTimeInstaled,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return ConstantSplashScreen();
+          } else {
+            return whichPageToNext(snapshot.data!);
+          }
+        },
+      ),
+
+      // whichPageToNext(),
       //MapScreenTest(),
       // SearchDestinationScreen(),
       // RideConfirmedScreen(),

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/urls.dart';
 import '../../../helpers/remote/data/api_client.dart';
@@ -10,10 +11,11 @@ class AuthRepository implements AuthRepositoryInterface {
   final SharedPreferences sharedPreferences;
   AuthRepository({required this.apiClient, required this.sharedPreferences});
 
+  RxString _token = "".obs;
+
   @override
-  Future accessAndRefreshToken(Pattern refreshToken) {
-    // TODO: implement accessAndRefreshToken
-    throw UnimplementedError();
+  Future accessAndRefreshToken(Pattern refreshToken) async {
+    return await apiClient.postData(Urls.refreshAccessToken, {}) ?? ();
   }
 
   @override
@@ -26,28 +28,51 @@ class AuthRepository implements AuthRepositoryInterface {
 
   @override
   bool clearSharedAddress() {
-    // TODO: implement clearSharedAddress
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> clearUserCredentials() {
-    return sharedPreferences.remove(AppConstants.token);
+  Future<bool> clearUserCredentials() async {
+    // sharedPreferences.remove(AppConstants.token);
+    return await sharedPreferences.clear();
   }
 
   @override
   String getUserToken() {
-    return sharedPreferences.getString(AppConstants.token) ?? '';
+    final token = sharedPreferences.getString(AppConstants.token) ?? '';
+    apiClient.updateHeader(token);
+    return token;
   }
+
+  // @override
+  // bool isFirstTimeInstall() {
+  //   return sharedPreferences.containsKey(AppConstants.token);
+  // }
 
   @override
   bool isFirstTimeInstall() {
-    return sharedPreferences.containsKey(AppConstants.token);
+    if (sharedPreferences.getBool('firstTimeInstall') == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
   bool isLoggedIn() {
-    return sharedPreferences.containsKey(AppConstants.token);
+    try {
+      final token = sharedPreferences.getString(AppConstants.token);
+      return token != null && token.isNotEmpty;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  @override
+  Future<void> saveLogin(String token) async {
+    await sharedPreferences.setString('IsLoggedIn', token);
+    _token.value = token;
   }
 
   @override
@@ -60,7 +85,10 @@ class AuthRepository implements AuthRepositoryInterface {
 
   @override
   Future logout() async {
-    return await apiClient.postData(Urls.logOut, {});
+    return await apiClient.postData(Urls.logOut, {}).then((response) {
+      clearUserCredentials();
+      return response;
+    });
   }
 
   @override

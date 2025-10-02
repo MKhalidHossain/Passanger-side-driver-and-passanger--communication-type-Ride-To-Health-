@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
+import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
 import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/edit_profile_screen.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -14,6 +16,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+AuthController authController = Get.find<AuthController>();
+
   @override
   void initState() {
     //Get.find<ProfileController>().getUserById();
@@ -145,7 +150,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       "Log Out",
                       'Sign out of your account',
                       color: Color(0xffCE0000).withOpacity(0.8),
-                      onTap: () {},
+                      onTap: () async{
+                       await Get.find<AuthController>().logOut();
+                      },
                     ),
                     _divider(),
                   ],

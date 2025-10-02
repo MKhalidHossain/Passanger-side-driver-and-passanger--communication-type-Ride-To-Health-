@@ -20,11 +20,11 @@ abstract class AuthServiceInterface {
   Future<dynamic> accessAndRefreshToken(String refreshToken);
 
 
-
-
+  bool isLoggedIn();
+  Future<dynamic> saveLogin(String token);
   Future<dynamic> logout();
 
-  bool isLoggedIn();
+
   Future<bool> clearUserCredentials();
   bool clearSharedAddress();
   String getUserToken();
