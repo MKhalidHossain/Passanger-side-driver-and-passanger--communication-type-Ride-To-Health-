@@ -29,6 +29,7 @@ class AuthController extends GetxController implements GetxService {
 
   bool changePasswordIsLoading = false;
 
+  bool? isFirstTime;
   bool _isLoading = false;
   bool _acceptTerms = false;
   bool get isLoading => _isLoading;
@@ -215,37 +216,74 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  bool isLoggedIn() {
-    return authServiceInterface.isLoggedIn();
-  }
-
-  bool isFirstTimeInstall() {
-    return true;
-  }
-
-  bool logging = false;
-
   Future<void> logOut() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
     logging = true;
     update();
     Response? response = await authServiceInterface.logout();
 
-    if (isLoggedIn() == true) {
+    if (isLoggedIn() == false) {
       if (response!.statusCode == 200) {
-        await preferences.setString(AppConstants.token, '');
-        await preferences.setString(AppConstants.refreshToken, '');
-
         showCustomSnackBar('You have logout Successfully');
+        Get.offAll(() => UserLoginScreen());
       } else {
         logging = false;
         ApiChecker.checkApi(response);
+        print(response.body['message'] + ' for logout from controller');
+        Get.snackbar('Error', response.body['message']);
+        Get.offAll(() => UserLoginScreen());
       }
     } else {
-      print('object fucked up');
+      print(response.toString() + ' from controller');
     }
     update();
   }
+
+  bool isLoggedIn() {
+    return authServiceInterface.isLoggedIn();
+  }
+
+  Future<bool> isFirstTimeInstall() async {
+    _isLoading = true;
+    update();
+    final prefs = await SharedPreferences.getInstance();
+
+    isFirstTime = prefs.getBool('firstTimeInstall') ?? true;
+
+    if (isFirstTime!) {
+      await prefs.setBool('firstTimeInstall', false);
+      _isLoading = false;
+      update();
+      return true; // means first time
+    } else {
+      _isLoading = false;
+      update();
+      return false; // not first time
+    }
+  }
+
+  bool logging = false;
+
+  // Future<void> logOut() async {
+  //   SharedPreferences preferences = await SharedPreferences.getInstance();
+  //   logging = true;
+  //   update();
+  //   Response? response = await authServiceInterface.logout();
+
+  //   if (isLoggedIn() == true) {
+  //     if (response!.statusCode == 200) {
+  //       await preferences.setString(AppConstants.token, '');
+  //       await preferences.setString(AppConstants.refreshToken, '');
+
+  //       showCustomSnackBar('You have logout Successfully');
+  //     } else {
+  //       logging = false;
+  //       ApiChecker.checkApi(response);
+  //     }
+  //   } else {
+  //     print('object fucked up');
+  //   }
+  //   update();
+  // }
 
   Future<void> permanentDelete() async {
     logging = true;

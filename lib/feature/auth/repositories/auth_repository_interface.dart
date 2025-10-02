@@ -21,9 +21,12 @@ abstract class AuthRepositoryInterface {
 
 
 
-  Future<dynamic> logout();
+
 
   bool isLoggedIn();
+  Future<dynamic> saveLogin(String token);
+  Future<dynamic> logout();
+  
   Future<bool> clearUserCredentials();
   bool clearSharedAddress();
   String getUserToken();

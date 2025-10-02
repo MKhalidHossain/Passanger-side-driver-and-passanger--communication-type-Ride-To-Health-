@@ -40,6 +40,11 @@ class AuthService implements AuthServiceInterface {
   bool isLoggedIn() {
     return authRepositoryInterface.isLoggedIn();
   }
+
+  @override
+  Future saveLogin(String token) {
+    return authRepositoryInterface.saveLogin(token);
+  }
   
   @override
   Future login(String emailOrPhone, String password) async{

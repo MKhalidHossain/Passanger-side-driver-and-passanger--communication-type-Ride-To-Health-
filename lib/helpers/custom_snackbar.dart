@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,6 +20,7 @@ void showCustomSnackBar(
       dismissDirection: DismissDirection.horizontal,
       margin: const EdgeInsets.all(10).copyWith(right: 10),
       duration: Duration(seconds: seconds),
+      snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.black12,
 
       borderRadius: 10,
@@ -43,13 +43,13 @@ void showCustomSnackBar(
                   ),
                   subMessage != null
                       ? Text(
-                        subMessage,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      )
+                          subMessage,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        )
                       : const SizedBox(),
                 ],
               ),
