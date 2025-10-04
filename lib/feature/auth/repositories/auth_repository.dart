@@ -109,31 +109,26 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future requestPasswordReset(String? emailOrPhone) async {
-    return await apiClient.postData(Urls.requestPasswordReset, {
+  Future forgetPassword(String? emailOrPhone) async {
+    return await apiClient.postData(Urls.forgetPassword, {
       'emailOrPhone': emailOrPhone,
     });
   }
 
-  @override
-  Future resetPassword(
-    String email,
-    String newPassword,
-    String repeatNewPassword,
-  ) {
-    // TODO: implement resetPassword
-    throw UnimplementedError();
-  }
+  // @override
+  // Future resetPassword(
+  //   String email,
+  //   String newPassword,
+  //   String repeatNewPassword,
+  // ) {
+  //   // TODO: implement resetPassword
+  //   throw UnimplementedError();
+  // }
 
   @override
-  Future resetPasswordWithOtp(
-    String emailOrPhone,
-    String otp,
-    String newPassword,
-  ) async {
+  Future resetPassword(String emailOrPhone, String newPassword) async {
     return await apiClient.postData(Urls.resetPasswordWithOtp, {
       'emailOrPhone': emailOrPhone,
-      'otp': otp,
       'newPassword': newPassword,
     });
   }
@@ -162,9 +157,9 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future verifyOtpPhone(String userId, String otp, String type) async {
-    return await apiClient.postData(Urls.verifyOtpPhone, {
-      'userId': userId,
+  Future verifyOtp(String email, String otp, String type) async {
+    return await apiClient.postData(Urls.verifyOtp, {
+      'email': email,
       'otp': otp,
       'type': type,
     });
