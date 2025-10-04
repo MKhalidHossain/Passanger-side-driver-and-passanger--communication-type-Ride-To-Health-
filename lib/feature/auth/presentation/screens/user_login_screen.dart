@@ -7,7 +7,7 @@ import '../../../../core/validation/validators.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/utils/constants/app_colors.dart';
-import 'request_password_reset_screen.dart';
+import 'forget_password_screen.dart';
 import 'user_signup_screen.dart';
 
 class UserLoginScreen extends StatefulWidget {
@@ -125,7 +125,7 @@ class UserLoginScreenState extends State<UserLoginScreen> {
                                     alignment: Alignment.centerRight,
                                     child: TextButton(
                                       onPressed: () {
-                                        Get.to(RequestPasswordResetScreen());
+                                        Get.to(ForgetPasswordScreen());
                                       },
                                       child: 'Forgot Password ?'.text14Blue(),
                                     ),

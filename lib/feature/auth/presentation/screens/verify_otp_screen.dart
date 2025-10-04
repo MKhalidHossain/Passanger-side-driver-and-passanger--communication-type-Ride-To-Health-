@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/app_logo.dart';
@@ -10,8 +9,13 @@ import '../../../../core/widgets/wide_custom_button.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
   final String email;
+  final otpVerifyType;
 
-  const VerifyOtpScreen({super.key, required this.email});
+  const VerifyOtpScreen({
+    super.key,
+    required this.email,
+    required this.otpVerifyType,
+  });
 
   @override
   State<VerifyOtpScreen> createState() => _VerifyOtpScreenState();
@@ -171,10 +175,10 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
                             WideCustomButton(
                               text: 'Verify OTP',
                               onPressed: () {
-                                authController.resetPasswordWithOtp(
+                                authController.verifyOtp(
                                   widget.email,
-                                  "newPassword",
-                                  "repeatNewPassword",
+                                  pinController.text,
+                                  widget.otpVerifyType,
                                 );
                               },
                             ),

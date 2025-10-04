@@ -8,16 +8,14 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
 
-class RequestPasswordResetScreen extends StatefulWidget {
-  const RequestPasswordResetScreen({super.key});
+class ForgetPasswordScreen extends StatefulWidget {
+  const ForgetPasswordScreen({super.key});
 
   @override
-  State<RequestPasswordResetScreen> createState() =>
-      _RequestPasswordResetScreenState();
+  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
-class _RequestPasswordResetScreenState
-    extends State<RequestPasswordResetScreen> {
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   late TextEditingController _emailController;
   final FocusNode _emailFocus = FocusNode();
 
@@ -36,6 +34,7 @@ class _RequestPasswordResetScreenState
 
   @override
   Widget build(BuildContext context) {
+    const String otpVerifyType = 'password_reset';
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
@@ -134,8 +133,9 @@ class _RequestPasswordResetScreenState
                             WideCustomButton(
                               text: 'Send OTP',
                               onPressed: () {
-                                authController.requestPasswordReset(
+                                authController.forgetPassword(
                                   _emailController.text,
+                                  otpVerifyType,
                                 );
                                 // Get.to(
                                 //   () => VerifyOtpScreen(

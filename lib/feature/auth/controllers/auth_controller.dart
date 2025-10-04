@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rideztohealth/feature/auth/domain/model/change_password_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/model/request_password_reset_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/model/reset_password_with_otp_response_model.dart';
-import 'package:rideztohealth/feature/auth/domain/model/verify_otp_phone_response_model.dart';
+import 'package:rideztohealth/feature/auth/domain/model/verify_otp_response_model.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app.dart';
@@ -72,7 +72,7 @@ class AuthController extends GetxController implements GetxService {
   ChangePasswordResponseModel? changePasswordResponseModel;
   RequestPasswordResetResponseModel? requestPasswordResetResponseModel;
   ResetPasswordWithOtpResponseModel? resetPasswordWithOtpResponseModel;
-  VerifyOtpPhoneResponseModel? verifyOtpPhoneResponseModel;
+  VerifyOtpResponseModel? verifyOtpResponseModel;
   // VerifyCodeResponseModel? verifyCodeResponseModel;
   // ChangePasswordResponseModel? changePasswordResponseModel;
   // ForgetPasswordResponseModel? forgetPasswordResponseModel;
@@ -121,6 +121,7 @@ class AuthController extends GetxController implements GetxService {
   }
 
   Future<void> register(
+    String otpVerifyType,
     String fullName,
     String email,
     String phoneNumber,
@@ -150,12 +151,20 @@ class AuthController extends GetxController implements GetxService {
         print(
           "REGISTER API BODY: {fullNmae: $fullName, email: $email, password: $password, role: $role}",
         );
-
+        print('\nemail: $email , otpVerifyType: $otpVerifyType\n');
         _isLoading = false;
         update();
+        Get.off(
+          () => VerifyOtpScreen(email: email, otpVerifyType: otpVerifyType),
+        );
 
-        Get.off(() => UserLoginScreen());
-        showCustomSnackBar('Welcome you have successfully Registered');
+        showCustomSnackBar(
+          response.body['message'] ??
+              'Registration success Now need to email verification',
+        );
+        showCustomSnackBar('please check your email to verify your account');
+        // Get.off(() => UserLoginScreen());
+        // showCustomSnackBar('Welcome you have successfully Registered');
       } else {
         _isLoading = false;
         if (response.statusCode == 400) {
@@ -316,22 +325,40 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> verifyOtpPhone(String userId, String otp, String type) async {
+  Future<void> verifyOtp(String email, String otp, String type) async {
     _isLoading = true;
     update();
-    Response? response = await authServiceInterface.verifyOtpPhone(
-      userId,
-      otp,
-      type,
-    );
-    if (response!.body['success'] == true) {
+    Response? response = await authServiceInterface.verifyOtp(email, otp, type);
+
+    print(response!.body);
+
+    if (response.body['success'] == true) {
+      verifyOtpResponseModel = VerifyOtpResponseModel.fromJson(response.body);
       showCustomSnackBar('Otp verification has been successful');
-      Get.to(ResetChangePassword(userEmail: email));
+
+      if (type == 'password_reset') {
+        Get.to(ResetChangePassword(userEmail: email));
+      } else if (type == 'email_verification') {
+        showCustomSnackBar('Email verification has been successful');
+        Get.offAll(() => UserLoginScreen());
+      } else if (type == 'password_reset') {
+        showCustomSnackBar('Password Change Successfully');
+        Get.offAll(() => UserSignupScreen());
+      } else {
+        showCustomSnackBar('Otp type is not valid');
+        Get.offAll(() => UserSignupScreen());
+      }
+
+      // Get.to(ResetChangePassword(userEmail: email));
     } else {
-      showCustomSnackBar('There is a problem in sending OTP');
+      showCustomSnackBar(
+        'Otp is not valid, Please try again',
+        subMessage: response.body['message'],
+        isError: true,
+      );
       // Get.find<AuthController>().logOut();
     }
-
+    _isLoading = false;
     update();
   }
 
@@ -348,18 +375,23 @@ class AuthController extends GetxController implements GetxService {
   //   update();
   // }
 
-  Future<void> requestPasswordReset(String emailOrPhone) async {
+  Future<void> forgetPassword(String emailOrPhone, String otpVerifyType) async {
     _isLoading = true;
     update();
 
-    Response? response = await authServiceInterface.requestPasswordReset(
+    Response? response = await authServiceInterface.forgetPassword(
       emailOrPhone,
     );
+    print(response!.body);
 
-    if (response?.statusCode == 200) {
+    if (response.statusCode == 200) {
       _isLoading = false;
       showCustomSnackBar('successfully sent otp');
-      Get.to(() => VerifyOtpScreen(email: email));
+      print('\neamil $emailOrPhone , otpVerifyType $otpVerifyType\n');
+      Get.to(
+        () =>
+            VerifyOtpScreen(email: emailOrPhone, otpVerifyType: otpVerifyType),
+      );
     } else {
       _isLoading = false;
       showCustomSnackBar('invalid mail');
@@ -390,18 +422,13 @@ class AuthController extends GetxController implements GetxService {
   //   update();
   // }
 
-  Future<void> resetPasswordWithOtp(
-    String email,
-    String newPassword,
-    String repeatNewPassword,
-  ) async {
+  Future<void> resetPassword(String email, String newPassword) async {
     _isLoading = true;
     update();
 
-    Response? response = await authServiceInterface.resetPasswordWithOtp(
+    Response? response = await authServiceInterface.resetPassword(
       email,
       newPassword,
-      repeatNewPassword,
     );
     if (response!.statusCode == 200) {
       showCustomSnackBar('Password Change Successfully');

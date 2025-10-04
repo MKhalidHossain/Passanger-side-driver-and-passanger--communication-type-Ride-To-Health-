@@ -56,6 +56,8 @@ class UserSignupScreenState extends State<UserSignupScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    const String otpVerifyType = "email_verification";
+    const String userRole = "customer";
 
     return GetBuilder<AuthController>(
       builder: (authController) {
@@ -220,11 +222,12 @@ class UserSignupScreenState extends State<UserSignupScreen> {
                                       text: 'Sign Up',
                                       onPressed: () {
                                         authController.register(
+                                          otpVerifyType,
                                           _nameController.text,
                                           _emailController.text,
                                           _phoneController.text,
                                           _passwordController.text,
-                                          'customer',
+                                          userRole,
                                         );
                                       },
                                     ),

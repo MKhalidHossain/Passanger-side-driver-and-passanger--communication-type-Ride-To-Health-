@@ -8,8 +8,8 @@ class Urls {
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String refreshAccessToken = '/auth/refresh-token';
-  static const String verifyOtpPhone = '/auth/verify-otp';
-  static const String requestPasswordReset = '/auth/request-password-reset';
+  static const String verifyOtp = '/auth/verify-otp';
+  static const String forgetPassword = '/auth/request-password-reset';
   static const String resetPasswordWithOtp = '/auth/reset-password';
   static const String changePassword = '/auth/change-password';
   static const String logOut = '/auth/logout';
