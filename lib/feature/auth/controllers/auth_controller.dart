@@ -129,36 +129,61 @@ class AuthController extends GetxController implements GetxService {
   ) async {
     _isLoading = true;
     update();
+
     print(
-      "REGISTER API BODY: {fullNmae: $fullName, email: $email, phoneNumber: $phoneNumber, password: $password,  role : $role}",
+      "REGISTER API BODY: {fullNmae: $fullName, email: $email, password: $password, role: $role}",
     );
 
-    Response? response = await authServiceInterface.register(
-      fullName,
-      email,
-      phoneNumber,
-      password,
-      role,
-    );
-    if (response!.statusCode == 201) {
-      // print(
-      //   "REGISTER API BODY: {email: $email, password: $password, confirmPassword: $confirmPassword}",
-      // );
-      // registrationResponseModel = RegistrationResponseModel.fromJson(response.body);
+    try {
+      Response? response = await authServiceInterface.register(
+        fullName,
+        email,
+        phoneNumber,
+        password,
+        role,
+      );
+      if (response!.statusCode == 201) {
+        registrationResponseModel = RegistrationResponseModel.fromJson(
+          response.body,
+        );
 
-      // _isLoading = false;
-      // update();
+        print(
+          "REGISTER API BODY: {fullNmae: $fullName, email: $email, password: $password, role: $role}",
+        );
 
-      Get.off(() => UserLoginScreen());
-      showCustomSnackBar('Welcome you have successfully Registered');
-    } else {
+        _isLoading = false;
+        update();
+
+        Get.off(() => UserLoginScreen());
+        showCustomSnackBar('Welcome you have successfully Registered');
+      } else {
+        _isLoading = false;
+        if (response.statusCode == 400) {
+          showCustomSnackBar(
+            response.body['message'] ?? 'Something went wrong',
+            isError: true,
+          );
+        } else {
+          showCustomSnackBar(
+            response.body['message'] ??
+                'Registration failed. Please try again.',
+            isError: true,
+          );
+        }
+
+        print(
+          ' ❌ Registration failed: ${response.statusCode} ${response.body} ',
+        );
+      }
+      update();
+    } catch (e) {
       _isLoading = false;
-      // ApiChecker.checkApi(response);
-      print(
-        ' ❌ Registration failed: ${response?.statusCode} ${response?.body} ',
+      print("❌ Error during registration: $e");
+      showCustomSnackBar(
+        "Something went wrong. Please try again later.",
+        isError: true,
       );
     }
-    update();
   }
 
   Future<void> login(String emailOrPhone, String password) async {
