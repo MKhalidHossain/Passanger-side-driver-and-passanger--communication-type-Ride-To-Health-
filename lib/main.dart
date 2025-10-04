@@ -13,6 +13,8 @@ import 'feature/map/bindings/initial_binding.dart';
 import 'feature/map/presentation/screens/ride_confirmed_screen.dart';
 import 'feature/map/presentation/screens/work/search_destination_screen.dart';
 
+// I thinga that we need to check isLoggedIn  , is work or not
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDI();
