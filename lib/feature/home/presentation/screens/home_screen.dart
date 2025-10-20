@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       expand: false,
                       builder: (_, controller) => Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFF2C3E50),
+                          color: const Color(0xFF303644),
                           borderRadius: BorderRadius.vertical(
                             top: Radius.circular(20),
                           ),

@@ -85,7 +85,7 @@ class UserLoginScreenState extends State<UserLoginScreen> {
                                   const SizedBox(height: 12),
 
                                   _buildCustomTextField(
-                                    title: 'Email',
+                                    // title: 'Email',
                                     context: context,
                                     label: 'Email',
                                     controller: _emailController,
@@ -97,7 +97,7 @@ class UserLoginScreenState extends State<UserLoginScreen> {
                                   ),
 
                                   _buildCustomTextField(
-                                    title: 'Password',
+                                    // title: 'Password',
                                     context: context,
                                     label: 'Password',
                                     controller: _passwordController,
@@ -223,7 +223,7 @@ class UserLoginScreenState extends State<UserLoginScreen> {
 }
 
 Widget _buildCustomTextField({
-  required String title,
+  // required String title,
   required BuildContext context,
   required String label,
   required TextEditingController controller,
@@ -238,17 +238,17 @@ Widget _buildCustomTextField({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      RichText(
-        text: TextSpan(
-          text: title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-      ),
-      const SizedBox(height: 8),
+      // RichText(
+      //   text: TextSpan(
+      //     text: title,
+      //     style: const TextStyle(
+      //       color: Colors.white,
+      //       fontSize: 16,
+      //       fontWeight: FontWeight.w400,
+      //     ),
+      //   ),
+      // ),
+      // const SizedBox(height: 8),
       TextFormField(
         controller: controller,
         focusNode: focusNode,
