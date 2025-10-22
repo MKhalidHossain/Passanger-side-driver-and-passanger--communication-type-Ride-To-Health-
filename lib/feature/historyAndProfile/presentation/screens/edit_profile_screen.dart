@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/feature/historyAndProfile/domain/model/get_profile_response_model.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
 
 class EditProfile extends StatefulWidget {
-  // final UserforProfile userProfile;
+  ProfileData? userProfile;
 
-  const EditProfile({super.key});
+  EditProfile({super.key, required this.userProfile});
 
   @override
   State<EditProfile> createState() => _EditProfileState();
@@ -157,14 +159,77 @@ class _EditProfileState extends State<EditProfile> {
                                     ),
                                   ),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.asset(
-                                      'assets/images/user6.png',
-                                      fit: BoxFit.cover,
-                                      width: 170,
-                                      height: 170,
+                                    borderRadius: BorderRadius.circular(
+                                      16,
+                                    ), // adjust for how round you want it
+                                    child: Builder(
+                                      builder: (context) {
+                                        final imageUrl =
+                                            widget.userProfile?.profileImage;
+
+                                        if (imageUrl == null ||
+                                            imageUrl.isEmpty) {
+                                          // Fallback placeholder if no profile image
+                                          return Center(
+                                            child: Icon(
+                                              Icons.person_outline,
+                                              size: 90,
+                                              color: Colors.grey,
+                                            ),
+                                          );
+                                        }
+
+                                        return Image.network(
+                                          imageUrl,
+                                          width: 170,
+                                          height: 170,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null)
+                                                  return child;
+
+                                                // Shimmer effect while loading
+                                                return Shimmer.fromColors(
+                                                  baseColor:
+                                                      Colors.grey.shade300,
+                                                  highlightColor:
+                                                      Colors.grey.shade100,
+                                                  child: Container(
+                                                    width: 170,
+                                                    height: 170,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                // Placeholder if image fails to load
+                                                return Center(
+                                                  child: Icon(
+                                                    Icons.person_outline,
+                                                    size: 90,
+                                                    color: Colors.grey,
+                                                  ),
+                                                );
+                                              },
+                                        );
+                                      },
                                     ),
                                   ),
+                                  // ClipRRect(
+                                  //   borderRadius: BorderRadius.circular(16),
+                                  //   child: Image.asset(
+                                  //     'assets/images/user6.png',
+                                  //     fit: BoxFit.cover,
+                                  //     width: 170,
+                                  //     height: 170,
+                                  //   ),
+                                  // ),
                                 ),
                           ),
                           const SizedBox(height: 10),
@@ -173,7 +238,8 @@ class _EditProfileState extends State<EditProfile> {
                           //widget.userProfile.name ??
 
                           //'Mr. User Name')
-                          'Mr. User Name'.text24White(),
+                          '${widget.userProfile?.fullName ?? 'No name'}'
+                              .text24White(),
                         ],
                       ),
                     ),

@@ -21,15 +21,13 @@ void showCustomSnackBar(
       margin: const EdgeInsets.all(10).copyWith(right: 10),
       duration: Duration(seconds: seconds),
       snackPosition: SnackPosition.TOP,
-      backgroundColor: Color(0xff303644).withOpacity(0.9),
-
+      backgroundColor: Colors.white,
       borderRadius: 10,
       messageText: Row(
         children: [
           const SizedBox(width: 10),
           Expanded(
-            child: Container(
-              color: Color(0xffFFFFFF).withOpacity(0.1),
+            child: SizedBox(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -38,18 +36,18 @@ void showCustomSnackBar(
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   subMessage != null
                       ? Text(
-                          subMessage,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        )
+                        subMessage,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      )
                       : const SizedBox(),
                 ],
               ),

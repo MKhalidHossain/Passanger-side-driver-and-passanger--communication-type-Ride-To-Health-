@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
 import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
+import 'package:rideztohealth/feature/historyAndProfile/controllers/profile_controller.dart';
 import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/edit_profile_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import 'notifications_screen.dart';
@@ -16,12 +18,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
-AuthController authController = Get.find<AuthController>();
+  AuthController authController = Get.find<AuthController>();
+  ProfileController historyandprofileController = Get.find<ProfileController>();
 
   @override
   void initState() {
     //Get.find<ProfileController>().getUserById();
+    historyandprofileController.getProfile();
     super.initState();
   }
 
@@ -30,137 +33,213 @@ AuthController authController = Get.find<AuthController>();
     Size size = MediaQuery.of(context).size;
 
     return SafeArea(
-      child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: 'My Profile'.text20white(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white10,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 80,
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xffCE0000).withOpacity(0.8),
-                            // Color(0xFFCE0000),
-                            Color(0xff7B0100).withOpacity(0.8),
-                          ],
+      child: GetBuilder<ProfileController>(
+        builder: (historyandprofileController) {
+          print(
+            " profile image is  ${historyandprofileController.getProfileResponseModel.data?.profileImage}",
+          );
+          return historyandprofileController.isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Scaffold(
+                  body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: 'My Profile'.text20white(),
                         ),
                       ),
-                      child: ClipOval(
-                        child:
-                            Image.asset('assets/images/user5.png') ??
-                            Image.network(
-                              '',
-                              width: 60,
-                              height: 60,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Icon(
-                                    Icons.person_outline,
-                                    size: 30,
-                                    color: Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white10,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 80,
+                                width: 80,
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xffCE0000).withOpacity(0.8),
+                                      // Color(0xFFCE0000),
+                                      Color(0xff7B0100).withOpacity(0.8),
+                                    ],
                                   ),
-                                );
-                              },
-                            ),
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    'John Doe'.text22White(),
-                    SizedBox(height: 4),
-                    Spacer(),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ListView(
-                  children: [
-                    //SizedBox(height: 12),
-                    _buildMenuItem(
-                      Icons.person_outline,
-                      "Profile",
-                      "Customize your profile",
-                      onTap: () {
-                        Get.to(() => EditProfile());
-                      },
-                    ),
-                    _divider(),
-                    _buildMenuItem(
-                      Icons.wallet_outlined,
-                      "Wallet",
-                      "Term of services",
-                      onTap: () {
-                        Get.to(() => WalletScreen());
-                      },
-                    ),
+                                ),
+                                child: 
+                                ClipOval(
+                                  child: Builder(
+                                    builder: (context) {
+                                      final imageUrl =
+                                          historyandprofileController
+                                              .getProfileResponseModel
+                                              .data
+                                              ?.profileImage;
 
-                    _divider(),
-                    _buildMenuItem(
-                      Icons.notifications_outlined,
-                      "Manage Notifications",
-                      "Customize alerts",
-                      onTap: () {
-                        Get.to(NotificationsScreen());
-                      },
-                    ),
-                    _divider(),
-                    _buildMenuItem(
-                      Icons.help_outline,
-                      "Terms & Conditions",
-                      "Terms & Services",
-                      onTap: () {
-                        Get.to(TermsAndCondition());
-                      },
-                    ),
-                    _divider(),
-                    _buildMenuItem(
-                      Icons.shield_outlined,
-                      "Privacy policy",
-                      'Privacy policy',
-                      onTap: () {},
-                    ),
-                    _divider(),
-                    _buildMenuItem(
-                      Icons.logout,
-                      "Log Out",
-                      'Sign out of your account',
-                      color: Color(0xffCE0000).withOpacity(0.8),
-                      onTap: () async{
-                       await Get.find<AuthController>().logOut();
-                      },
-                    ),
-                    _divider(),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+                                      if (imageUrl == null ||
+                                          imageUrl.isEmpty) {
+                                        // Fallback placeholder if no profile image
+                                        return Center(
+                                          child: Icon(
+                                            Icons.person_outline,
+                                            size: 30,
+                                            color: Colors.grey,
+                                          ),
+                                        );
+                                      }
+
+                                      return Image.network(
+                                        imageUrl,
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              // Shimmer effect while loading
+                                              return Shimmer.fromColors(
+                                                baseColor: Colors.grey.shade300,
+                                                highlightColor:
+                                                    Colors.grey.shade100,
+                                                child: Container(
+                                                  width: 60,
+                                                  height: 60,
+                                                  color: Colors.white,
+                                                ),
+                                              );
+                                            },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              // Placeholder if image fails to load
+                                              return Center(
+                                                child: Icon(
+                                                  Icons.person_outline,
+                                                  size: 30,
+                                                  color: Colors.grey,
+                                                ),
+                                              );
+                                            },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                // ClipOval(
+                                //   child:
+                                //       Image.asset('assets/images/user5.png') ??
+                                //       Image.network(
+                                //         '',
+                                //         width: 60,
+                                //         height: 60,
+                                //         fit: BoxFit.cover,
+                                //         errorBuilder:
+                                //             (context, error, stackTrace) {
+                                //               return Center(
+                                //                 child: Icon(
+                                //                   Icons.person_outline,
+                                //                   size: 30,
+                                //                   color: Colors.grey,
+                                //                 ),
+                                //               );
+                                //             },
+                                //       ),
+                                // ),
+                              ),
+                              SizedBox(width: 12),
+                              '${historyandprofileController.getProfileResponseModel.data?.fullName}'
+                                  .text22White(),
+                              SizedBox(height: 4),
+                              Spacer(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ListView(
+                            children: [
+                              //SizedBox(height: 12),
+                              _buildMenuItem(
+                                Icons.person_outline,
+                                "Profile",
+                                "Customize your profile",
+                                onTap: () {
+                                  Get.to(
+                                    () => EditProfile(
+                                      userProfile: historyandprofileController
+                                          .getProfileResponseModel
+                                          .data,
+                                    ),
+                                  );
+                                },
+                              ),
+                              _divider(),
+                              _buildMenuItem(
+                                Icons.wallet_outlined,
+                                "Wallet",
+                                "Term of services",
+                                onTap: () {
+                                  Get.to(() => WalletScreen());
+                                },
+                              ),
+
+                              _divider(),
+                              _buildMenuItem(
+                                Icons.notifications_outlined,
+                                "Manage Notifications",
+                                "Customize alerts",
+                                onTap: () {
+                                  Get.to(NotificationsScreen());
+                                },
+                              ),
+                              _divider(),
+                              _buildMenuItem(
+                                Icons.help_outline,
+                                "Terms & Conditions",
+                                "Terms & Services",
+                                onTap: () {
+                                  Get.to(TermsAndCondition());
+                                },
+                              ),
+                              _divider(),
+                              _buildMenuItem(
+                                Icons.shield_outlined,
+                                "Privacy policy",
+                                'Privacy policy',
+                                onTap: () {},
+                              ),
+                              _divider(),
+                              _buildMenuItem(
+                                Icons.logout,
+                                "Log Out",
+                                'Sign out of your account',
+                                color: Color(0xffCE0000).withOpacity(0.8),
+                                onTap: () async {
+                                  await Get.find<AuthController>().logOut();
+                                },
+                              ),
+                              _divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+        },
       ),
     );
   }
