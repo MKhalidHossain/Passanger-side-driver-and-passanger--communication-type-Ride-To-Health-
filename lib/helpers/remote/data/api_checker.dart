@@ -1,24 +1,23 @@
 import 'package:get/get.dart';
-import '../../../utils/display_helper.dart';
+import '../../custom_snackbar.dart';
 import 'error_response.dart';
 
 class ApiChecker {
   static void checkApi(Response response) {
-    if(response.statusCode == 401) {
+    if (response.statusCode == 401) {
       // Get.find<SplashController>().removeSharedData();
       //showCustomSnackBar(response.body['message']);
       //Get.offAll(()=> const LoginScreen());
-
-    }else if(response.statusCode == 403){
+    } else if (response.statusCode == 403) {
       ErrorResponse errorResponse;
       errorResponse = ErrorResponse.fromJson(response.body);
-      if(errorResponse.errors != null && errorResponse.errors!.isNotEmpty){
+      if (errorResponse.errors != null && errorResponse.errors!.isNotEmpty) {
         showCustomSnackBar(errorResponse.errors![0].message!);
-      }else{
+      } else {
         showCustomSnackBar(response.body['message']!);
       }
-
-    }else {
+    } else {
+      //showCustomSnackBar(response.statusText! + 'Khalid this is Status Code');
       showCustomSnackBar(response.statusText!);
     }
   }

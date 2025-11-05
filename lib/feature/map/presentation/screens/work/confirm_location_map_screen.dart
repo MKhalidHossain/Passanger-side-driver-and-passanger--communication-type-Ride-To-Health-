@@ -5,8 +5,7 @@ import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'finding_your_driver_screen.dart';
-import '../location_confirmation_screen.dart';
-import '../ride_confirmed_screen.dart';
+
 // import 'chat_screen.dart'; // Uncomment if you use these
 // import 'call_screen.dart'; // Uncomment if you use these
 // import 'payment_screen.dart'; // Uncomment if you use these// Import the new search screen
