@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:rideztohealth/feature/historyAndProfile/repositories/history_and_profile_repository.dart';
-import 'package:rideztohealth/feature/historyAndProfile/repositories/history_and_profile_repository_interface.dart';
-import 'package:rideztohealth/feature/historyAndProfile/services/history_and_profile_service.dart';
-import 'package:rideztohealth/feature/historyAndProfile/services/history_and_profile_service_interface.dart';
+import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository.dart';
+import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository_interface.dart';
+import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service.dart';
+import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service_interface.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/urls.dart';
@@ -12,7 +12,7 @@ import '../feature/auth/repositories/auth_repository.dart';
 import '../feature/auth/repositories/auth_repository_interface.dart';
 import '../feature/auth/sevices/auth_service.dart';
 import '../feature/auth/sevices/auth_service_interface.dart';
-import '../feature/historyAndProfile/controllers/profile_controller.dart';
+import '../feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'remote/data/api_client.dart';
 
 Future<void> initDI() async {
@@ -49,7 +49,7 @@ Future<void> initDI() async {
   HistoryAndProfileServiceInterface profileServiceInterface =
       HistoryAndProfileService(Get.find());
   Get.lazyPut(() => profileServiceInterface);
-  Get.lazyPut(() => ProfileController(profileServiceInterface));
+  Get.lazyPut(() => ProfileAndHistoryController(profileServiceInterface));
   Get.lazyPut(() => HistoryAndProfileService(Get.find()));
 
   //////////// home  Service, Repository and Controller ////////////////////////////////

@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
-import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/history_screen.dart';
+import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/history_screen.dart';
 import 'package:rideztohealth/feature/home/presentation/widgets/recent_single_contianer.dart';
 import 'package:rideztohealth/feature/map/presentation/screens/work/search_destination_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/promo_banner_widget.dart';
-import '../../../historyAndProfile/presentation/screens/saved_places_screen.dart';
+import '../../../profileAndHistory/presentation/screens/saved_places_screen.dart';
 import '../../../serviceFeature/presentation/screens/service_screen.dart';
 import '../widgets/saved_pleaces_single_container.dart';
 

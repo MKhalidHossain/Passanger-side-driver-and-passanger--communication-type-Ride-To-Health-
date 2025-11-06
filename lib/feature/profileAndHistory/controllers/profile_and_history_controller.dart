@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:rideztohealth/feature/historyAndProfile/domain/model/get_profile_response_model.dart';
-import 'package:rideztohealth/feature/historyAndProfile/domain/model/update_location_response_model.dart';
-import 'package:rideztohealth/feature/historyAndProfile/domain/model/update_profile_response_model.dart';
-import 'package:rideztohealth/feature/historyAndProfile/domain/model/upload_profile_image_response_model.dart';
-import 'package:rideztohealth/feature/historyAndProfile/services/history_and_profile_service_interface.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/model/update_location_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/model/update_profile_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/model/upload_profile_image_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service_interface.dart';
 
-class ProfileController extends GetxController implements GetxService {
+class ProfileAndHistoryController extends GetxController implements GetxService {
   final HistoryAndProfileServiceInterface historyAndProfileServiceInterface;
 
-  ProfileController(this.historyAndProfileServiceInterface);
+  ProfileAndHistoryController(this.historyAndProfileServiceInterface);
 
   GetProfileResponseModel getProfileResponseModel = GetProfileResponseModel();
   UpdateProfileResponseModel updateProfileResponseModel =
