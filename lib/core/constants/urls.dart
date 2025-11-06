@@ -32,6 +32,13 @@ class Urls {
   static const String updateNotificationSettings =
       '/user/notification-settings';
 
+  // ------------------------ Category------------------------
+  static const String allCategories = '/admin/categories';
+  static const String getACategory = 'admin/categories/';
+  // static const String uploadProfileImage = '/user/profile/image';
+  // static const String updateLocation = '/user/location';
+
+
   // ------------------------ Ride Management ------------------------
   static const String requestRide = '/ride/request';
   static const String acceptRide = '/ride/'; // + {rideId}/accept
