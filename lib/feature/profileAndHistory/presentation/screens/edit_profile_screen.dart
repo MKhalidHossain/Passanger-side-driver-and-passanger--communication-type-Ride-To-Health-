@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
-import 'package:rideztohealth/feature/historyAndProfile/controllers/profile_controller.dart';
-import 'package:rideztohealth/feature/historyAndProfile/domain/model/get_profile_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
 
@@ -27,7 +27,7 @@ class _EditProfileState extends State<EditProfile> {
 
   bool isEditing = false; // Track whether user is editing
 
-  late ProfileController profileController;
+  late ProfileAndHistoryController profileController;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _EditProfileState extends State<EditProfile> {
       text: widget.userProfile?.phoneNumber,
     );
 
-    profileController = Get.find<ProfileController>();
+    profileController = Get.find<ProfileAndHistoryController>();
   }
 
   @override
@@ -57,7 +57,7 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ProfileController>(
+    return GetBuilder<ProfileAndHistoryController>(
       builder: (profileController) {
         return profileController.isLoading
             ? _ProfileShimmerLoader()

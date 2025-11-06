@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
-import 'package:rideztohealth/feature/historyAndProfile/controllers/profile_controller.dart';
-import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/edit_profile_screen.dart';
-import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/notifications_screen.dart';
-import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/terms_and_condition.dart';
-import 'package:rideztohealth/feature/historyAndProfile/presentation/screens/wallet_screen.dart';
+import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
+import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/edit_profile_screen.dart';
+import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/notifications_screen.dart';
+import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/terms_and_condition.dart';
+import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/wallet_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/constants/app_colors.dart';
 
@@ -17,7 +17,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   AuthController authController = Get.find<AuthController>();
-  ProfileController profileController = Get.find<ProfileController>();
+  ProfileAndHistoryController profileController = Get.find<ProfileAndHistoryController>();
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: GetBuilder<ProfileController>(
+      child: GetBuilder<ProfileAndHistoryController>(
         builder: (controller) {
           return Scaffold(
             body: controller.isLoading
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// 🔹 Actual profile content after loading completes
   Widget _buildProfileContent(
     BuildContext context,
-    ProfileController controller,
+    ProfileAndHistoryController controller,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

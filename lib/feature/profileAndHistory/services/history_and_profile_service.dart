@@ -1,5 +1,5 @@
 import 'package:get/get_connect/http/src/response/response.dart';
-import 'package:rideztohealth/feature/historyAndProfile/repositories/history_and_profile_repository_interface.dart';
+import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository_interface.dart';
 
 import 'history_and_profile_service_interface.dart';
 
