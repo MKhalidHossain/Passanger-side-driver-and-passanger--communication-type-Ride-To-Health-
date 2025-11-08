@@ -227,7 +227,7 @@ class AuthController extends GetxController implements GetxService {
       print(
         'User Token $token  ================================== from comtroller ',
       );
-      setUserToken(token, refreshToken);
+      await setUserToken(token, refreshToken);
 
       Get.offAll(() => AppMain());
 
@@ -241,7 +241,17 @@ class AuthController extends GetxController implements GetxService {
     } else if (response.statusCode == 400) {
       Get.offAll(UserSignupScreen());
       showCustomSnackBar('Sorry you have no account, please create a account');
-    } else {
+    }
+    else if (response.statusCode == 401) {
+      Get.offAll(UserSignupScreen());
+      showCustomSnackBar(
+  'Login Failed',
+  subMessage: 'The email or password you entered is incorrect. Please try again.',
+);
+
+    }
+    
+     else {
       _isLoading = false;
       ApiChecker.checkApi(response);
     }

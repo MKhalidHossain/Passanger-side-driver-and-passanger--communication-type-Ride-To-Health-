@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 
+import '../../../home/controllers/home_controller.dart';
 import '../../../home/presentation/widgets/saved_pleaces_single_container.dart';
 
 class SavedPlaceScreen extends StatefulWidget {
@@ -11,9 +13,26 @@ class SavedPlaceScreen extends StatefulWidget {
 }
 
 class _SavedPlaceScreenState extends State<SavedPlaceScreen> {
+
+  HomeController homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      homeController.getSavedPlaces();
+    });
+    
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return GetBuilder<HomeController>(
+      builder: (homeController){
+      return homeController.isLoading 
+      ? Center(child: CircularProgressIndicator(),) 
+      :SafeArea(
       bottom: false,
       child: Scaffold(
         appBar: AppBar(
@@ -28,55 +47,33 @@ class _SavedPlaceScreenState extends State<SavedPlaceScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Mom\'s House',
-                  subTitle: '321 Family Rd',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Airport',
-                  subTitle: 'International Terminal',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Mom\'s House',
-                  subTitle: '321 Family Rd',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Airport',
-                  subTitle: 'International Terminal',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Mom\'s House',
-                  subTitle: '321 Family Rd',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Airport',
-                  subTitle: 'International Terminal',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Mom\'s House',
-                  subTitle: '321 Family Rd',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Airport',
-                  subTitle: 'International Terminal',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Mom\'s House',
-                  subTitle: '321 Family Rd',
-                ),
-                const SizedBox(height: 16),
-                SavedPlaceSingeContainer(
-                  title: 'Airport',
-                  subTitle: 'International Terminal',
-                ),
+                ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              homeController.getSavedPlacesResponseModel.data
+                                      ?.length ??
+                                  0,
+                          itemBuilder: (context, index) {
+                            final place = homeController
+                                .getSavedPlacesResponseModel.data
+                                ?[index];
+                            return Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(SavedPlaceScreen());
+                                  },
+                                  child: SavedPlaceSingeContainer(
+                                    title: place?.name ?? 'Unknown',
+                                    subTitle: place?.address ?? 'No Address',
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            );
+                          },
+                        ),
                 const SizedBox(height: 16),
               ],
             ),
@@ -84,5 +81,12 @@ class _SavedPlaceScreenState extends State<SavedPlaceScreen> {
         ),
       ),
     );
+
+
+    });
+    
+    
+
+
   }
 }
