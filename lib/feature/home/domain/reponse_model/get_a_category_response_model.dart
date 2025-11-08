@@ -1,9 +1,9 @@
 class GetACategoryResponseModel {
-  final bool success;
+  final bool? success;
   final CategoryData? data;
 
   GetACategoryResponseModel({
-    required this.success,
+     this.success,
     this.data,
   });
 

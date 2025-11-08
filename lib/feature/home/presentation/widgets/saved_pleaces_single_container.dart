@@ -19,28 +19,36 @@ class SavedPlaceSingeContainer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white24,
+          Expanded( // <--- WRAP THE CONTENT THAT NEEDS TO BE CONSTRAINED
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: const BoxDecoration( // Changed to const
+                    shape: BoxShape.circle,
+                    color: Colors.white24,
+                  ),
+                  child: const Icon(
+                    Icons.bookmark_border_outlined,
+                    size: 24,
+                    color: Colors.white,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.bookmark_border_outlined,
-
-                  size: 24,
-                  color: Colors.white,
+                const SizedBox(width: 16),
+                Expanded( // <--- ADD A SECOND EXPANDED HERE
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // The text widgets inside here will now wrap/truncate
+                    // to fit the space provided by this Expanded widget.
+                    children: [
+                      title.text16White500(), 
+                      subTitle.text12Grey()
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [title.text16White500(), subTitle.text12Grey()],
-              ),
-            ],
+              ],
+            ),
           ),
           // SmallSemiTranparentButton(
           //   showIcon: true,

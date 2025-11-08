@@ -22,7 +22,30 @@ class HomeRepository implements HomeRepositoryInterface{
   }
   
   @override
-  Future<Response> getACategory() {
-    return apiClient.getData(Urls.getACategory);
+  Future<Response> getACategory() async{
+    return await apiClient.getData(Urls.getACategory);
+  }
+  
+  @override
+  Future<Response> addSavedPlaces(String name , String addresss, double latitude, double longitude, String type) async{
+    return await apiClient.postData(Urls.addSavedPlace,{
+      {
+      "name": name,
+      "address": addresss,
+      "latitude": latitude,
+      "longitude": longitude,
+      "type": type
+      }
+    });
+  }
+  
+  @override
+  Future<Response> deleteSavedPlaces(String placeId) async{
+    return await apiClient.deleteData(Urls.deleteSavedPlace + placeId);
+  }
+  
+  @override
+  Future<Response> getSavedPlaces() async{
+    return await apiClient.getData(Urls.getSavedPlaces);
   }
 }

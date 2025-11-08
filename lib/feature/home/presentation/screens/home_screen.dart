@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     homeController.getAllCategory();
+    homeController.getSavedPlaces();
     super.initState();
   }
 
@@ -220,25 +221,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // Saved Places
                         const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(SavedPlaceScreen());
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount:
+                              2 ,
+                          itemBuilder: (context, index) {
+                            final place = homeController
+                                .getSavedPlacesResponseModel.data
+                                ?[index];
+                            return Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.to(SavedPlaceScreen());
+                                  },
+                                  child: SavedPlaceSingeContainer(
+                                    title: place?.name ?? 'Unknown',
+                                    subTitle: place?.address ?? 'No Address',
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            );
                           },
-                          child: SavedPlaceSingeContainer(
-                            title: 'Mom\'s House',
-                            subTitle: '321 Family Rd',
-                          ),
                         ),
-                        const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(SavedPlaceScreen());
-                          },
-                          child: SavedPlaceSingeContainer(
-                            title: 'Airport',
-                            subTitle: 'International Terminal',
-                          ),
-                        ),
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     Get.to(SavedPlaceScreen());
+                        //   },
+                        //   child: SavedPlaceSingeContainer(
+                        //     title: 'Mom\'s House',
+                        //     subTitle: '321 Family Rd',
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 16),
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     Get.to(SavedPlaceScreen());
+                        //   },
+                        //   child: SavedPlaceSingeContainer(
+                        //     title: 'Airport',
+                        //     subTitle: 'International Terminal',
+                        //   ),
+                        // ),
                         const SizedBox(height: 16),
                         _buildSectionTitle('Our Services'),
                         const SizedBox(height: 16),

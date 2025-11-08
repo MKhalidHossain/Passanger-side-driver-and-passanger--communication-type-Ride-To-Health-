@@ -1,6 +1,8 @@
 // lib/screens/service_screen.dart
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 
 import '../../../../core/widgets/promo_banner_widget.dart';
 
@@ -15,34 +17,52 @@ class ServiceScreen extends StatefulWidget {
 class _ServiceScreenState extends State<ServiceScreen> {
   int selectedService = 0;
 
-  final List<Map<String, dynamic>> services = [
-    {
-      'path': 'assets/images/ambolence.png',
-      'label': 'Non-Emergency Medical Transportation',
-    },
-    {'path': 'assets/images/noaha.png', 'label': 'Taxi'},
-    {'path': 'assets/images/taxi_ourService.png', 'label': 'Ride with kids'},
-    {
-      'path': 'assets/images/ambolence1.png',
-      'label': 'Airport pick up & drop off',
-    },
-    {
-      'path': 'assets/images/noaha.png',
-      'label': 'Wheelchair Accessible Vehicles (WAV)',
-    },
-    {
-      'path': 'assets/images/ambolence1.png',
-      'label': 'Wheelchair Accessible Vehicles (WAV)',
-    },
-    {
-      'path': 'assets/images/taxi_ourService.png',
-      'label': 'Wheelchair Accessible Vehicles (WAV)',
-    },
-  ];
+  // final List<Map<String, dynamic>> services = [
+  //   {
+  //     'path': 'assets/images/ambolence.png',
+  //     'label': 'Non-Emergency Medical Transportation',
+  //   },
+  //   {
+  //     'path': 'assets/images/noaha.png', 'label': 'Taxi'
+  //   },
+  //   {'path': 'assets/images/taxi_ourService.png', 'label': 'Ride with kids'},
+  //   {
+  //     'path': 'assets/images/ambolence1.png',
+  //     'label': 'Airport pick up & drop off',
+  //   },
+  //   {
+  //     'path': 'assets/images/noaha.png',
+  //     'label': 'Wheelchair Accessible Vehicles (WAV)',
+  //   },
+  //   {
+  //     'path': 'assets/images/ambolence1.png',
+  //     'label': 'Wheelchair Accessible Vehicles (WAV)',
+  //   },
+  //   {
+  //     'path': 'assets/images/taxi_ourService.png',
+  //     'label': 'Wheelchair Accessible Vehicles (WAV)',
+  //   },
+  // ];
+
+
+  HomeController homeController = Get.find<HomeController>();
+
+
+  @override
+  void initState() {
+    homeController.getAllCategory();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GetBuilder<HomeController>(
+      builder:(homeController){
+        final services = homeController.getAllCategoryResponseModel.data?.categories ?? [];
+
+      return homeController.isLoading 
+      ? const Center(child: CircularProgressIndicator()) 
+      : Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -88,15 +108,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset(
-                              service['path'],
-                              fit: BoxFit.contain,
-                              height: 60,
-                            ),
+                            Image.network(
+                                        service.categoryImage ?? '',
+                                        fit: BoxFit.contain,
+                                        height: 60,
+                                        errorBuilder: (context, error,
+                                                stackTrace) =>
+                                            const Icon(Icons.broken_image,
+                                                color: Colors.white, size: 40),
+                                      ),
                             //Icon(Icons.local_taxi, size: 32, color: Colors.white),
                             const SizedBox(height: 8),
                             Text(
-                              service['label'],
+                              service.name ?? 'No Name',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 13,
@@ -155,5 +179,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
         ),
       ),
     );
+
+
+
+    } );
   }
 }
