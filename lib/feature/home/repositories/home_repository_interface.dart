@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 
 abstract class HomeRepositoryInterface {
-  Future<Response> getRecentTrips();
+
   Future<Response> allCategories();
   Future<Response> getACategory();
 // Saved Places
@@ -10,6 +10,7 @@ abstract class HomeRepositoryInterface {
   Future<Response> getSavedPlaces();
   Future<Response> deleteSavedPlaces(String placeId);
 
+  Future<Response> getRecentTrips();
   //Category
 
 }

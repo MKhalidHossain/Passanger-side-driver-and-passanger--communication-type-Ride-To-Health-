@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/core/utils/date_time_formatter.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/history_screen.dart';
 import 'package:rideztohealth/feature/home/presentation/widgets/recent_single_contianer.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     homeController.getAllCategory();
     homeController.getSavedPlaces();
+    homeController.getRecentTrips();
     super.initState();
   }
 
@@ -45,6 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ?.first
             .name;
         print("Nmae form category: $name");
+        final savedPlaces =
+            homeController.getSavedPlacesResponseModel.data ?? [];
+        final recentTrips =
+            homeController.getRecentTripsResponseModel.data?.rides ?? [];
         return homeController.isLoading
             ? const Center(child: CircularProgressIndicator())
             : Scaffold(
@@ -189,29 +195,82 @@ class _HomeScreenState extends State<HomeScreen> {
                         //       .toList(),
                         // ),
                         const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(HistoryScreen());
-                          },
-                          child: SingleActivityContainer(
-                            title: 'New York City',
-                            subTitle: 'June 25, 07:16 am',
-                            price: '\$99.99 USD',
-                          ),
-                        ),
+
+                        recentTrips.isEmpty
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 40,
+                                  ),
+                                  child: 'You have not taken any trips yet.'
+                                      .text16White500(),
+                                ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: recentTrips.length > 2
+                                    ? 2
+                                    : recentTrips.length, // ✅ max 2 items,
+                                itemBuilder: (context, index) {
+                                  final trip = recentTrips[index];
+                                  return Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(HistoryScreen());
+                                        },
+                                        child: SingleActivityContainer(
+                                          title:
+                                              trip.dropoffLocation?.address ??
+                                              'Unknown Location',
+                                          subTitle: DateTimeFormatter.format(
+                                            trip.createdAt ?? '',
+                                          ),
+                                          price:
+                                              "\$ ${trip.finalFare.toString()} USD",
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                },
+                              ),
+
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     Get.to(HistoryScreen());
+                        //   },
+                        //   child: SingleActivityContainer(
+                        //     title: 'New York City',
+                        //     subTitle: 'June 25, 07:16 am',
+                        //     price: '\$99.99 USD',
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 16),
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     Get.to(HistoryScreen());
+                        //   },
+                        //   child: SingleActivityContainer(
+                        //     title: 'Los Anageles',
+                        //     subTitle: 'June 25, 07:16 am',
+                        //     price: '\$99.99 USD',
+                        //   ),
+                        // ),
                         const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(HistoryScreen());
-                          },
-                          child: SingleActivityContainer(
-                            title: 'Los Anageles',
-                            subTitle: 'June 25, 07:16 am',
-                            price: '\$99.99 USD',
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildSectionTitle('Saved Places'),
+                            TextButton(
+                              onPressed: () {
+                                Get.to(SavedPlaceScreen());
+                              },
+                              child: 'See All'.textColorWhite(14),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        _buildSectionTitle('Saved Places'),
 
                         // Column(
                         //   children: savedPlaces
@@ -221,31 +280,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         // Saved Places
                         const SizedBox(height: 16),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount:
-                              2 ,
-                          itemBuilder: (context, index) {
-                            final place = homeController
-                                .getSavedPlacesResponseModel.data
-                                ?[index];
-                            return Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(SavedPlaceScreen());
-                                  },
-                                  child: SavedPlaceSingeContainer(
-                                    title: place?.name ?? 'Unknown',
-                                    subTitle: place?.address ?? 'No Address',
+
+                        savedPlaces.isEmpty
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 40,
                                   ),
+                                  child: 'No saved places yet.'
+                                      .text16White500(),
                                 ),
-                                const SizedBox(height: 16),
-                              ],
-                            );
-                          },
-                        ),
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: savedPlaces.length > 2
+                                    ? 2
+                                    : savedPlaces.length, // ✅ max 2,
+                                itemBuilder: (context, index) {
+                                  final place = savedPlaces[index];
+                                  return Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(SavedPlaceScreen());
+                                        },
+                                        child: SavedPlaceSingeContainer(
+                                          title: place.name ?? 'Unknown',
+                                          subTitle:
+                                              place.address ?? 'No Address',
+                                          isShowDeleteButton: false,
+                                          placeId: place.id.toString(),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                },
+                              ),
                         // GestureDetector(
                         //   onTap: () {
                         //     Get.to(SavedPlaceScreen());
@@ -266,7 +338,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         //   ),
                         // ),
                         const SizedBox(height: 16),
-                        _buildSectionTitle('Our Services'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildSectionTitle('Our Services'),
+                            // TextButton(onPressed: (){}, child: 'See All'.textColorWhite(14)),
+                          ],
+                        ),
                         const SizedBox(height: 16),
 
                         // Row(
@@ -425,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
             image, // make sure 'image' is a valid URL string
             fit: BoxFit.contain,
             height: 40,
-            width: size.width * 0.25,
+            width: size.width * 0.20,
             errorBuilder: (context, error, stackTrace) {
               return const Icon(
                 Icons.broken_image,

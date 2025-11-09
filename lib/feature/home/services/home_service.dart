@@ -6,11 +6,7 @@ import 'home_service_interface.dart';
 class HomeService implements HomeServiceInterface{
   final HomeRepositoryInterface homeRepositoryInterface;
   HomeService(this.homeRepositoryInterface);
-  @override
-  Future<Response> getRecentTrips() {
-    // TODO: implement getRecentTrips
-    throw UnimplementedError();
-  }
+
   
   @override
   Future<Response> allCategories() async{
@@ -35,5 +31,11 @@ class HomeService implements HomeServiceInterface{
   @override
   Future<Response> getSavedPlaces() async{
     return await homeRepositoryInterface.getSavedPlaces();
+  }
+
+
+    @override
+  Future<Response> getRecentTrips() async{
+    return await homeRepositoryInterface.getRecentTrips();
   }
 }

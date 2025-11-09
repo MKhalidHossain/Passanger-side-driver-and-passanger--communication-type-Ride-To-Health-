@@ -10,12 +10,7 @@ class HomeRepository implements HomeRepositoryInterface{
   final SharedPreferences sharedPreferences;
   HomeRepository(this.apiClient, this.sharedPreferences);
 
-  @override
-  Future<Response> getRecentTrips() {
-    // TODO: implement getRecentTrips
-    throw UnimplementedError();
-  }
-  
+
   @override
   Future<Response> allCategories() async{
     return await apiClient.getData(Urls.allCategories);
@@ -48,4 +43,12 @@ class HomeRepository implements HomeRepositoryInterface{
   Future<Response> getSavedPlaces() async{
     return await apiClient.getData(Urls.getSavedPlaces);
   }
+
+
+
+    @override
+  Future<Response> getRecentTrips() async{
+    return await apiClient.getData(Urls.getRecentTrips);
+  }
+  
 }

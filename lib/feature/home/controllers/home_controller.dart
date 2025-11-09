@@ -8,6 +8,7 @@ import 'package:rideztohealth/feature/home/domain/reponse_model/delete_saved_pla
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_all_category_response_model.dart';
 import '../../../core/constants/urls.dart';
 import '../domain/reponse_model/get_a_category_response_model.dart';
+import '../domain/reponse_model/get_recent_trips_response_model.dart';
 import '../domain/reponse_model/get_saved_places_response_model.dart';
 import '../services/home_service_interface.dart';
 
@@ -30,6 +31,9 @@ class HomeController extends GetxController implements GetxService {
       GetSavedPlacesResponseModel();
   DeleteSavedPlaceResponseModel deleteSavedPlaceResponseModel = 
       DeleteSavedPlaceResponseModel();
+
+  GetRecentTripsResponseModel getRecentTripsResponseModel = 
+      GetRecentTripsResponseModel();
 
 
   bool isLoading = false;
@@ -157,6 +161,35 @@ Future<void> deleteSavedPlaces(String placeId) async {
   }
 }
 
+Future<void> getRecentTrips() async {
+  try {
+    isLoading = true;
+    update();
+
+    final response = await homeServiceInterface.getRecentTrips();
+
+    debugPrint("Status Code: ${response.statusCode}");
+    debugPrint("Response Body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      debugPrint("✅ getRecentTrips: HomeController fetched successfully.");
+       // Ensure response.body is a Map before passing to fromJson
+      // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      
+      getRecentTripsResponseModel = GetRecentTripsResponseModel.fromJson(response.body);
+
+      isLoading = false;
+      update();
+    } else {
+      getRecentTripsResponseModel = GetRecentTripsResponseModel.fromJson(response.body);
+    }
+  } catch (e) {
+    print("⚠️ Error fetching HomeController : getRecentTrips : $e\n");
+  } finally {
+    isLoading = false;
+    update();
+  }
+}
 
 
 }
