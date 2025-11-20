@@ -18,25 +18,28 @@ class LocationRepository implements LocationRepositoryInterface{
 
 LocationRepository(this.apiClient, this.sharedPreferences);
   @override
-  Future<List<PlacePrediction>> searchPlaces({required String query}) async{
-    final autocompleteRes = await http.post(
-         Uri.parse('https://places.googleapis.com/v1/places:autocomplete'),
-        body: {
-          'input': query,
-        },
-        headers: {
-            // 'Content-Type': 'application/json',
-            'X-Goog-Api-Key': AppConstant.apiKey,
-          },
-      );
-      final data = json.decode(autocompleteRes.body);
-      debugPrint('Autocomplete Response: $data');
-      final predictions = List<Map<String, dynamic>>.from(
-        data['predictions'],
-      );
+  Future<List<PlacePrediction>> searchPlaces({required String query}) async {
 
-      return predictions.map((e) => PlacePrediction.fromJson(e)).toList();
+  final url = Uri.parse(
+    "https://maps.googleapis.com/maps/api/place/autocomplete/json"
+    "?input=$query"
+    "&key=${AppConstant.apiKey}"
+  );
+
+  final response = await http.get(url);
+
+  // debugPrint("Autocomplete Response: ${response.body}");
+
+  final data = jsonDecode(response.body);
+
+  if (data["status"] != "OK") {
+    debugPrint("Places API Error: ${data['status']}");
+    return [];
   }
 
+  final predictions = List<Map<String, dynamic>>.from(data['predictions']);
+
+  return predictions.map((e) => PlacePrediction.fromPlacesLegacyApiResponse(e)).toList();
+}
 
 } 
