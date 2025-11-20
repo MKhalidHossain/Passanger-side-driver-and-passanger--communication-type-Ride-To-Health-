@@ -12,8 +12,8 @@ class HomeRepository implements HomeRepositoryInterface{
 
 
   @override
-  Future<Response> allCategories() async{
-    return await apiClient.getData(Urls.allCategories);
+  Future<Response> getAllServices() async{
+    return await apiClient.getData(Urls.getAllServices);
   }
   
   @override

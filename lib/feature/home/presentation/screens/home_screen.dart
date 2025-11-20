@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    homeController.getAllCategory();
+    homeController.getAllServices();
     homeController.getSavedPlaces();
     homeController.getRecentTrips();
     super.initState();
@@ -43,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
         final name = homeController
             .getAllCategoryResponseModel
             .data
-            ?.categories
             ?.first
             .name;
         print("Nmae form category: $name");
@@ -396,16 +395,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 (homeController
                                             .getAllCategoryResponseModel
                                             .data
-                                            ?.categories ??
+                                            ??
                                         [])
-                                    .map((category) {
+                                    .map((Services) {
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                           right: 10,
                                         ),
                                         child: _buildServiceCard(
-                                          category.name ?? 'Unknown',
-                                          category.categoryImage ??
+                                          Services.name ?? 'Unknown',
+                                          Services.serviceImage ??
                                               'assets/images/texi.png',
                                           () {
                                             Navigator.push(

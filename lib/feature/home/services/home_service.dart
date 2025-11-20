@@ -9,8 +9,8 @@ class HomeService implements HomeServiceInterface{
 
   
   @override
-  Future<Response> allCategories() async{
-    return await homeRepositoryInterface.allCategories();
+  Future<Response> getAllServices() async{
+    return await homeRepositoryInterface.getAllServices();
   }
   
   @override

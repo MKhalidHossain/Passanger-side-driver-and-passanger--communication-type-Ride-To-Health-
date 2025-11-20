@@ -50,7 +50,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
   @override
   void initState() {
-    homeController.getAllCategory();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      homeController.getAllServices();
+    });
+    
     super.initState();
   }
 
@@ -58,7 +61,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<HomeController>(
       builder:(homeController){
-        final services = homeController.getAllCategoryResponseModel.data?.categories ?? [];
+        final services = homeController.getAllCategoryResponseModel.data ?? [];
 
       return homeController.isLoading 
       ? const Center(child: CircularProgressIndicator()) 
@@ -109,7 +112,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.network(
-                                        service.categoryImage ?? '',
+                                        service.serviceImage ?? '',
                                         fit: BoxFit.contain,
                                         height: 60,
                                         errorBuilder: (context, error,

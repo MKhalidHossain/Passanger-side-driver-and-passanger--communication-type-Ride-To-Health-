@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/locaion_controller.dart';
+import '../../../controllers/location_picked_controller.dart';
 import 'car_selection_map_screen.dart';
 
 class SearchDestinationScreen extends StatefulWidget {
   final ScrollController? scrollController;
+
 
   const SearchDestinationScreen({super.key, this.scrollController});
 
@@ -17,6 +19,8 @@ class SearchDestinationScreen extends StatefulWidget {
 class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   final LocationController locationController = Get.find<LocationController>();
   final AppController appController = Get.find<AppController>();
+  final LocationPickedController locationPickedController = LocationPickedController();
+
 
   final TextEditingController searchTextController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
@@ -39,6 +43,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   }
 
   Future<void> performSearch(String query) async {
+    locationPickedController.searchChanged(query);
     setState(() {
       isSearching = true;
       isSearchMode = true;
@@ -130,20 +135,24 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
               )
             else
               Expanded(
-                child: ListView.builder(
-                  itemCount: searchResults.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Icon(Icons.location_on, color: Colors.white),
-                      title: Text(
-                        searchResults[index],
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        goToMap(searchResults[index]);
-                      },
-                    );
-                  },
+                child: ObxValue(
+                  (results)=> ListView.builder(
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Icon(Icons.location_on, color: Colors.white),
+                        title: Text(
+                          results[index].description,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+
+                          // goToMap(results[index]);
+                        },
+                      );
+                    },
+                  ),
+                  locationPickedController.autoCompliteSuggetion
                 ),
               )
           else

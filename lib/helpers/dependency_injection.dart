@@ -1,13 +1,15 @@
 import 'package:get/get.dart';
+import 'package:rideztohealth/feature/map/controllers/locaion_controller.dart';
+import 'package:rideztohealth/feature/map/repository/location_repository.dart';
+import 'package:rideztohealth/feature/map/service/location_service.dart';
+import 'package:rideztohealth/feature/map/service/location_service_interface.dart';
 import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository.dart';
 import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository_interface.dart';
 import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service.dart';
 import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service_interface.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/urls.dart';
 import '../feature/auth/controllers/auth_controller.dart';
-
 import '../feature/auth/repositories/auth_repository.dart';
 import '../feature/auth/repositories/auth_repository_interface.dart';
 import '../feature/auth/sevices/auth_service.dart';
@@ -17,6 +19,7 @@ import '../feature/home/repositories/home_repository.dart';
 import '../feature/home/repositories/home_repository_interface.dart';
 import '../feature/home/services/home_service.dart';
 import '../feature/home/services/home_service_interface.dart';
+import '../feature/map/repository/location_repository_interface.dart';
 import '../feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'remote/data/api_client.dart';
 
@@ -70,6 +73,22 @@ Future<void> initDI() async {
   Get.lazyPut(() => localHomeServiceInterface);
   Get.lazyPut(() => HomeController(localHomeServiceInterface));
   Get.lazyPut(() => HomeService(Get.find()));
+
+
+
+
+  //////////// location  Service, Repository and Controller ////////////////////////////////
+  ///
+  ///
+    LocationRepositoryInterface locationRepositoryInterface = LocationRepository(
+    Get.find(),
+    prefs,
+  );
+  Get.lazyPut(() => locationRepositoryInterface);
+  LocationServiceInterface locationServiceInterface = Get.put<LocationServiceInterface>(LocationService(Get.find()));
+  Get.lazyPut(() => localHomeServiceInterface);
+  Get.lazyPut(() => LocationController());
+  Get.lazyPut(() => LocationService(Get.find()));
 
   // //
 

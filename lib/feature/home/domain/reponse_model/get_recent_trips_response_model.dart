@@ -1,52 +1,32 @@
 class GetRecentTripsResponseModel {
   final bool? success;
-  final TripData? data;
+  final TripsData? data;
 
-  GetRecentTripsResponseModel({
-    this.success,
-    this.data,
-  });
+  GetRecentTripsResponseModel({this.success, this.data});
 
   factory GetRecentTripsResponseModel.fromJson(Map<String, dynamic> json) {
     return GetRecentTripsResponseModel(
       success: json['success'],
-      data: json['data'] != null ? TripData.fromJson(json['data']) : null,
+      data: json['data'] != null ? TripsData.fromJson(json['data']) : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'data': data?.toJson(),
-    };
   }
 }
 
-class TripData {
+class TripsData {
   final List<Ride>? rides;
   final Pagination? pagination;
 
-  TripData({
-    this.rides,
-    this.pagination,
-  });
+  TripsData({this.rides, this.pagination});
 
-  factory TripData.fromJson(Map<String, dynamic> json) {
-    return TripData(
+  factory TripsData.fromJson(Map<String, dynamic> json) {
+    return TripsData(
       rides: json['rides'] != null
           ? List<Ride>.from(json['rides'].map((x) => Ride.fromJson(x)))
-          : [],
+          : null,
       pagination: json['pagination'] != null
           ? Pagination.fromJson(json['pagination'])
           : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'rides': rides?.map((x) => x.toJson()).toList(),
-      'pagination': pagination?.toJson(),
-    };
   }
 }
 
@@ -54,23 +34,20 @@ class Ride {
   final Location? pickupLocation;
   final Location? dropoffLocation;
   final PromoCode? promoCode;
-  final Commission? commission;
   final String? id;
   final String? customerId;
   final String? driverId;
-  final String? stripeCustomerId;
-  final ServiceId? serviceId;
+  final String? serviceId;
   final double? estimatedDistance;
-  final double? estimatedDuration;
   final double? estimatedFare;
+  final int? estimatedDuration;
   final double? actualDistance;
-  final double? actualDuration;
+  final int? actualDuration;
   final double? finalFare;
   final String? status;
   final String? paymentMethod;
   final String? paymentStatus;
-  final List<dynamic>? route;
-  final List<dynamic>? timeline;
+  final List<Timeline>? timeline;
   final String? createdAt;
   final int? v;
 
@@ -78,11 +55,9 @@ class Ride {
     this.pickupLocation,
     this.dropoffLocation,
     this.promoCode,
-    this.commission,
     this.id,
     this.customerId,
     this.driverId,
-    this.stripeCustomerId,
     this.serviceId,
     this.estimatedDistance,
     this.estimatedDuration,
@@ -93,7 +68,6 @@ class Ride {
     this.status,
     this.paymentMethod,
     this.paymentStatus,
-    this.route,
     this.timeline,
     this.createdAt,
     this.v,
@@ -110,59 +84,27 @@ class Ride {
       promoCode: json['promoCode'] != null
           ? PromoCode.fromJson(json['promoCode'])
           : null,
-      commission: json['commission'] != null
-          ? Commission.fromJson(json['commission'])
-          : null,
       id: json['_id'],
       customerId: json['customerId'],
       driverId: json['driverId'],
-      stripeCustomerId: json['stripeCustomerId'],
-      serviceId: json['serviceId'] != null
-          ? ServiceId.fromJson(json['serviceId'])
-          : null,
+      serviceId: json['serviceId'],
       estimatedDistance:
-          (json['estimatedDistance'] as num?)?.toDouble(),
-      estimatedDuration:
-          (json['estimatedDuration'] as num?)?.toDouble(),
-      estimatedFare: (json['estimatedFare'] as num?)?.toDouble(),
-      actualDistance: (json['actualDistance'] as num?)?.toDouble(),
-      actualDuration: (json['actualDuration'] as num?)?.toDouble(),
-      finalFare: (json['finalFare'] as num?)?.toDouble(),
+          json['estimatedDistance']?.toDouble(),
+      estimatedDuration: json['estimatedDuration'],
+      estimatedFare: json['estimatedFare']?.toDouble(),
+      actualDistance: json['actualDistance']?.toDouble(),
+      actualDuration: json['actualDuration'],
+      finalFare: json['finalFare']?.toDouble(),
       status: json['status'],
       paymentMethod: json['paymentMethod'],
       paymentStatus: json['paymentStatus'],
-      route: json['route'] ?? [],
-      timeline: json['timeline'] ?? [],
+      timeline: json['timeline'] != null
+          ? List<Timeline>.from(
+              json['timeline'].map((x) => Timeline.fromJson(x)))
+          : [],
       createdAt: json['createdAt'],
       v: json['__v'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'pickupLocation': pickupLocation?.toJson(),
-      'dropoffLocation': dropoffLocation?.toJson(),
-      'promoCode': promoCode?.toJson(),
-      'commission': commission?.toJson(),
-      '_id': id,
-      'customerId': customerId,
-      'driverId': driverId,
-      'stripeCustomerId': stripeCustomerId,
-      'serviceId': serviceId?.toJson(),
-      'estimatedDistance': estimatedDistance,
-      'estimatedDuration': estimatedDuration,
-      'estimatedFare': estimatedFare,
-      'actualDistance': actualDistance,
-      'actualDuration': actualDuration,
-      'finalFare': finalFare,
-      'status': status,
-      'paymentMethod': paymentMethod,
-      'paymentStatus': paymentStatus,
-      'route': route,
-      'timeline': timeline,
-      'createdAt': createdAt,
-      '__v': v,
-    };
   }
 }
 
@@ -171,29 +113,16 @@ class Location {
   final String? address;
   final String? type;
 
-  Location({
-    this.coordinates,
-    this.address,
-    this.type,
-  });
+  Location({this.coordinates, this.address, this.type});
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
       coordinates: json['coordinates'] != null
-          ? List<double>.from(
-              json['coordinates'].map((x) => (x as num).toDouble()))
-          : [],
+          ? List<double>.from(json['coordinates'].map((x) => x.toDouble()))
+          : null,
       address: json['address'],
       type: json['type'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'coordinates': coordinates,
-      'address': address,
-      'type': type,
-    };
   }
 }
 
@@ -201,71 +130,29 @@ class PromoCode {
   final String? code;
   final double? discount;
 
-  PromoCode({
-    this.code,
-    this.discount,
-  });
+  PromoCode({this.code, this.discount});
 
   factory PromoCode.fromJson(Map<String, dynamic> json) {
     return PromoCode(
       code: json['code'],
-      discount: (json['discount'] as num?)?.toDouble(),
+      discount: json['discount']?.toDouble(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'code': code,
-      'discount': discount,
-    };
   }
 }
 
-class Commission {
-  final double? rate;
-  final double? amount;
-
-  Commission({
-    this.rate,
-    this.amount,
-  });
-
-  factory Commission.fromJson(Map<String, dynamic> json) {
-    return Commission(
-      rate: (json['rate'] as num?)?.toDouble(),
-      amount: (json['amount'] as num?)?.toDouble(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'rate': rate,
-      'amount': amount,
-    };
-  }
-}
-
-class ServiceId {
+class Timeline {
   final String? id;
-  final String? name;
+  final String? status;
+  final String? timestamp;
 
-  ServiceId({
-    this.id,
-    this.name,
-  });
+  Timeline({this.id, this.status, this.timestamp});
 
-  factory ServiceId.fromJson(Map<String, dynamic> json) {
-    return ServiceId(
+  factory Timeline.fromJson(Map<String, dynamic> json) {
+    return Timeline(
       id: json['_id'],
-      name: json['name'],
+      status: json['status'],
+      timestamp: json['timestamp'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-    };
   }
 }
 
@@ -274,11 +161,7 @@ class Pagination {
   final int? pages;
   final int? total;
 
-  Pagination({
-    this.current,
-    this.pages,
-    this.total,
-  });
+  Pagination({this.current, this.pages, this.total});
 
   factory Pagination.fromJson(Map<String, dynamic> json) {
     return Pagination(
@@ -286,13 +169,5 @@ class Pagination {
       pages: json['pages'],
       total: json['total'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'current': current,
-      'pages': pages,
-      'total': total,
-    };
   }
 }
