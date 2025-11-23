@@ -290,7 +290,7 @@ class LocationController extends GetxController {
         polylines.add(
           Polyline(
             polylineId: const PolylineId('route_polyline'),
-            color: Colors.black,
+            color: Color(0xff303644),
             width: 5,
             points: decodedPoints,
           ),

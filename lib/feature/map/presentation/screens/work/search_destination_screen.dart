@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
@@ -43,18 +45,51 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     });
   }
 
-  Future<void> performSearch(String query) async {
-    locationPickedController.searchChanged(query);
+  Timer? _debounce;
+
+Future<void> performSearch(String query) async {
+  // Cancel previous timer
+  _debounce?.cancel();
+
+  // Don't search for super short input
+  if (query.trim().length < 2) {
+    setState(() {
+      isSearchMode = query.isNotEmpty;
+      isSearching = false;
+    });
+    locationPickedController.autoCompliteSuggetion.clear();
+    return;
+  }
+
+  _debounce = Timer(const Duration(milliseconds: 400), () async {
     setState(() {
       isSearching = true;
       isSearchMode = true;
     });
 
-    await Future.delayed(Duration(milliseconds: 500));
-    setState(() {
-      isSearching = false;
-    });
-  }
+    await locationPickedController.searchChanged(query);
+
+    if (mounted) {
+      setState(() {
+        isSearching = false;
+      });
+    }
+  });
+}
+
+
+  // Future<void> performSearch(String query) async {
+  //   locationPickedController.searchChanged(query);
+  //   setState(() {
+  //     isSearching = true;
+  //     isSearchMode = true;
+  //   });
+
+  //   await Future.delayed(Duration(milliseconds: 500));
+  //   setState(() {
+  //     isSearching = false;
+  //   });
+  // }
 
   void clearSearch() {
     setState(() {
@@ -366,21 +401,78 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                   }
 
                   return ListView.builder(
-                    itemCount: results.length,
-                    itemBuilder: (context, index) {
-                      final suggestion = results[index];
-                      return ListTile(
-                        leading: Icon(Icons.location_on, color: Colors.white),
-                        title: Text(
-                          suggestion.description ?? '',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onTap: () async {
-                          await handleSuggestionTap(suggestion);
-                        },
-                      );
-                    },
-                  );
+  itemCount: results.length,
+  itemBuilder: (context, index) {
+    final suggestion = results[index];
+
+    // Try to extract country from description (last part)
+    String country = '';
+    if ((suggestion.description).isNotEmpty) {
+      final parts = suggestion.description.split(',');
+      if (parts.isNotEmpty) {
+        country = parts.last.trim(); // e.g. "United States" / "Bangladesh"
+      }
+    }
+
+    return ListTile(
+      leading: const Icon(Icons.location_on, color: Colors.white),
+      title: Text(
+        suggestion.mainText,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+      ),
+      subtitle: Row(
+        children: [
+          Expanded(
+            child: Text(
+              suggestion.secondaryText,
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (country.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                country,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+      onTap: () async {
+        await handleSuggestionTap(suggestion);
+      },
+    );
+  },
+);
+
+
+                  // return ListView.builder(
+                  //   itemCount: results.length,
+                  //   itemBuilder: (context, index) {
+                  //     final suggestion = results[index];
+                  //     return ListTile(
+                  //       leading: Icon(Icons.location_on, color: Colors.white),
+                  //       title: Text(
+                  //         suggestion.description ?? '',
+                  //         style: TextStyle(color: Colors.white),
+                  //       ),
+                  //       onTap: () async {
+                  //         await handleSuggestionTap(suggestion);
+                  //       },
+                  //     );
+                  //   },
+                  // );
                 }),
               )
           // Expanded(
