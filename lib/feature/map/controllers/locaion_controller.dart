@@ -34,17 +34,36 @@ class LocationController extends GetxController {
   RxString workAddress = 'Gulshan 2, Dhaka'.obs;
   RxString favoriteAddress = 'Banani, Dhaka'.obs;
 
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   requestLocationPermission();
+  //   getCurrentLocation();
+  //   // Listen for changes in pickup or destination to regenerate polyline and distance
+  //   everAll([pickupLocation, destinationLocation], (_) {
+  //     generatePolyline();
+  //     _calculateDistance(); // Calculate distance whenever locations change
+  //   });
+  // }
+
+
   @override
-  void onInit() {
-    super.onInit();
-    requestLocationPermission();
-    getCurrentLocation();
-    // Listen for changes in pickup or destination to regenerate polyline and distance
-    everAll([pickupLocation, destinationLocation], (_) {
-      generatePolyline();
-      _calculateDistance(); // Calculate distance whenever locations change
-    });
-  }
+void onInit() {
+  super.onInit();
+  _initLocation(); // 🔹 async-safe init
+
+  // Listen for changes in pickup or destination to regenerate polyline and distance
+  everAll([pickupLocation, destinationLocation], (_) {
+    generatePolyline();
+    _calculateDistance(); // Calculate distance whenever locations change
+  });
+}
+
+Future<void> _initLocation() async {
+  await requestLocationPermission();
+  await getCurrentLocation();
+}
+
 
   Future<void> requestLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -57,28 +76,45 @@ class LocationController extends GetxController {
         permission == LocationPermission.always;
   }
 
-  Future<void> getCurrentLocation() async {
-    try {
-      if (isLocationPermissionGranted.value) {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
-        currentPosition.value = position;
-        currentLocation.value = LatLng(position.latitude, position.longitude); // Set currentLocation
-        pickupLocation.value = LatLng(position.latitude, position.longitude);
-        await getAddressFromCoordinates(position.latitude, position.longitude, true);
-        updateMapMarkers();
-        // Move camera to current location if map controller is ready
-        if (mapController.value != null && currentLocation.value != null) {
-          mapController.value!.animateCamera(
-            CameraUpdate.newLatLngZoom(currentLocation.value!, 14.0),
-          );
-        }
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to get current location: $e');
+ Future<void> getCurrentLocation() async {
+  try {
+    // 🔹 If permission not granted yet, request it
+    if (!isLocationPermissionGranted.value) {
+      await requestLocationPermission();
     }
+
+    if (!isLocationPermissionGranted.value) {
+      return; // still not granted
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    currentPosition.value = position;
+    currentLocation.value = LatLng(position.latitude, position.longitude);
+
+    // 🔹 Make current location the default pickup point
+    pickupLocation.value = currentLocation.value;
+
+    await getAddressFromCoordinates(
+      position.latitude,
+      position.longitude,
+      true,
+    );
+
+    updateMapMarkers();
+
+    // Move camera to current location if map controller is ready
+    if (mapController.value != null && currentLocation.value != null) {
+      mapController.value!.animateCamera(
+        CameraUpdate.newLatLngZoom(currentLocation.value!, 14.0),
+      );
+    }
+  } catch (e) {
+    Get.snackbar('Error', 'Failed to get current location: $e');
   }
+}
 
   Future<void> getAddressFromCoordinates(double lat, double lng, bool isPickup) async {
     try {
@@ -213,6 +249,9 @@ class LocationController extends GetxController {
     }
   }
 
+  // 🔹 Add this:
+void recalculateDistance() => _calculateDistance();
+
   void searchLocation(String query) {
     searchQuery.value = query;
     if (query.isEmpty) {
@@ -283,7 +322,16 @@ class LocationController extends GetxController {
   }
 
 
-
+double calculateDistanceBetween(LatLng start, LatLng end) {
+  final double distanceInMeters = Geolocator.distanceBetween(
+    start.latitude,
+    start.longitude,
+    end.latitude,
+    end.longitude,
+  );
+  // Convert meters to kilometers
+  return distanceInMeters / 1000;
+}
 
 
 

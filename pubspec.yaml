@@ -53,6 +53,7 @@ dependencies:
   google_maps_flutter: ^2.12.3
   location: ^8.0.1
   geolocator: ^14.0.2
+  flutter_polyline_points: ^3.1.0
   geocoding: ^4.0.0
 
   flutter_typeahead: ^5.2.0
@@ -63,6 +64,8 @@ dependencies:
   url_launcher: ^6.3.2
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
+  dio: ^5.9.0
+
 
 
 

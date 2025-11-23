@@ -6,92 +6,161 @@ import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'confirm_location_map_screen.dart';
 
-
 class CarSelectionMapScreen extends StatelessWidget {
   final LocationController locationController = Get.find<LocationController>();
   final BookingController bookingController = Get.find<BookingController>();
   final AppController appController = Get.find<AppController>();
 
-  static const CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(
-      37.7749,
-      -122.4194,
-    ), // Default to San Francisco if no location
-    zoom: 14.0,
-  );
+  CarSelectionMapScreen({super.key});
 
-  
+  // Calculate estimated time based on distance
+  String _calculateEstimatedTime(double distanceKm) {
+    // Assuming average speed of 30 km/h in city
+    double hours = distanceKm / 30;
+    int minutes = (hours * 60).round();
+
+    if (minutes < 1) {
+      return '1 min';
+    } else if (minutes < 60) {
+      return '$minutes min';
+    } else {
+      int hrs = minutes ~/ 60;
+      int mins = minutes % 60;
+      return '${hrs}h ${mins}min';
+    }
+  }
+
+  // Calculate estimated price based on distance
+  String _calculateEstimatedPrice(double distanceKm) {
+    // Base fare + per km rate
+    double baseFare = 5.0;
+    double perKmRate = 2.5;
+    double price = baseFare + (distanceKm * perKmRate);
+    return price.toStringAsFixed(2);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(
-        () => Stack(
+    return Obx(() {
+      final pickup = locationController.pickupLocation.value;
+      final destination = locationController.destinationLocation.value;
+      final current = locationController.currentLocation.value;
+
+      // Priority: pickup -> destination -> current -> Dhaka center
+      final LatLng initialTarget =
+          pickup ?? destination ?? current ?? const LatLng(23.8103, 90.4125);
+
+      final CameraPosition initialCameraPosition = CameraPosition(
+        target: initialTarget,
+        zoom: 14.0,
+      );
+
+      return Scaffold(
+        body: Stack(
           children: [
             GoogleMap(
+              initialCameraPosition: initialCameraPosition,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              markers: locationController.markers.toSet(),
+              polylines: locationController.polylines.toSet(),
               onMapCreated: (GoogleMapController controller) {
                 locationController.setMapController(controller);
-                // Move camera to current location if available
-                if (locationController.currentLocation.value != null) {
+
+                if (pickup != null && destination != null) {
+                  // Fit both markers in view
+                  Future.delayed(const Duration(milliseconds: 400), () {
+                    LatLngBounds bounds = LatLngBounds(
+                      southwest: LatLng(
+                        pickup.latitude < destination.latitude
+                            ? pickup.latitude
+                            : destination.latitude,
+                        pickup.longitude < destination.longitude
+                            ? pickup.longitude
+                            : destination.longitude,
+                      ),
+                      northeast: LatLng(
+                        pickup.latitude > destination.latitude
+                            ? pickup.latitude
+                            : destination.latitude,
+                        pickup.longitude > destination.longitude
+                            ? pickup.longitude
+                            : destination.longitude,
+                      ),
+                    );
+
+                    controller.animateCamera(
+                      CameraUpdate.newLatLngBounds(bounds, 100),
+                    );
+                  });
+                } else {
                   controller.animateCamera(
-                    CameraUpdate.newLatLngZoom(
-                      locationController.currentLocation.value!,
-                      14.0,
-                    ),
+                    CameraUpdate.newCameraPosition(initialCameraPosition),
                   );
                 }
               },
-              initialCameraPosition: _initialPosition,
-              markers: locationController.markers,
-              polylines: locationController.polylines, // Display polyline
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
               onTap: (LatLng position) {
-                // Allow changing destination by tapping on the map
+                // User taps map to change destination
                 locationController.setDestinationLocation(position);
-                locationController
-                    .generatePolyline(); // Regenerate polyline on destination change
+                // No need to call _calculateDistance manually:
+                // everAll in LocationController will regenerate polyline + distance
               },
             ),
 
-            // Back button and other controls (as seen in the image - top left)
+            // Top-left Back button
             Positioned(
               top: 50,
               left: 20,
               child: GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.arrow_back, color: Colors.black),
+                  child: const Icon(Icons.arrow_back, color: Colors.black),
                 ),
               ),
             ),
-            // Red target icon in the middle right
+
+            // Current location button
+            // Current location button
             Positioned(
-              top:
-                  MediaQuery.of(context).size.height *
-                  0.45, // Approximately center vertically
+              top: MediaQuery.of(context).size.height * 0.45,
               right: 20,
               child: GestureDetector(
-                onTap: () {
-                  // This is a static icon from the screenshot, no specific action implied.
-                  // You might want to assign a function to recenter the map on the destination.
+                onTap: () async {
+                  // 🔹 Force-refresh current location
+                  await locationController.getCurrentLocation();
+
+                  if (locationController.currentLocation.value != null) {
+                    // Pickup = current GPS again (in case it changed)
+                    locationController.setPickupLocation(
+                      locationController.currentLocation.value!,
+                    );
+
+                    // Camera to current location
+                    locationController.mapController.value?.animateCamera(
+                      CameraUpdate.newLatLngZoom(
+                        locationController.currentLocation.value!,
+                        14.0,
+                      ),
+                    );
+                  }
                 },
                 child: Container(
                   width: 50,
                   height: 50,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.red,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.my_location,
                     color: Colors.white,
                     size: 30,
-                  ), // Example icon, adjust as needed
+                  ),
                 ),
               ),
             ),
@@ -108,8 +177,8 @@ class CarSelectionMapScreen extends StatelessWidget {
                   right: 20,
                   bottom: MediaQuery.of(context).padding.bottom + 10,
                 ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2E2E38), // Dark grey from the image
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2E2E38),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -126,15 +195,18 @@ class CarSelectionMapScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2.5),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                          onTap: () => Get.back(), // Go back to previous screen
-                          child: Icon(Icons.arrow_back, color: Colors.white),
+                          onTap: () => Get.back(),
+                          child: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                          ),
                         ),
-                        Text(
+                        const Text(
                           'Set Ride',
                           style: TextStyle(
                             color: Colors.white,
@@ -142,34 +214,103 @@ class CarSelectionMapScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 24), // For alignment
+                        const SizedBox(width: 24),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+
+                    // Distance and time info
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3B3B42),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Column(
+                            children: [
+                              const Text(
+                                'Distance',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Obx(
+                                () => Text(
+                                  '${locationController.distance.value.toStringAsFixed(1)} km',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: 30,
+                            width: 1,
+                            color: Colors.grey[700],
+                          ),
+                          Column(
+                            children: [
+                              const Text(
+                                'Est. Time',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Obx(
+                                () => Text(
+                                  _calculateEstimatedTime(
+                                    locationController.distance.value,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Car option 1
+                    Container(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 10,
                         horizontal: 15,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(
-                          0xFF3B3B42,
-                        ), // Slightly lighter dark grey
+                        color: const Color(0xFF3B3B42),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
                           Image.asset(
-                            'assets/images/privet_car.png', // Replace with your actual image path
+                            'assets/images/privet_car.png',
                             width: 80,
                             height: 50,
                             fit: BoxFit.contain,
                           ),
-                          SizedBox(width: 15),
+                          const SizedBox(width: 15),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: const [
                                 Text(
                                   'Copen GR SPORT',
                                   style: TextStyle(
@@ -191,19 +332,25 @@ class CarSelectionMapScreen extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                '\$12.50', // Replace with dynamic price from bookingController
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Obx(
+                                () => Text(
+                                  '\$${_calculateEstimatedPrice(locationController.distance.value)}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              Text(
-                                '5 min away', // Replace with dynamic time from bookingController
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
+                              Obx(
+                                () => Text(
+                                  _calculateEstimatedTime(
+                                    locationController.distance.value,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ],
@@ -211,33 +358,33 @@ class CarSelectionMapScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
+
+                    // Car option 2
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 10,
                         horizontal: 15,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(
-                          0xFF3B3B42,
-                        ), // Slightly lighter dark grey
+                        color: const Color(0xFF3B3B42),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
                         children: [
                           Image.asset(
-                            'assets/images/texi.png', // Replace with your actual image path
+                            'assets/images/texi.png',
                             width: 80,
                             height: 50,
                             fit: BoxFit.contain,
                           ),
-                          SizedBox(width: 15),
+                          const SizedBox(width: 15),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: const [
                                 Text(
-                                  'Copen GR SPORT',
+                                  'Taxi Service',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -245,7 +392,7 @@ class CarSelectionMapScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  'Affordable rides for everyday',
+                                  'Standard taxi service',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontSize: 13,
@@ -257,19 +404,25 @@ class CarSelectionMapScreen extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Text(
-                                '\$12.50', // Replace with dynamic price from bookingController
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Obx(
+                                () => Text(
+                                  '\$${(double.parse(_calculateEstimatedPrice(locationController.distance.value)) * 0.9).toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              Text(
-                                '5 min away', // Replace with dynamic time from bookingController
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
+                              Obx(
+                                () => Text(
+                                  _calculateEstimatedTime(
+                                    locationController.distance.value,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ),
                             ],
@@ -277,23 +430,24 @@ class CarSelectionMapScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 30),
-                    Container(
+                    const SizedBox(height: 30),
+
+                    // Choose car button
+                    SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Action for "Choose car"
                           appController.setCurrentScreen('confirm');
                           Get.to(() => ConfirmYourLocationScreen());
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFC0392B), // Red color
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          backgroundColor: const Color(0xFFC0392B),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Choose car',
                           style: TextStyle(
                             color: Colors.white,
@@ -307,266 +461,781 @@ class CarSelectionMapScreen extends StatelessWidget {
                 ),
               ),
             ),
+
             // Loading overlay
             if (appController.isLoading.value)
               Container(
                 color: Colors.black54,
-                child: Center(
+                child: const Center(
                   child: CircularProgressIndicator(color: Colors.red),
                 ),
               ),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
-// // import 'package:flutter/material.dart';
-// // import 'package:get/get.dart';
-// // import 'package:google_maps_flutter/google_maps_flutter.dart';
-// // import '../../controllers/app_controller.dart';
-// // import '../../controllers/booking_controller.dart';
-// // import '../../controllers/locaion_controller.dart';
-// // import 'location_confirmation_screen.dart';
-// // import 'chat_screen.dart';
-// // import 'call_screen.dart';
-// // import 'payment_screen.dart';
 
-// // class MapScreen extends StatelessWidget {
-// //   final LocationController locationController = Get.find<LocationController>();
-// //   final BookingController bookingController = Get.find<BookingController>();
-// //   final AppController appController = Get.find<AppController>();
 
-// //   static const CameraPosition _initialPosition = CameraPosition(
-// //     target: LatLng(37.7749, -122.4194),
-// //     zoom: 14.0,
-// //   );
 
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       // appBar: AppBar(
-// //       //   title: Text('Search'),
-// //       //   backgroundColor: Color(0xFF2C3E50),
-// //       //   leading: IconButton(
-// //       //     icon: Icon(Icons.arrow_back),
-// //       //     onPressed: () => Get.back(),
-// //       //   ),
-// //       //   actions: [
-// //       //     IconButton(
-// //       //       icon: Icon(Icons.chat),
-// //       //       onPressed: () => Get.to(() => ChatScreen()),
-// //       //     ),
-// //       //     IconButton(
-// //       //       icon: Icon(Icons.call),
-// //       //       onPressed: () => Get.to(() => CallScreen()),
-// //       //     ),
-// //       //   ],
-// //       // ),
-// //       body: Obx(
-// //         () => Stack(
-// //           children: [
-// //             GoogleMap(
-// //               onMapCreated: (GoogleMapController controller) {
-// //                 locationController.setMapController(controller);
-// //               },
-// //               initialCameraPosition: _initialPosition,
-// //               markers: locationController.markers,
-// //               myLocationEnabled: true,
-// //               myLocationButtonEnabled: false,
-// //               onTap: (LatLng position) {
-// //                 locationController.setDestinationLocation(position);
-// //               },
-// //             ),
 
-// //             // Top location info
-// //             Positioned(
-// //               top: 20,
-// //               left: 20,
-// //               right: 20,
-// //               child: Container(
-// //                 padding: EdgeInsets.all(16),
-// //                 decoration: BoxDecoration(
-// //                   color: Color(0xFF2C3E50),
-// //                   borderRadius: BorderRadius.circular(12),
-// //                 ),
-// //                 child: Column(
-// //                   crossAxisAlignment: CrossAxisAlignment.start,
-// //                   children: [
-// //                     Row(
-// //                       children: [
-// //                         Icon(
-// //                           Icons.radio_button_checked,
-// //                           color: Colors.green,
-// //                           size: 16,
-// //                         ),
-// //                         SizedBox(width: 8),
-// //                         Expanded(
-// //                           child: Text(
-// //                             locationController.pickupAddress.value.isEmpty
-// //                                 ? 'Current Location'
-// //                                 : locationController.pickupAddress.value,
-// //                             style: TextStyle(color: Colors.white, fontSize: 14),
-// //                           ),
-// //                         ),
-// //                       ],
-// //                     ),
-// //                     SizedBox(height: 8),
-// //                     Row(
-// //                       children: [
-// //                         Icon(Icons.location_on, color: Colors.red, size: 16),
-// //                         SizedBox(width: 8),
-// //                         Expanded(
-// //                           child: Text(
-// //                             locationController.destinationAddress.value.isEmpty
-// //                                 ? 'Select destination'
-// //                                 : locationController.destinationAddress.value,
-// //                             style: TextStyle(color: Colors.white, fontSize: 14),
-// //                           ),
-// //                         ),
-// //                       ],
-// //                     ),
-// //                   ],
-// //                 ),
-// //               ),
-// //             ),
 
-// //             // Car selection bottom sheet
-// //             Positioned(
-// //               bottom: 20,
-// //               left: 20,
-// //               right: 20,
-// //               child: Container(
-// //                 padding: EdgeInsets.all(16),
-// //                 decoration: BoxDecoration(
-// //                   color: Color(0xFF2C3E50),
-// //                   borderRadius: BorderRadius.circular(12),
-// //                 ),
-// //                 child: Column(
-// //                   mainAxisSize: MainAxisSize.min,
-// //                   children: [
-// //                     Row(
-// //                       children: [
-// //                         Container(
-// //                           width: 60,
-// //                           height: 40,
-// //                           decoration: BoxDecoration(
-// //                             color: Colors.orange,
-// //                             borderRadius: BorderRadius.circular(8),
-// //                           ),
-// //                           child: Icon(
-// //                             Icons.directions_car,
-// //                             color: Colors.white,
-// //                           ),
-// //                         ),
-// //                         SizedBox(width: 12),
-// //                         Expanded(
-// //                           child: Column(
-// //                             crossAxisAlignment: CrossAxisAlignment.start,
-// //                             children: [
-// //                               Text(
-// //                                 bookingController.getCarTypeString(),
-// //                                 style: TextStyle(
-// //                                   color: Colors.white,
-// //                                   fontSize: 16,
-// //                                   fontWeight: FontWeight.bold,
-// //                                 ),
-// //                               ),
-// //                               Text(
-// //                                 '${bookingController.estimatedTime.value} min away',
-// //                                 style: TextStyle(
-// //                                   color: Colors.grey,
-// //                                   fontSize: 14,
-// //                                 ),
-// //                               ),
-// //                             ],
-// //                           ),
-// //                         ),
-// //                         Text(
-// //                           '\$${bookingController.estimatedPrice.value.toStringAsFixed(2)}',
-// //                           style: TextStyle(
-// //                             color: Colors.white,
-// //                             fontSize: 18,
-// //                             fontWeight: FontWeight.bold,
-// //                           ),
-// //                         ),
-// //                       ],
-// //                     ),
-// //                     SizedBox(height: 16),
-// //                     Row(
-// //                       children: [
-// //                         Expanded(
-// //                           child: ElevatedButton(
-// //                             onPressed: () => Get.to(() => PaymentScreen()),
-// //                             style: ElevatedButton.styleFrom(
-// //                               backgroundColor: Color(0xFF34495E),
-// //                               padding: EdgeInsets.symmetric(vertical: 12),
-// //                               shape: RoundedRectangleBorder(
-// //                                 borderRadius: BorderRadius.circular(8),
-// //                               ),
-// //                             ),
-// //                             child: Text(
-// //                               'Payment',
-// //                               style: TextStyle(color: Colors.white),
-// //                             ),
-// //                           ),
-// //                         ),
-// //                         SizedBox(width: 12),
-// //                         Expanded(
-// //                           flex: 2,
-// //                           child: ElevatedButton(
-// //                             onPressed: () {
-// //                               appController.setCurrentScreen('confirm');
-// //                               Get.to(() => LocationConfirmationScreen());
-// //                             },
-// //                             style: ElevatedButton.styleFrom(
-// //                               backgroundColor: Colors.red,
-// //                               padding: EdgeInsets.symmetric(vertical: 12),
-// //                               shape: RoundedRectangleBorder(
-// //                                 borderRadius: BorderRadius.circular(8),
-// //                               ),
-// //                             ),
-// //                             child: Text(
-// //                               'Confirm Location',
-// //                               style: TextStyle(
-// //                                 color: Colors.white,
-// //                                 fontSize: 16,
-// //                                 fontWeight: FontWeight.bold,
-// //                               ),
-// //                             ),
-// //                           ),
-// //                         ),
-// //                       ],
-// //                     ),
-// //                   ],
-// //                 ),
-// //               ),
-// //             ),
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import '../../../controllers/app_controller.dart';
+// import '../../../controllers/booking_controller.dart';
+// import '../../../controllers/locaion_controller.dart';
+// import 'confirm_location_map_screen.dart';
 
-// //             // My location button
-// //             Positioned(
-// //               top: 100,
-// //               right: 20,
-// //               child: FloatingActionButton(
-// //                 mini: true,
-// //                 backgroundColor: Colors.white,
-// //                 onPressed: () => locationController.getCurrentLocation(),
-// //                 child: Icon(Icons.my_location, color: Colors.black),
-// //               ),
-// //             ),
+// class CarSelectionMapScreen extends StatelessWidget {
+//   final LocationController locationController = Get.find<LocationController>();
+//   final BookingController bookingController = Get.find<BookingController>();
+//   final AppController appController = Get.find<AppController>();
 
-// //             // Loading overlay
-// //             if (appController.isLoading.value)
-// //               Container(
-// //                 color: Colors.black54,
-// //                 child: Center(
-// //                   child: CircularProgressIndicator(color: Colors.red),
-// //                 ),
-// //               ),
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
+//   static const CameraPosition _initialPosition = CameraPosition(
+//     target: LatLng(37.7749, -122.4194),
+//     zoom: 14.0,
+//   );
+
+//   // Calculate estimated time based on distance
+//   String _calculateEstimatedTime(double distanceKm) {
+//     // Assuming average speed of 30 km/h in city
+//     double hours = distanceKm / 30;
+//     int minutes = (hours * 60).round();
+    
+//     if (minutes < 1) {
+//       return '1 min';
+//     } else if (minutes < 60) {
+//       return '$minutes min';
+//     } else {
+//       int hrs = minutes ~/ 60;
+//       int mins = minutes % 60;
+//       return '${hrs}h ${mins}min';
+//     }
+//   }
+
+//   // Calculate estimated price based on distance
+//   String _calculateEstimatedPrice(double distanceKm) {
+//     // Base fare + per km rate
+//     double baseFare = 5.0;
+//     double perKmRate = 2.5;
+//     double price = baseFare + (distanceKm * perKmRate);
+//     return price.toStringAsFixed(2);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Obx(
+//         () => Stack(
+//           children: [
+//             GoogleMap(
+//               onMapCreated: (GoogleMapController controller) {
+//                 locationController.setMapController(controller);
+                
+//                 // Fit both markers in view
+//                 if (locationController.pickupLocation.value != null &&
+//                     locationController.destinationLocation.value != null) {
+//                   Future.delayed(Duration(milliseconds: 500), () {
+//                     LatLng pickup = locationController.pickupLocation.value!;
+//                     LatLng destination = locationController.destinationLocation.value!;
+                    
+//                     LatLngBounds bounds = LatLngBounds(
+//                       southwest: LatLng(
+//                         pickup.latitude < destination.latitude
+//                             ? pickup.latitude
+//                             : destination.latitude,
+//                         pickup.longitude < destination.longitude
+//                             ? pickup.longitude
+//                             : destination.longitude,
+//                       ),
+//                       northeast: LatLng(
+//                         pickup.latitude > destination.latitude
+//                             ? pickup.latitude
+//                             : destination.latitude,
+//                         pickup.longitude > destination.longitude
+//                             ? pickup.longitude
+//                             : destination.longitude,
+//                       ),
+//                     );
+                    
+//                     controller.animateCamera(
+//                       CameraUpdate.newLatLngBounds(bounds, 100),
+//                     );
+//                   });
+//                 }
+//               },
+//               initialCameraPosition: _initialPosition,
+//               markers: locationController.markers,
+//               polylines: locationController.polylines,
+//               myLocationEnabled: true,
+//               myLocationButtonEnabled: false,
+//               onTap: (LatLng position) {
+//                 locationController.setDestinationLocation(position);
+//                 locationController.generatePolyline();
+//               },
+//             ),
+
+//             // Back button
+//             Positioned(
+//               top: 50,
+//               left: 20,
+//               child: GestureDetector(
+//                 onTap: () => Get.back(),
+//                 child: Container(
+//                   padding: EdgeInsets.all(8),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white,
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Icon(Icons.arrow_back, color: Colors.black),
+//                 ),
+//               ),
+//             ),
+
+//             // Current location button
+//             Positioned(
+//               top: MediaQuery.of(context).size.height * 0.45,
+//               right: 20,
+//               child: GestureDetector(
+//                 onTap: () {
+//                   if (locationController.currentLocation.value != null) {
+//                     locationController.mapController.value?.animateCamera(
+//                       CameraUpdate.newLatLngZoom(
+//                         locationController.currentLocation.value!,
+//                         14.0,
+//                       ),
+//                     );
+//                   }
+//                 },
+//                 child: Container(
+//                   width: 50,
+//                   height: 50,
+//                   decoration: BoxDecoration(
+//                     color: Colors.red,
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Icon(
+//                     Icons.my_location,
+//                     color: Colors.white,
+//                     size: 30,
+//                   ),
+//                 ),
+//               ),
+//             ),
+
+//             // Bottom Sheet
+//             Positioned(
+//               bottom: 0,
+//               left: 0,
+//               right: 0,
+//               child: Container(
+//                 padding: EdgeInsets.only(
+//                   top: 10,
+//                   left: 20,
+//                   right: 20,
+//                   bottom: MediaQuery.of(context).padding.bottom + 10,
+//                 ),
+//                 decoration: BoxDecoration(
+//                   color: const Color(0xFF2E2E38),
+//                   borderRadius: BorderRadius.only(
+//                     topLeft: Radius.circular(20),
+//                     topRight: Radius.circular(20),
+//                   ),
+//                 ),
+//                 child: Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     Container(
+//                       height: 5,
+//                       width: 50,
+//                       decoration: BoxDecoration(
+//                         color: Colors.grey[700],
+//                         borderRadius: BorderRadius.circular(2.5),
+//                       ),
+//                     ),
+//                     SizedBox(height: 15),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         GestureDetector(
+//                           onTap: () => Get.back(),
+//                           child: Icon(Icons.arrow_back, color: Colors.white),
+//                         ),
+//                         Text(
+//                           'Set Ride',
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         SizedBox(width: 24),
+//                       ],
+//                     ),
+//                     SizedBox(height: 20),
+
+//                     // Distance and time info
+//                     Container(
+//                       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFF3B3B42),
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                         children: [
+//                           Column(
+//                             children: [
+//                               Text(
+//                                 'Distance',
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 12,
+//                                 ),
+//                               ),
+//                               SizedBox(height: 4),
+//                               Obx(() => Text(
+//                                 '${locationController.distance.value.toStringAsFixed(1)} km',
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               )),
+//                             ],
+//                           ),
+//                           Container(
+//                             height: 30,
+//                             width: 1,
+//                             color: Colors.grey[700],
+//                           ),
+//                           Column(
+//                             children: [
+//                               Text(
+//                                 'Est. Time',
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 12,
+//                                 ),
+//                               ),
+//                               SizedBox(height: 4),
+//                               Obx(() => Text(
+//                                 _calculateEstimatedTime(
+//                                   locationController.distance.value,
+//                                 ),
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               )),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+
+//                     // Car option 1
+//                     Container(
+//                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFF3B3B42),
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         children: [
+//                           Image.asset(
+//                             'assets/images/privet_car.png',
+//                             width: 80,
+//                             height: 50,
+//                             fit: BoxFit.contain,
+//                           ),
+//                           SizedBox(width: 15),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Text(
+//                                   'Copen GR SPORT',
+//                                   style: TextStyle(
+//                                     color: Colors.white,
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   'Affordable rides for everyday',
+//                                   style: TextStyle(
+//                                     color: Colors.grey,
+//                                     fontSize: 13,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Obx(() => Text(
+//                                 '\$${_calculateEstimatedPrice(locationController.distance.value)}',
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               )),
+//                               Obx(() => Text(
+//                                 _calculateEstimatedTime(
+//                                   locationController.distance.value,
+//                                 ),
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 13,
+//                                 ),
+//                               )),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+
+//                     // Car option 2
+//                     Container(
+//                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFF3B3B42),
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         children: [
+//                           Image.asset(
+//                             'assets/images/texi.png',
+//                             width: 80,
+//                             height: 50,
+//                             fit: BoxFit.contain,
+//                           ),
+//                           SizedBox(width: 15),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Text(
+//                                   'Taxi Service',
+//                                   style: TextStyle(
+//                                     color: Colors.white,
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   'Standard taxi service',
+//                                   style: TextStyle(
+//                                     color: Colors.grey,
+//                                     fontSize: 13,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Obx(() => Text(
+//                                 '\$${(double.parse(_calculateEstimatedPrice(locationController.distance.value)) * 0.9).toStringAsFixed(2)}',
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               )),
+//                               Obx(() => Text(
+//                                 _calculateEstimatedTime(
+//                                   locationController.distance.value,
+//                                 ),
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 13,
+//                                 ),
+//                               )),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 30),
+
+//                     // Choose car button
+//                     Container(
+//                       width: double.infinity,
+//                       child: ElevatedButton(
+//                         onPressed: () {
+//                           appController.setCurrentScreen('confirm');
+//                           Get.to(() => ConfirmYourLocationScreen());
+//                         },
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFFC0392B),
+//                           padding: EdgeInsets.symmetric(vertical: 15),
+//                           shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                           ),
+//                         ),
+//                         child: Text(
+//                           'Choose car',
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+
+//             // Loading overlay
+//             if (appController.isLoading.value)
+//               Container(
+//                 color: Colors.black54,
+//                 child: Center(
+//                   child: CircularProgressIndicator(color: Colors.red),
+//                 ),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import '../../../controllers/app_controller.dart';
+// import '../../../controllers/booking_controller.dart';
+// import '../../../controllers/locaion_controller.dart';
+// import 'confirm_location_map_screen.dart';
+
+
+// class CarSelectionMapScreen extends StatelessWidget {
+//   final LocationController locationController = Get.find<LocationController>();
+//   final BookingController bookingController = Get.find<BookingController>();
+//   final AppController appController = Get.find<AppController>();
+
+//   static const CameraPosition _initialPosition = CameraPosition(
+//     target: LatLng(
+//       37.7749,
+//       -122.4194,
+//     ), // Default to San Francisco if no location
+//     zoom: 14.0,
+//   );
+
+  
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Obx(
+//         () => Stack(
+//           children: [
+//             GoogleMap(
+//               onMapCreated: (GoogleMapController controller) {
+//                 locationController.setMapController(controller);
+//                 // Move camera to current location if available
+//                 if (locationController.currentLocation.value != null) {
+//                   controller.animateCamera(
+//                     CameraUpdate.newLatLngZoom(
+//                       locationController.currentLocation.value!,
+//                       14.0,
+//                     ),
+//                   );
+//                 }
+//               },
+//               initialCameraPosition: _initialPosition,
+//               markers: locationController.markers,
+//               polylines: locationController.polylines, // Display polyline
+//               myLocationEnabled: true,
+//               myLocationButtonEnabled: false,
+//               onTap: (LatLng position) {
+//                 // Allow changing destination by tapping on the map
+//                 locationController.setDestinationLocation(position);
+//                 locationController
+//                     .generatePolyline(); // Regenerate polyline on destination change
+//               },
+//             ),
+
+//             // Back button and other controls (as seen in the image - top left)
+//             Positioned(
+//               top: 50,
+//               left: 20,
+//               child: GestureDetector(
+//                 onTap: () => Get.back(),
+//                 child: Container(
+//                   padding: EdgeInsets.all(8),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white,
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Icon(Icons.arrow_back, color: Colors.black),
+//                 ),
+//               ),
+//             ),
+//             // Red target icon in the middle right
+//             Positioned(
+//               top:
+//                   MediaQuery.of(context).size.height *
+//                   0.45, // Approximately center vertically
+//               right: 20,
+//               child: GestureDetector(
+//                 onTap: () {
+//                   // This is a static icon from the screenshot, no specific action implied.
+//                   // You might want to assign a function to recenter the map on the destination.
+//                 },
+//                 child: Container(
+//                   width: 50,
+//                   height: 50,
+//                   decoration: BoxDecoration(
+//                     color: Colors.red,
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Icon(
+//                     Icons.my_location,
+//                     color: Colors.white,
+//                     size: 30,
+//                   ), // Example icon, adjust as needed
+//                 ),
+//               ),
+//             ),
+
+//             // Bottom Sheet
+//             Positioned(
+//               bottom: 0,
+//               left: 0,
+//               right: 0,
+//               child: Container(
+//                 padding: EdgeInsets.only(
+//                   top: 10,
+//                   left: 20,
+//                   right: 20,
+//                   bottom: MediaQuery.of(context).padding.bottom + 10,
+//                 ),
+//                 decoration: BoxDecoration(
+//                   color: const Color(0xFF2E2E38), // Dark grey from the image
+//                   borderRadius: BorderRadius.only(
+//                     topLeft: Radius.circular(20),
+//                     topRight: Radius.circular(20),
+//                   ),
+//                 ),
+//                 child: Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     Container(
+//                       height: 5,
+//                       width: 50,
+//                       decoration: BoxDecoration(
+//                         color: Colors.grey[700],
+//                         borderRadius: BorderRadius.circular(2.5),
+//                       ),
+//                     ),
+//                     SizedBox(height: 15),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         GestureDetector(
+//                           onTap: () => Get.back(), // Go back to previous screen
+//                           child: Icon(Icons.arrow_back, color: Colors.white),
+//                         ),
+//                         Text(
+//                           'Set Ride',
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         SizedBox(width: 24), // For alignment
+//                       ],
+//                     ),
+//                     SizedBox(height: 20),
+//                     Container(
+//                       padding: EdgeInsets.symmetric(
+//                         vertical: 10,
+//                         horizontal: 15,
+//                       ),
+//                       decoration: BoxDecoration(
+//                         color: const Color(
+//                           0xFF3B3B42,
+//                         ), // Slightly lighter dark grey
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         children: [
+//                           Image.asset(
+//                             'assets/images/privet_car.png', // Replace with your actual image path
+//                             width: 80,
+//                             height: 50,
+//                             fit: BoxFit.contain,
+//                           ),
+//                           SizedBox(width: 15),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Text(
+//                                   'Copen GR SPORT',
+//                                   style: TextStyle(
+//                                     color: Colors.white,
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   'Affordable rides for everyday',
+//                                   style: TextStyle(
+//                                     color: Colors.grey,
+//                                     fontSize: 13,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Text(
+//                                 '\$12.50', // Replace with dynamic price from bookingController
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                               Text(
+//                                 '5 min away', // Replace with dynamic time from bookingController
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 13,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     Container(
+//                       padding: EdgeInsets.symmetric(
+//                         vertical: 10,
+//                         horizontal: 15,
+//                       ),
+//                       decoration: BoxDecoration(
+//                         color: const Color(
+//                           0xFF3B3B42,
+//                         ), // Slightly lighter dark grey
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         children: [
+//                           Image.asset(
+//                             'assets/images/texi.png', // Replace with your actual image path
+//                             width: 80,
+//                             height: 50,
+//                             fit: BoxFit.contain,
+//                           ),
+//                           SizedBox(width: 15),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Text(
+//                                   'Copen GR SPORT',
+//                                   style: TextStyle(
+//                                     color: Colors.white,
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                   ),
+//                                 ),
+//                                 Text(
+//                                   'Affordable rides for everyday',
+//                                   style: TextStyle(
+//                                     color: Colors.grey,
+//                                     fontSize: 13,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.end,
+//                             children: [
+//                               Text(
+//                                 '\$12.50', // Replace with dynamic price from bookingController
+//                                 style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontSize: 16,
+//                                   fontWeight: FontWeight.bold,
+//                                 ),
+//                               ),
+//                               Text(
+//                                 '5 min away', // Replace with dynamic time from bookingController
+//                                 style: TextStyle(
+//                                   color: Colors.grey,
+//                                   fontSize: 13,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 30),
+//                     Container(
+//                       width: double.infinity,
+//                       child: ElevatedButton(
+//                         onPressed: () {
+//                           // Action for "Choose car"
+//                           appController.setCurrentScreen('confirm');
+//                           Get.to(() => ConfirmYourLocationScreen());
+//                         },
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFFC0392B), // Red color
+//                           padding: EdgeInsets.symmetric(vertical: 15),
+//                           shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                           ),
+//                         ),
+//                         child: Text(
+//                           'Choose car',
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             // Loading overlay
+//             if (appController.isLoading.value)
+//               Container(
+//                 color: Colors.black54,
+//                 child: Center(
+//                   child: CircularProgressIndicator(color: Colors.red),
+//                 ),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

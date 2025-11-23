@@ -3,6 +3,7 @@ import '../controllers/app_controller.dart';
 import '../controllers/booking_controller.dart';
 import '../controllers/chat_controller.dart';
 import '../controllers/locaion_controller.dart';
+import '../controllers/location_picked_controller.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -12,6 +13,7 @@ class InitialBinding extends Bindings {
     Get.put(LocationController(), permanent: true);
     Get.put(BookingController(), permanent: true);
     Get.put(ChatController(), permanent: true);
+    Get.put(LocationPickedController(), permanent: true);
   }
 }
 
