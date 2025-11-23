@@ -1,8 +1,8 @@
 class Urls {
   // Base URL
   // static const String baseUrl = 'http://localhost:5000/api';
-  static const String baseUrl = 'http://10.0.2.2:5001/api';
-  // static const String baseUrl = 'https://kobeur.onrender.com/api/v1';
+  // static const String baseUrl = 'http://10.0.2.2:5001/api';
+  static const String baseUrl = 'https://ridetohealth-backend.onrender.com/api';
 
   // ------------------------ Authentication ------------------------
 

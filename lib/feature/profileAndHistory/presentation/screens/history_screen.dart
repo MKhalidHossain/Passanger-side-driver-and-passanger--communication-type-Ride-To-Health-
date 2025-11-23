@@ -33,36 +33,46 @@ class HistoryScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: recentTrips.length > 2
-                                ? 2
-                                : recentTrips.length, // ✅ max 2 items,
-                            itemBuilder: (context, index) {
-                              final trip = recentTrips[index];
-                              return Column(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      Get.to(HistoryScreen());
-                                    },
-                                    child: SingleActivityContainer(
-                                      title:
-                                          trip.dropoffLocation?.address ??
-                                          'Unknown Location',
-                                      subTitle: DateTimeFormatter.format(
-                                        trip.createdAt ?? '',
-                                      ),
-                                      price:
-                                          "\$ ${trip.finalFare.toString()} USD",
+                          recentTrips.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No riding history found yet",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.grey,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
-                                ],
-                              );
-                            },
-                          ),
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: recentTrips.length > 2
+                                      ? 2
+                                      : recentTrips.length, // ✅ max 2 items,
+                                  itemBuilder: (context, index) {
+                                    final trip = recentTrips[index];
+                                    return Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Get.to(HistoryScreen());
+                                          },
+                                          child: SingleActivityContainer(
+                                            title:
+                                                trip.dropoffLocation?.address ??
+                                                'Unknown Location',
+                                            subTitle: DateTimeFormatter.format(
+                                              trip.createdAt ?? '',
+                                            ),
+                                            price:
+                                                "\$ ${trip.finalFare.toString()} USD",
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                    );
+                                  },
+                                ),
                           const SizedBox(height: 16),
                         ],
                       ),

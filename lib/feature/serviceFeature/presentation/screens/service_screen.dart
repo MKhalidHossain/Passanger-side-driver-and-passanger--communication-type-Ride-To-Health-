@@ -77,7 +77,20 @@ class _ServiceScreenState extends State<ServiceScreen> {
               "From here to there — and everything in between.".text14White(),
               const SizedBox(height: 16),
               Expanded(
-                child: GridView.builder(
+                child: services.isEmpty
+                ? Center(
+          child: Text(
+            "No services found yet",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ):
+                
+                
+                GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 12,
