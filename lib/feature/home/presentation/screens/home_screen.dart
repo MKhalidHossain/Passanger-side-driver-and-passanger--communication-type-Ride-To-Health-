@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onTap: () {
                                           Get.to(HistoryScreen());
                                         },
-                                        child: SingleActivityContainer(
+                                        child: SingleActivityORTripContainer(
                                           title:
                                               trip.dropoffLocation?.address ??
                                               'Unknown Location',

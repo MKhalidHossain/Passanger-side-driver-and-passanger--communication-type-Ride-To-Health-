@@ -57,7 +57,7 @@ class HistoryScreen extends StatelessWidget {
                                           onTap: () {
                                             Get.to(HistoryScreen());
                                           },
-                                          child: SingleActivityContainer(
+                                          child: SingleActivityORTripContainer(
                                             title:
                                                 trip.dropoffLocation?.address ??
                                                 'Unknown Location',
