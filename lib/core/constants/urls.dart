@@ -32,6 +32,7 @@ class Urls {
       '/user/payment-methods/'; // + {methodId}
   static const String updateNotificationSettings =
       '/user/notification-settings';
+  static const String getSearchDestinationForFindNearestDrivers = '/user/find-rider?';
 
   // ------------------------ Category------------------------
   static const String allCategories = '/admin/categories';

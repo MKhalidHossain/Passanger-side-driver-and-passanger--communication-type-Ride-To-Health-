@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/add_saved_place_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/delete_saved_place_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_all_services_response_model.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import '../../../core/constants/urls.dart';
 import '../domain/reponse_model/get_a_category_response_model.dart';
 import '../domain/reponse_model/get_recent_trips_response_model.dart';
@@ -34,6 +35,9 @@ class HomeController extends GetxController implements GetxService {
 
   GetRecentTripsResponseModel getRecentTripsResponseModel = 
       GetRecentTripsResponseModel();
+
+  GetSearchDestinationForFindNearestDriversResponseModel getSearchDestinationForFindNearestDriversResponseModel = 
+      GetSearchDestinationForFindNearestDriversResponseModel();
 
 
   bool isLoading = false;
@@ -190,6 +194,85 @@ Future<void> getRecentTrips() async {
     update();
   }
 }
+
+
+Future<void> getSearchDestinationForFindNearestDrivers(
+  String latitude,
+  String longitude,
+) async {
+  try {
+    isLoading = true;
+    update();
+
+    final response = await homeServiceInterface
+        .getSearchDestinationForFindNearestDrivers(latitude, longitude);
+
+    debugPrint("Status Code: ${response.statusCode}");
+    debugPrint("Response Body: ${response.body}");
+
+    if (response.statusCode == 200 && response.body != null) {
+      // If you're using GetConnect, body is already a decoded Map
+      getSearchDestinationForFindNearestDriversResponseModel =
+          GetSearchDestinationForFindNearestDriversResponseModel.fromJson(
+        response.body,
+      );
+
+      debugPrint("✅ getSearchDestinationForFindNearestDrivers parsed successfully.");
+    } else {
+      // Don’t try to parse error response into your success model
+      debugPrint("❌ API error (find rider): ${response.body}");
+      // Here you can show a toast / snackbar using response.body['message']
+    }
+  } catch (e, st) {
+    debugPrint(
+        "⚠️ Error fetching HomeController : getSearchDestinationForFindNearestDrivers : $e\n$st");
+  } finally {
+    isLoading = false;
+    update();
+  }
+}
+
+// Future<void> getSearchDestinationForFindNearestDrivers(
+//   String latitude,
+//    String longitude
+//    ) async {
+//   try {
+//     isLoading = true;
+//     update();
+//           print("this is for print forom car selection hiji biji 1");
+
+//     final response = await homeServiceInterface.getSearchDestinationForFindNearestDrivers(latitude, longitude);
+
+//     debugPrint("Status Code: ${response.statusCode}");
+//     debugPrint("Response Body: ${response.body}");
+
+// // 🔥 Always decode JSON first
+//     final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+
+
+//     if (response.statusCode == 200) {
+//        debugPrint("✅ Parsed JSON: $jsonResponse");
+//       debugPrint("✅ getSearchDestinationForFindNearestDrivers: HomeController fetched successfully.");
+//        // Ensure response.body is a Map before passing to fromJson
+//       // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      
+//       getSearchDestinationForFindNearestDriversResponseModel = GetSearchDestinationForFindNearestDriversResponseModel.fromJson(jsonResponse);
+
+//       isLoading = false;
+//       update();
+//     } else {
+//       getSearchDestinationForFindNearestDriversResponseModel = GetSearchDestinationForFindNearestDriversResponseModel.fromJson(jsonResponse);
+//       update();
+//     }
+//   } catch (e) {
+//     print("⚠️ Error fetching HomeController  : getSearchDestinationForFindNearestDrivers : $e\n");
+//   } finally {
+//     isLoading = false;
+//     update();
+//   }
+// }
+
 
 
 }

@@ -38,4 +38,9 @@ class HomeService implements HomeServiceInterface{
   Future<Response> getRecentTrips() async{
     return await homeRepositoryInterface.getRecentTrips();
   }
+  
+  @override
+  Future<Response> getSearchDestinationForFindNearestDrivers(String latitude, String longitude) async{
+    return await homeRepositoryInterface.getSearchDestinationForFindNearestDrivers(latitude, longitude);
+  }
 }
