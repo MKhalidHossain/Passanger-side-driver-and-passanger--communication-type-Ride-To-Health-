@@ -11,5 +11,7 @@ abstract class HomeServiceInterface {
   Future<Response> deleteSavedPlaces(String placeId);
 
 
-    Future<Response> getRecentTrips();
+  Future<Response> getRecentTrips();
+
+  Future<Response> getSearchDestinationForFindNearestDrivers(String latitude, String longitude);
 }

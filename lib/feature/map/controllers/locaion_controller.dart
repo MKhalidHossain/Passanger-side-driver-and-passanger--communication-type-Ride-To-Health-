@@ -34,6 +34,8 @@ class LocationController extends GetxController {
   var searchQuery = ''.obs;
   RxString selectedAddress = ''.obs;
 
+ 
+
   // Saved locations
   RxString homeAddress = 'Mohakhali DOHS, Dhaka'.obs;
   RxString workAddress = 'Gulshan 2, Dhaka'.obs;
@@ -45,6 +47,9 @@ class LocationController extends GetxController {
   // Custom marker icons
   BitmapDescriptor? pickupMarkerIcon;
   BitmapDescriptor? destinationMarkerIcon;
+
+
+  
 
   @override
   void onInit() {
@@ -551,6 +556,10 @@ Future<void> _initCustomMarkers() async {
     // Convert meters to kilometers
     return distanceInMeters / 1000;
   }
+
+
+
+
 }
 
 

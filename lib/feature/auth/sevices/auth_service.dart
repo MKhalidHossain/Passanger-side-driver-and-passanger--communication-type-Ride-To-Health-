@@ -91,8 +91,8 @@ class AuthService implements AuthServiceInterface {
   }
 
   @override
-  Future<bool?> saveUserToken(String token, String refreshToken) async {
-    return await authRepositoryInterface.saveUserToken(token, refreshToken);
+  Future<bool?> saveUserToken(String accessToken, String refreshToken) async {
+    return await authRepositoryInterface.saveUserToken(accessToken, refreshToken);
   }
 
   @override

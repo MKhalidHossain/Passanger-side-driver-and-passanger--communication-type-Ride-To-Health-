@@ -51,4 +51,9 @@ class HomeRepository implements HomeRepositoryInterface{
     return await apiClient.getData(Urls.getRecentTrips);
   }
   
+  @override
+  Future<Response> getSearchDestinationForFindNearestDrivers(String latitude, String longitude) async{
+    return await apiClient.getData(Urls.getSearchDestinationForFindNearestDrivers + "latitude="+latitude+ "&longitude=" + longitude);
+  }
+  
 }

@@ -17,7 +17,7 @@ class HistoryScreen extends StatelessWidget {
     return GetBuilder<HomeController>(
       builder: (homeController) {
         final recentTrips =
-            homeController.getRecentTripsResponseModel.data?.rides ?? [];
+            homeController.getRecentTripsResponseModel.value.data?.rides  ?? [];
         return homeController.isLoading
             ? const Center(child: CircularProgressIndicator())
             : SafeArea(

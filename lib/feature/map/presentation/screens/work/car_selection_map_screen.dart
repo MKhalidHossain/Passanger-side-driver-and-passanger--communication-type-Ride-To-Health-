@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'confirm_location_map_screen.dart';
 
-class CarSelectionMapScreen extends StatelessWidget {
-  final LocationController locationController = Get.find<LocationController>();
-  final BookingController bookingController = Get.find<BookingController>();
-  final AppController appController = Get.find<AppController>();
-
+class CarSelectionMapScreen extends StatefulWidget {
   CarSelectionMapScreen({super.key});
+
+  @override
+  State<CarSelectionMapScreen> createState() => _CarSelectionMapScreenState();
+}
+
+class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
+  final LocationController locationController = Get.find<LocationController>();
+
+  late HomeController homeController;
+
+  final BookingController bookingController = Get.find<BookingController>();
+
+  final AppController appController = Get.find<AppController>();
 
   // Calculate estimated time based on distance
   String _calculateEstimatedTime(double distanceKm) {
@@ -37,6 +47,62 @@ class CarSelectionMapScreen extends StatelessWidget {
     double perKmRate = 2.5;
     double price = baseFare + (distanceKm * perKmRate);
     return price.toStringAsFixed(2);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print("this is for print forom car selection 4545454545454");
+    locationController.getCurrentLocation().then((value) {
+      getCarData();
+    });
+    // 1. Call the function to get current location
+    // locationController.getCurrentLocation();
+    // homeController = Get.find<HomeController>();
+    //   print("this is for print forom car selection 00000000000000");
+    // 2. React to changes in currentLocation
+    
+  }
+
+  void getCarData() async {
+
+    homeController = Get.find<HomeController>();
+
+    print("this is for print forom car selection 00000000000000");
+
+    debugPrint("this is for print forom car selection 1");
+    if (locationController.currentLocation.value != null) {
+      debugPrint(
+        "this is for print ll ${locationController.currentLocation.value!.latitude.toString()},",
+      );
+      try {
+        await homeController.getSearchDestinationForFindNearestDrivers(
+          '1','1'
+          // locationController.currentLocation.value!.latitude.toString(),
+          // locationController.currentLocation.value!.longitude.toString(),
+        );
+      } catch (e) {
+        print(
+          "⚠️ Error fetching CarSelectionMapScreen : getSearchDestinationForFindNearestDrivers : $e\n",
+        );
+      }
+
+      debugPrint(
+        "this is for print ll ${locationController.currentLocation.value!.latitude.toString()},",
+      );
+    } else {
+      debugPrint("location are not found");
+    }
+    //   ever(locationController.currentLocation, (LatLng? loc)async {
+    //   if (loc != null) {
+    //           print("this is for print forom car selection 99999999999999");
+    //    await homeController.getSearchDestinationForFindNearestDrivers(
+
+    //       loc.latitude.toString(),
+    //       loc.longitude.toString(),
+    //     );
+    //   }
+    // });
   }
 
   @override
@@ -226,7 +292,8 @@ class CarSelectionMapScreen extends StatelessWidget {
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3B3B42),
+                        // color: const Color(0xFF3B3B42),
+                        color: Colors.white10,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
@@ -287,77 +354,203 @@ class CarSelectionMapScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    GetBuilder<HomeController>(
+                      builder: (homeController) {
+                        print(
+                          "this is for print forom car selection 3333333333333333",
+                        );
+                        // 1️⃣ Loader check
+                        if (homeController.isLoading ||
+                            locationController.currentLocation.value == null) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        print(
+                          "this is for print forom car selection 44444444444444",
+                        );
+                        final model = homeController
+                            .getSearchDestinationForFindNearestDriversResponseModel;
+
+                        print(
+                          "this is for print forom car selection :${model.data?.first.licenseNumber}",
+                        );
+
+                        // 2️⃣ Empty check
+                        if (model.data == null || model.data!.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              "No nearby drivers found",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
+
+                        // 3️⃣ LIST VIEW FOR ALL DRIVERS
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: model.data!.length,
+                          itemBuilder: (context, index) {
+                            final driver = model.data![index];
+                            final vehicle = driver.vehicle;
+                            final user = driver.userId;
+
+                            final carName = vehicle?.model ?? "Unknown model";
+                            final carType = vehicle?.type ?? "Unknown type";
+                            final carImage =
+                                vehicle?.image ??
+                                'assets/images/privet_car.png';
+                            final driverName =
+                                user?.fullName ?? "Unknown driver";
+
+                            print("Driver $index Car: $carName");
+
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 15),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 15,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white10,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  // Vehicle Image
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      carImage,
+                                      height: 60,
+                                      width: 80,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) {
+                                        return Image.asset(
+                                          'assets/images/privet_car.png',
+                                          height: 60,
+                                          width: 80,
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+
+                                  // Vehicle + Driver Info
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          carName, // CAR NAME
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "$carType • $driverName", // Car type + Driver name
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
 
                     // Car option 1
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B3B42),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/privet_car.png',
-                            width: 80,
-                            height: 50,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  'Copen GR SPORT',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Affordable rides for everyday',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Obx(
-                                () => Text(
-                                  '\$${_calculateEstimatedPrice(locationController.distance.value)}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Obx(
-                                () => Text(
-                                  _calculateEstimatedTime(
-                                    locationController.distance.value,
-                                  ),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    // GetBuilder<HomeController>(
+                    //   builder: (homeController){
+                    //    final vehicleName =  homeController.getSearchDestinationForFindNearestDriversResponseModel.data?.first.vehicle?.model;
+                    //    print('Frist vehicleName : $vehicleName');
+                    //   return (homeController.isLoading || locationController.currentLocation.value == null)
+                    //   ? const Center(child: CircularProgressIndicator(),)
+                    //   : Container(
+                    //     padding: const EdgeInsets.symmetric(
+                    //       vertical: 10,
+                    //       horizontal: 15,
+                    //     ),
+                    //     decoration: BoxDecoration(
+                    //       // color: const Color(0xFF3B3B42),
+                    //       color:  Colors.white10,
+                    //       borderRadius: BorderRadius.circular(10),
+                    //     ),
+                    //     child: Row(
+                    //       children: [
+                    //         Image.asset(
+                    //           'assets/images/privet_car.png',
+                    //           width: 80,
+                    //           height: 50,
+                    //           fit: BoxFit.contain,
+                    //         ),
+                    //         const SizedBox(width: 15),
+                    //         Expanded(
+                    //           child: Column(
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: const [
+                    //               Text(
+                    //                 'Copen GR SPORT',
+                    //                 style: TextStyle(
+                    //                   color: Colors.white,
+                    //                   fontSize: 16,
+                    //                   fontWeight: FontWeight.bold,
+                    //                 ),
+                    //               ),
+                    //               Text(
+                    //                 'Affordable rides for everyday',
+                    //                 style: TextStyle(
+                    //                   color: Colors.grey,
+                    //                   fontSize: 13,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //         Column(
+                    //           crossAxisAlignment: CrossAxisAlignment.end,
+                    //           children: [
+                    //             Obx(
+                    //               () => Text(
+                    //                 '\$${_calculateEstimatedPrice(locationController.distance.value)}',
+                    //                 style: const TextStyle(
+                    //                   color: Colors.white,
+                    //                   fontSize: 16,
+                    //                   fontWeight: FontWeight.bold,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //             Obx(
+                    //               () => Text(
+                    //                 _calculateEstimatedTime(
+                    //                   locationController.distance.value,
+                    //                 ),
+                    //                 style: const TextStyle(
+                    //                   color: Colors.grey,
+                    //                   fontSize: 13,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   );
+                    // }
+
+                    // ),
                     const SizedBox(height: 20),
 
                     // Car option 2
@@ -476,11 +669,6 @@ class CarSelectionMapScreen extends StatelessWidget {
     });
   }
 }
-
-
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';

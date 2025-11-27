@@ -22,30 +22,40 @@ class ApiClient extends GetxService {
   final int timeoutInSeconds = 30;
 
   late String token;
-  late Map<String, String> _mainHeaders;
+
 
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
-    token = sharedPreferences.getString(AppConstants.token) ?? '';
+    token = sharedPreferences.getString(AppConstants.accessToken) ?? '';
     if (kDebugMode) {
       print('Token: $token');
     }
-    updateHeader(token);
+    // updateHeader(token);
   }
 
-  void updateHeader(String token) {
-    Map<String, String> header = {
+  Map<String, String> getHeader(){
+    token = sharedPreferences.getString(AppConstants.accessToken) ?? '';
+     Map<String, String> header = {
       'Content-Type': 'application/json; charset=UTF-8',
       'Accept': 'application/json',
       'Authorization': 'Bearer $token',
     };
-
-    print(
-      'User Token ${token.toString()} ================================== from api Client ',
-    );
-    _mainHeaders = header;
-
-    print('New header: $_mainHeaders');
+    return header;
   }
+
+  // void updateHeader(String token) {
+  //   Map<String, String> header = {
+  //     'Content-Type': 'application/json; charset=UTF-8',
+  //     'Accept': 'application/json',
+  //     'Authorization': 'Bearer $token',
+  //   };
+
+  //   print(
+  //     'User Token ${token.toString()} ================================== from api Client ',
+  //   );
+  //   getHeader() = header;
+
+  //   print('New header: $getHeader()');
+  // }
 
   Future<Response> getData(
     String uri, {
@@ -54,10 +64,11 @@ class ApiClient extends GetxService {
   }) async {
     try {
       if (kDebugMode) {
-        log('====> API Call: $uri\nHeader: $_mainHeaders');
+       // log('====> API Call: $uri\nHeader: $getHeader()');
+        debugPrint('====> API Call: $uri\nHeader: $getHeader()');
       }
       http.Response response = await http
-          .get(Uri.parse(appBaseUrln + uri), headers: headers ?? _mainHeaders)
+          .get(Uri.parse(appBaseUrln + uri), headers: headers ??  getHeader())
           .timeout(Duration(seconds: timeoutInSeconds));
       debugPrint('====> API Response: ${response.statusCode} - $uri');
       return handleResponse(response, uri);
@@ -73,16 +84,16 @@ class ApiClient extends GetxService {
   }) async {
     try {
       print('====> API Body: $body');
-      print('====> API Header: $_mainHeaders');
+
       if (kDebugMode) {
-        log('====> API Call: $appBaseUrln$uri\nHeader: $_mainHeaders');
+
         log('====> API Body: ${body}');
       }
       http.Response response = await http
           .post(
             Uri.parse(appBaseUrln + uri),
             body: jsonEncode(body),
-            headers: headers ?? _mainHeaders,
+            headers: headers ?? getHeader(),
           )
           .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
@@ -103,7 +114,7 @@ class ApiClient extends GetxService {
       var request = http.MultipartRequest('POST', Uri.parse(appBaseUrln + uri));
 
       // ✅ Remove Content-Type (multipart will set it automatically)
-      var requestHeaders = Map<String, String>.from(headers ?? _mainHeaders);
+      var requestHeaders = Map<String, String>.from(headers ?? getHeader());
       requestHeaders.remove('Content-Type');
       request.headers.addAll(requestHeaders);
 
@@ -153,7 +164,7 @@ class ApiClient extends GetxService {
   }) async {
     try {
       if (kDebugMode) {
-        log('====> API Call (PATCH): $appBaseUrln$uri\nHeader: $_mainHeaders');
+        log('====> API Call (PATCH): $appBaseUrln$uri\nHeader: $getHeader()');
         log('====> API Body: $body');
       }
 
@@ -165,7 +176,7 @@ class ApiClient extends GetxService {
         );
 
         // Add headers (remove Content-Type for multipart request)
-        var requestHeaders = Map<String, String>.from(headers ?? _mainHeaders);
+        var requestHeaders = Map<String, String>.from(headers ?? getHeader());
         requestHeaders.remove('Content-Type');
         request.headers.addAll(requestHeaders);
 
@@ -197,7 +208,7 @@ class ApiClient extends GetxService {
             .patch(
               Uri.parse(appBaseUrln + uri),
               body: jsonEncode(body),
-              headers: headers ?? _mainHeaders,
+              headers: headers ?? getHeader(),
             )
             .timeout(Duration(seconds: timeoutInSeconds));
         return handleResponse(response, uri);
@@ -221,7 +232,7 @@ class ApiClient extends GetxService {
       );
 
       // Add default headers
-      request.headers.addAll(headers ?? _mainHeaders);
+      request.headers.addAll(headers ?? getHeader());
 
       // Add fields (text data)
       if (fields != null) {
@@ -265,14 +276,14 @@ class ApiClient extends GetxService {
 
       if (kDebugMode) {
         log(
-          'API Call: $apiUrl\nHeaders: ${headers ?? _mainHeaders}\nBody: $body',
+          'API Call: $apiUrl\nHeaders: ${headers ?? getHeader()}\nBody: $body',
         );
       }
 
       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 
       // Add headers
-      var requestHeaders = Map<String, String>.from(headers ?? _mainHeaders);
+      var requestHeaders = Map<String, String>.from(headers ?? getHeader());
       requestHeaders.remove('Content-Type');
       request.headers.addAll(requestHeaders);
 
@@ -320,7 +331,7 @@ class ApiClient extends GetxService {
       debugPrint("request >>>> ${request.files.length}");
       if (kDebugMode) {
         log(
-          'API Call: $apiUrl\nHeaders: ${headers ?? _mainHeaders}\nBody: $body',
+          'API Call: $apiUrl\nHeaders: ${headers ?? getHeader()}\nBody: $body',
         );
       }
       // Send request
@@ -355,14 +366,14 @@ class ApiClient extends GetxService {
 
       if (kDebugMode) {
         log(
-          'API Call: $appBaseUrln+$uri\nHeaders: ${headers ?? _mainHeaders}\nBody: $body',
+          'API Call: $appBaseUrln+$uri\nHeaders: ${headers ?? getHeader()}\nBody: $body',
         );
       }
 
       var request = http.MultipartRequest('POST', Uri.parse(appBaseUrln + uri));
 
       // Add headers
-      request.headers.addAll(headers ?? _mainHeaders);
+      request.headers.addAll(headers ?? getHeader());
 
       // Remove 'avatar' key from body before sending
       Map<String, String> filteredBody = Map.from(body);
@@ -407,13 +418,13 @@ class ApiClient extends GetxService {
   //   try {
   //     if(kDebugMode) {
   //
-  //       log('====> API Call: $appBaseUrln$uri\nHeader: $_mainHeaders');
+  //       log('====> API Call: $appBaseUrln$uri\nHeader: $getHeader()');
   //     }
   //
   //     http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse("https://backend-david-weijian.onrender.com/api/v1/user/update-userProfile")
   //     );
   //
-  //     request.headers.addAll(headers ?? _mainHeaders);
+  //     request.headers.addAll(headers ?? getHeader());
   //
   //     if(profileImage != null){
   //       if(profileImage.file != null) {
@@ -447,7 +458,7 @@ class ApiClient extends GetxService {
       'POST',
       Uri.parse(appBaseUrl + uri!),
     );
-    request.headers.addAll(headers ?? _mainHeaders);
+    request.headers.addAll(headers ?? getHeader());
 
     if (otherFile != null) {
       request.files.add(
@@ -486,14 +497,14 @@ class ApiClient extends GetxService {
   }) async {
     try {
       if (kDebugMode) {
-        log('====> API Call: $uri\nHeader: $_mainHeaders');
+        log('====> API Call: $uri\nHeader: $getHeader()');
         log('====> API Body: $body');
       }
       http.Response response = await http
           .put(
             Uri.parse(appBaseUrln + uri),
             body: jsonEncode(body),
-            headers: headers ?? _mainHeaders,
+            headers: headers ?? getHeader(),
           )
           .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
@@ -508,10 +519,10 @@ class ApiClient extends GetxService {
   }) async {
     try {
       if (kDebugMode) {
-        log('====> API Call: $uri\nHeader: $_mainHeaders');
+        log('====> API Call: $uri\nHeader: $getHeader()');
       }
       http.Response response = await http
-          .delete(Uri.parse(appBaseUrl + uri), headers: headers ?? _mainHeaders)
+          .delete(Uri.parse(appBaseUrl + uri), headers: headers ?? getHeader())
           .timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
