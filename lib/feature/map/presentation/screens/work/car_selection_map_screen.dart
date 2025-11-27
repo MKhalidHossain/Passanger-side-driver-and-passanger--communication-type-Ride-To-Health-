@@ -18,16 +18,18 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
   final LocationController locationController = Get.find<LocationController>();
 
   late HomeController homeController;
-
   final BookingController bookingController = Get.find<BookingController>();
 
   final AppController appController = Get.find<AppController>();
+
+  final RxString currentLocation = ''.obs;
 
   // Calculate estimated time based on distance
   String _calculateEstimatedTime(double distanceKm) {
     // Assuming average speed of 30 km/h in city
     double hours = distanceKm / 30;
     int minutes = (hours * 60).round();
+
 
     if (minutes < 1) {
       return '1 min';

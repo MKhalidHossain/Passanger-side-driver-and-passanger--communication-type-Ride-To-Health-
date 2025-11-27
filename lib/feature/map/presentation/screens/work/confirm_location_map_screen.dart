@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
@@ -112,7 +113,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                   bottom: MediaQuery.of(context).padding.bottom + 10,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2E2E38), // Dark grey from the image
+                  color: const Color(0xFF303644), // Dark grey from the image
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),
@@ -153,7 +154,8 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                       margin: EdgeInsets.symmetric(horizontal: 0),
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3B3B42), // Card background color
+                        // color: const Color(0xFF3B3B42), // Card background color
+                        color:  Colors.white10, // Card background color
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -185,23 +187,18 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'From:',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12,
-                                      ),
-                                    ),
+                                    "From:".text12White(),
                                     Obx(
                                       () => Text(
-                                        locationController
-                                                .pickupAddress
-                                                .value
-                                                .isEmpty
-                                            ? 'Current Location'
-                                            : locationController
-                                                  .pickupAddress
-                                                  .value,
+                                        "Your location",
+                                        // locationController
+                                        //         .pickupAddress
+                                        //         .value
+                                        //         .isEmpty
+                                        //     ? 'Current Location'
+                                        //     : locationController
+                                        //           .pickupAddress
+                                        //           .value,
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 15,
@@ -242,13 +239,10 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'To:',
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 12,
-                                        ),
-                                      ),
+                                      
+                                      
+                                        'To:'.text12White(),
+                                        
                                       Obx(
                                         () => Text(
                                           locationController
