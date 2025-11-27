@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
 
-  static const String token = 'token';
+  static const String accessToken = 'accessToken';
+ 
   static const String refreshToken = 'refreshToken';
 
   static const String appName = 'Ridez To Health';

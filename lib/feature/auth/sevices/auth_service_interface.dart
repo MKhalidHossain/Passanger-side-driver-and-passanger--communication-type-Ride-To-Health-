@@ -23,7 +23,7 @@ abstract class AuthServiceInterface {
   String getUserToken();
 
   Future<dynamic> updateToken();
-  Future<bool?> saveUserToken(String token, String refreshToken);
+  Future<bool?> saveUserToken(String accessToken, String refreshToken);
   Future<dynamic> updateAccessAndRefreshToken();
 
   bool isFirstTimeInstall();

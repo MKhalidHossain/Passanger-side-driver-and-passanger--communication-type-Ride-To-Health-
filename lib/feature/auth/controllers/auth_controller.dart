@@ -227,9 +227,13 @@ class AuthController extends GetxController implements GetxService {
       print(
         'User Token $token  ================================== from comtroller ',
       );
-      await setUserToken(token, refreshToken);
+      await setUserToken(token, refreshToken).then((_)async{
+        // await Future.delayed(Duration(seconds: 3), 
+        // );
+          Get.offAll(() => AppMain());
+      });
 
-      Get.offAll(() => AppMain());
+      
 
       //Get.offAll(BottomNavbar());
 
@@ -550,12 +554,12 @@ class AuthController extends GetxController implements GetxService {
     return authServiceInterface.getUserToken();
   }
 
-  Future<void> setUserToken(String token, String refreshToken) async {
-    authServiceInterface.saveUserToken(token, refreshToken);
+  Future<void> setUserToken(String accessToken, String refreshToken) async {
+    await authServiceInterface.saveUserToken(accessToken, refreshToken);
   }
 
   Future<bool> getFirsTimeInstall() async {
-    return authServiceInterface.isFirstTimeInstall();
+    return await authServiceInterface.isFirstTimeInstall();
   }
 
   void setFirstTimeInstall() {

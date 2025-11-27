@@ -33,8 +33,7 @@ class HomeController extends GetxController implements GetxService {
   DeleteSavedPlaceResponseModel deleteSavedPlaceResponseModel = 
       DeleteSavedPlaceResponseModel();
 
-  GetRecentTripsResponseModel getRecentTripsResponseModel = 
-      GetRecentTripsResponseModel();
+  Rx <GetRecentTripsResponseModel> getRecentTripsResponseModel =Rx<GetRecentTripsResponseModel>(GetRecentTripsResponseModel());
 
   GetSearchDestinationForFindNearestDriversResponseModel getSearchDestinationForFindNearestDriversResponseModel = 
       GetSearchDestinationForFindNearestDriversResponseModel();
@@ -173,20 +172,23 @@ Future<void> getRecentTrips() async {
     final response = await homeServiceInterface.getRecentTrips();
 
     debugPrint("Status Code: ${response.statusCode}");
-    debugPrint("Response Body: ${response.body}");
+    debugPrint("Response Body : getRecentTrips : ${response.body}");
 
     if (response.statusCode == 200) {
       debugPrint("✅ getRecentTrips: HomeController fetched successfully.");
        // Ensure response.body is a Map before passing to fromJson
       // final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
       
-      getRecentTripsResponseModel = GetRecentTripsResponseModel.fromJson(response.body);
+      getRecentTripsResponseModel.value = GetRecentTripsResponseModel.fromJson(response.body);
+      print("this is for cheack form homeconteroller : ${getRecentTripsResponseModel.value.data?.rides?.first.driverId}");
 
       isLoading = false;
       update();
     } else {
-      getRecentTripsResponseModel = GetRecentTripsResponseModel.fromJson(response.body);
+      getRecentTripsResponseModel.value = GetRecentTripsResponseModel.fromJson(response.body);
     }
+
+    
   } catch (e) {
     print("⚠️ Error fetching HomeController : getRecentTrips : $e\n");
   } finally {

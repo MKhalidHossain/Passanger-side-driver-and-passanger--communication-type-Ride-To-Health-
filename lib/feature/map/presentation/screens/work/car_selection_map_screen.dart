@@ -77,8 +77,9 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
       );
       try {
         await homeController.getSearchDestinationForFindNearestDrivers(
-          locationController.currentLocation.value!.latitude.toString(),
-          locationController.currentLocation.value!.longitude.toString(),
+          '1','1'
+          // locationController.currentLocation.value!.latitude.toString(),
+          // locationController.currentLocation.value!.longitude.toString(),
         );
       } catch (e) {
         print(

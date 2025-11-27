@@ -48,8 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
         print("Nmae form category: $name");
         final savedPlaces =
             homeController.getSavedPlacesResponseModel.data ?? [];
-        final recentTrips =
-            homeController.getRecentTripsResponseModel.data?.rides ?? [];
+      
         return homeController.isLoading
             ? const Center(child: CircularProgressIndicator())
             : Scaffold(
@@ -195,46 +194,54 @@ class _HomeScreenState extends State<HomeScreen> {
                         // ),
                         const SizedBox(height: 16),
 
-                        recentTrips.isEmpty
-                            ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 40,
+                        ObxValue(
+
+                          (data){
+                            final recentTrips =homeController.getRecentTripsResponseModel.value.data?.rides ?? [];
+                            return
+                          ( recentTrips).isEmpty
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 40,
+                                    ),
+                                    child: 'You have not taken any trips yet.'
+                                        .text16White500(),
                                   ),
-                                  child: 'You have not taken any trips yet.'
-                                      .text16White500(),
-                                ),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: recentTrips.length > 2
-                                    ? 2
-                                    : recentTrips.length, // ✅ max 2 items,
-                                itemBuilder: (context, index) {
-                                  final trip = recentTrips[index];
-                                  return Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          Get.to(HistoryScreen());
-                                        },
-                                        child: SingleActivityORTripContainer(
-                                          title:
-                                              trip.dropoffLocation?.address ??
-                                              'Unknown Location',
-                                          subTitle: DateTimeFormatter.format(
-                                            trip.createdAt ?? '',
+                                )
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: recentTrips.length > 2
+                                      ? 2
+                                      : recentTrips.length, // ✅ max 2 items,
+                                  itemBuilder: (context, index) {
+                                    final trip = recentTrips[index];
+                                    return Column(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            Get.to(HistoryScreen());
+                                          },
+                                          child: SingleActivityORTripContainer(
+                                            title:
+                                                trip.dropoffLocation?.address ??
+                                                'Unknown Location',
+                                            subTitle: DateTimeFormatter.format(
+                                              trip.createdAt ?? '',
+                                            ),
+                                            price:
+                                                "\$ ${trip.finalFare.toString()} USD",
                                           ),
-                                          price:
-                                              "\$ ${trip.finalFare.toString()} USD",
                                         ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                    ],
-                                  );
+                                        const SizedBox(height: 16),
+                                      ],
+                                    );
+                                  },
+                                );
                                 },
-                              ),
+                                homeController.getRecentTripsResponseModel
+                        ),
 
                         // GestureDetector(
                         //   onTap: () {
