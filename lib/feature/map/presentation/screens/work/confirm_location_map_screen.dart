@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
@@ -13,9 +15,15 @@ import 'finding_your_driver_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class ConfirmYourLocationScreen extends StatelessWidget {
+  ConfirmYourLocationScreen({super.key, this.selectedDriver});
+
   final LocationController locationController = Get.find<LocationController>();
   final BookingController bookingController = Get.find<BookingController>();
   final AppController appController = Get.find<AppController>();
+  final NearestDriverData? selectedDriver;
+
+  // Bottom sheet height control for quick tweaking
+  static const double _sheetHeightFactor = 0.35; // adjust here to change default height
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(23.8103, 90.4125), // Default to Dhaka, Bangladesh
@@ -73,7 +81,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
             Positioned(
               top:
                   MediaQuery.of(context).size.height *
-                  0.45, // Approximately center vertically
+                  0.55, // Approximately center vertically
               right: 20,
               child: GestureDetector(
                 onTap: () {
@@ -106,6 +114,8 @@ class ConfirmYourLocationScreen extends StatelessWidget {
               left: 0,
               right: 0,
               child: Container(
+                height: MediaQuery.of(context).size.height *
+                    _sheetHeightFactor, // change factor to adjust default height
                 padding: EdgeInsets.only(
                   top: 10,
                   left: 20,
@@ -119,106 +129,49 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 5,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[700],
-                        borderRadius: BorderRadius.circular(2.5),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () => Get.back(), // Go back to previous screen
-                          child: Icon(Icons.arrow_back, color: Colors.white),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        height: 5,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[700],
+                          borderRadius: BorderRadius.circular(2.5),
                         ),
-                        Text(
-                          'Confirm your location',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 24), // For alignment
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 0),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        // color: const Color(0xFF3B3B42), // Card background color
-                        color:  Colors.white10, // Card background color
-                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Column(
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // From: Current Location
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 2,
-                                    height:
-                                        25, // Height for the connecting line
-                                    color: Colors.red,
-                                  ),
-                                ],
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    "From:".text12White(),
-                                    Obx(
-                                      () => Text(
-                                        "Your location",
-                                        // locationController
-                                        //         .pickupAddress
-                                        //         .value
-                                        //         .isEmpty
-                                        //     ? 'Current Location'
-                                        //     : locationController
-                                        //           .pickupAddress
-                                        //           .value,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5), // Space between From and To
-                          // To: Destination Location (Changeable/Editable)
                           GestureDetector(
-                            onTap: () {
-                              //  Get.to(() => DestinationSearchScreen());
-                            },
-                            child: Row(
+                            onTap: () => Get.back(), // Go back to previous screen
+                            child: Icon(Icons.arrow_back, color: Colors.white),
+                          ),
+                          Text(
+                            'Confirm your location',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 24), // For alignment
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 0),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white10, // Card background color
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            // From: Current Location
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Column(
@@ -231,28 +184,21 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                                         shape: BoxShape.circle,
                                       ),
                                     ),
+                                    Container(
+                                      width: 2,
+                                      height: 25,
+                                      color: Colors.red,
+                                    ),
                                   ],
                                 ),
                                 SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      
-                                      
-                                        'To:'.text12White(),
-                                        
-                                      Obx(
-                                        () => Text(
-                                          locationController
-                                                  .destinationAddress
-                                                  .value
-                                                  .isEmpty
-                                              ? 'Select Destination' // Default text
-                                              : locationController
-                                                    .destinationAddress
-                                                    .value,
+                                      "From:".text12White(),
+                                      Text(
+                                          "Your location",
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 15,
@@ -260,65 +206,199 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
+                                      
                                     ],
                                   ),
                                 ),
-                                Obx(() {
-                                  // Only show distance if destination is set and distance is calculated
-                                  if (locationController
-                                              .destinationLocation
-                                              .value !=
-                                          null &&
-                                      locationController.distance.value > 0) {
-                                    return Text(
-                                      '${locationController.distance.value.toStringAsFixed(1)}km',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    );
-                                  }
-                                  return SizedBox.shrink(); // Hide if no destination or distance is zero
-                                }),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Confirm Location Button
-                    Container(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Action for "Confirm Location"
-                          // For example, navigate to the next screen or trigger booking process
-                          appController.setCurrentScreen(
-                            'confirm',
-                          ); // Your existing logic
-                          // Get.to(() => LocationConfirmationScreen());
-                          Get.to(() => FindingYourDriverScreen());
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFC0392B), // Red color
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                            SizedBox(height: 5),
+                            // To: Destination Location (Changeable/Editable)
+                            GestureDetector(
+                              onTap: () {
+                                //  Get.to(() => DestinationSearchScreen());
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        'To:'.text12White(),
+                                        Obx(
+                                          () => Text(
+                                            locationController
+                                                    .destinationAddress
+                                                    .value
+                                                    .isEmpty
+                                                ? 'Select Destination'
+                                                : locationController
+                                                      .destinationAddress
+                                                      .value,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Obx(() {
+                                    if (locationController
+                                                .destinationLocation.value !=
+                                            null &&
+                                        locationController.distance.value > 0) {
+                                      return Text(
+                                        '${locationController.distance.value.toStringAsFixed(1)}km',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                        ),
+                                      );
+                                    }
+                                    return SizedBox.shrink();
+                                  }),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          'Confirm Location',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 16),
+                        //               if (selectedDriver != null)
+                        //                 Container(
+                        //                   width: double.infinity,
+                        //                   padding: const EdgeInsets.all(14),
+                        //                   decoration: BoxDecoration(
+                        //                     color: Colors.white10,
+                        //                     borderRadius: BorderRadius.circular(10),
+                        //                   ),
+                        //                   child: Row(
+                        //                     children: [
+                        //                       ClipRRect(
+                        //                         borderRadius: BorderRadius.circular(8),
+                        //                         child: Image.network(
+                        //                           selectedDriver!.service.serviceImage,
+                        //                           height: 60,
+                        //                           width: 80,
+                        //                           fit: BoxFit.cover,
+                        //                           errorBuilder: (_, __, ___) => Image.asset(
+                        //                             'assets/images/privet_car.png',
+                        //                             height: 60,
+                        //                             width: 80,
+                        //                             fit: BoxFit.cover,
+                        //                           ),
+                        //                         ),
+                        //                       ),
+                        //                       const SizedBox(width: 12),
+                        //                       Expanded(
+                        //                         child: Column(
+                        //                           crossAxisAlignment: CrossAxisAlignment.start,
+                        //                           children: [
+                        //                             Text(
+                        //                               selectedDriver!.service.name,
+                        //                               style: const TextStyle(
+                        //                                 color: Colors.white,
+                        //                                 fontSize: 16,
+                        //                                 fontWeight: FontWeight.bold,
+                        //                               ),
+                        //                             ),
+                        //                             Text(
+                        //                               "${selectedDriver!.vehicle.taxiName} • Plate ${selectedDriver!.vehicle.plateNumber}",
+                        //                               style: const TextStyle(
+                        //                                 color: Colors.grey,
+                        //                                 fontSize: 13,
+                        //                               ),
+                        //                             ),
+                        //                             const SizedBox(height: 4),
+                        //                             // 👉 THIS PART: COMMENT OUT / DELETE
+                        // Obx(() {
+                        //   if (locationController
+                        //               .destinationLocation.value !=
+                        //           null &&
+                        //       locationController.distance.value > 0) {
+                        //     return Text(
+                        //       '${locationController.distance.value.toStringAsFixed(1)}km',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontSize: 15,
+                        //       ),
+                        //     );
+                        //   }
+                        //   return SizedBox.shrink();
+                        // }),
+                        //                           ],
+                        //                         ),
+                        //                       ),
+                        //                       Text(
+                        //                         "${selectedDriver!.service.estimatedArrivalTime} min",
+                        //                         style: const TextStyle(
+                        //                           color: Colors.white,
+                        //                           fontSize: 14,
+                        //                         ),
+                        //                       ),
+                        //                     ],
+                        //                   ),
+                        //                 ),
+                      SizedBox(height: 12),
+                      // Confirm Location Button
+
+                      WideCustomButton(text:  'Confirm Location',  onPressed: () {
+                            appController.setCurrentScreen('confirm');
+                            Get.to(
+                              () => FindingYourDriverScreen(
+                                selectedDriver: selectedDriver,
+                              ),
+                            );
+                          }, ),
+                      // Container(
+                      //   width: double.infinity,
+                      //   child: ElevatedButton(
+                      //     onPressed: () {
+                      //       appController.setCurrentScreen('confirm');
+                      //       Get.to(
+                      //         () => FindingYourDriverScreen(
+                      //           selectedDriver: selectedDriver,
+                      //         ),
+                      //       );
+                      //     },
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: const Color(0xFFC0392B), // Red color
+                      //       padding: EdgeInsets.symmetric(vertical: 15),
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(10),
+                      //       ),
+                      //     ),
+                      //     child: Text(
+                      //      'Confirm Location',
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 16,
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -641,7 +721,6 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 //     );
 //   }
 // }
-
 
 
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
@@ -11,6 +12,11 @@ import '../ride_confirmed_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class FindingYourDriverScreen extends StatefulWidget {
+  const FindingYourDriverScreen({Key? key, this.selectedDriver})
+      : super(key: key);
+
+  final NearestDriverData? selectedDriver;
+
   @override
   State<FindingYourDriverScreen> createState() =>
       _FindingYourDriverScreenState();
@@ -28,12 +34,19 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
     zoom: 14.0,
   );
 
+  // Bottom sheet height control (fixed)
+  static const double _sheetHeightFactor = 0.3; // adjust to resize fixed sheet
+
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
       // Navigate to next screen after 3 seconds
-      Get.to(() => RideConfirmedScreen()); // Replace with your screen
+      Get.to(
+        () => RideConfirmedScreen(
+          selectedDriver: widget.selectedDriver,
+        ),
+      ); // Replace with your screen
     });
   }
 
@@ -69,6 +82,8 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
             left: 0,
             right: 0,
             child: Container(
+              height: MediaQuery.of(context).size.height *
+                  _sheetHeightFactor, // fixed height; tweak factor to change size
               padding: EdgeInsets.only(
                 top: 10,
                 left: 20,
@@ -104,7 +119,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                       Text(
                         'Finding your driver...',
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Color(0xffEA0001),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -112,7 +127,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                       SizedBox(width: 24), // For alignment
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 0),
                     padding: EdgeInsets.all(16),
@@ -132,14 +147,14 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                   width: 8,
                                   height: 8,
                                   decoration: BoxDecoration(
-                                    color: Colors.red,
+                                    color: Color(0xffEA0001),
                                     shape: BoxShape.circle,
                                   ),
                                 ),
                                 Container(
                                   width: 2,
                                   height: 25, // Height for the connecting line
-                                  color: Colors.red,
+                                  color: Color(0xffEA0001),
                                 ),
                               ],
                             ),
@@ -157,6 +172,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                   ),
                                   Obx(
                                     () => Text(
+
                                       locationController
                                               .pickupAddress
                                               .value
@@ -166,6 +182,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                                 .pickupAddress
                                                 .value,
                                       style: TextStyle(
+                                        // overflow: TextOverflow.visible,
                                         color: Colors.white,
                                         fontSize: 15,
                                       ),
@@ -178,7 +195,9 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 5), // Space between From and To
+                        SizedBox(height: 20
+                        
+                        ), // Space between From and To
                         // To: Destination Location (Changeable/Editable)
                         GestureDetector(
                           onTap: () {
@@ -193,7 +212,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                      color: Colors.red,
+                                      color: Color(0xffEA0001),
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -256,6 +275,72 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                     ),
                   ),
                   SizedBox(height: 20),
+                  // if (widget.selectedDriver != null)
+                  //   Container(
+                  //     padding: const EdgeInsets.all(14),
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.white10,
+                  //       borderRadius: BorderRadius.circular(10),
+                  //     ),
+                  //     child: Row(
+                  //       children: [
+                  //         ClipRRect(
+                  //           borderRadius: BorderRadius.circular(8),
+                  //           child: Image.network(
+                  //             widget.selectedDriver!.service.serviceImage,
+                  //             height: 60,
+                  //             width: 80,
+                  //             fit: BoxFit.cover,
+                  //             errorBuilder: (_, __, ___) => Image.asset(
+                  //               'assets/images/privet_car.png',
+                  //               height: 60,
+                  //               width: 80,
+                  //               fit: BoxFit.cover,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //         const SizedBox(width: 12),
+                  //         Expanded(
+                  //           child: Column(
+                  //             crossAxisAlignment: CrossAxisAlignment.start,
+                  //             children: [
+                  //               Text(
+                  //                 widget.selectedDriver!.service.name,
+                  //                 style: const TextStyle(
+                  //                   color: Colors.white,
+                  //                   fontSize: 16,
+                  //                   fontWeight: FontWeight.bold,
+                  //                 ),
+                  //               ),
+                  //               Text(
+                  //                 "${widget.selectedDriver!.vehicle.taxiName} • Plate ${widget.selectedDriver!.vehicle.plateNumber}",
+                  //                 style: const TextStyle(
+                  //                   color: Colors.grey,
+                  //                   fontSize: 13,
+                  //                 ),
+                  //               ),
+                  //               const SizedBox(height: 4),
+                  //               Text(
+                  //                 "Driver: ${widget.selectedDriver!.driver.userId.fullName}",
+                  //                 style: const TextStyle(
+                  //                   color: Colors.grey,
+                  //                   fontSize: 12,
+                  //                 ),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //         Text(
+                  //           "${widget.selectedDriver!.service.estimatedArrivalTime} min",
+                  //           style: const TextStyle(
+                  //             color: Colors.white,
+                  //             fontSize: 14,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  SizedBox(height: 10),
                   // Confirm Location Button
                   // Container(
                   //   width: double.infinity,
