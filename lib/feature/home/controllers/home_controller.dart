@@ -252,7 +252,7 @@ Future<void> getRecentTrips() async {
       final response = await homeServiceInterface.requestRide(requestModel);
 
       debugPrint("Status Code: ${response.statusCode}");
-      debugPrint("Response Body: ${response.body}");
+      debugPrint("Response Body: from requestRide homecontroller :  ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final parsedBody = _responseToMap(response.body);

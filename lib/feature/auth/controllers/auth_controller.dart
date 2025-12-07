@@ -232,13 +232,14 @@ class AuthController extends GetxController implements GetxService {
       await setUserToken(token, refreshToken).then((_)async{
         // await Future.delayed(Duration(seconds: 3), 
         // );
-          socketClient.emit('join', {
-          'senderId': logInResponseModel!.data!.user!.id,  // ei key ta backend expect korche
+          socketClient.emit('join-user', {
+          'userId': logInResponseModel!.data!.user!.id,  // ei key ta backend expect korche
             });
+            print('socket join with sender id : ${logInResponseModel!.data!.user!.id}');
           Get.offAll(() => AppMain());
       });
 
-      
+
 
       //Get.offAll(BottomNavbar());
 
