@@ -6,6 +6,7 @@ class WideCustomButton extends StatelessWidget {
   final bool showIcon;
   final IconData? sufixIcon;
   final double? height;
+  final bool enabled;
 
   const WideCustomButton({
     super.key,
@@ -14,26 +15,34 @@ class WideCustomButton extends StatelessWidget {
     this.showIcon = false,
     this.sufixIcon,
     this.height = 50,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: enabled ? onPressed : null,
       child: Container(
         height: height,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           // Make it red like in your design
-          gradient: LinearGradient(
-            stops: [0.0, 0.4, 9.0],
-            colors: [
-              Color(0xff7B0100).withOpacity(0.8),
-              Color(0xFFCE0000),
-              Color(0xff7B0100).withOpacity(0.8),
-            ],
-          ),
+          gradient: enabled
+              ? LinearGradient(
+                  stops: [0.0, 0.4, 9.0],
+                  colors: [
+                    Color(0xff7B0100).withOpacity(0.8),
+                    Color(0xFFCE0000),
+                    Color(0xff7B0100).withOpacity(0.8),
+                  ],
+                )
+              : const LinearGradient(
+                  colors: [
+                    Color(0xFF5A5A5A),
+                    Color(0xFF4A4A4A),
+                  ],
+                ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

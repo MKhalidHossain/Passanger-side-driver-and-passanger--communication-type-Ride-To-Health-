@@ -4,15 +4,11 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:rideztohealth/app.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
 import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
-import 'package:rideztohealth/feature/map/presentation/screens/map_screen_test.dart';
 import 'package:rideztohealth/helpers/dependency_injection.dart';
 import 'core/onboarding/presentation/screens/constantSpashScreen.dart';
 import 'core/onboarding/presentation/screens/onboarding1.dart';
 import 'core/onboarding/presentation/screens/spashScreen.dart';
 import 'feature/map/bindings/initial_binding.dart';
-import 'feature/map/presentation/screens/ride_confirmed_screen.dart';
-import 'feature/map/presentation/screens/work/search_destination_screen.dart';
-
 // I think that we need to check isLoggedIn  , is work or not
 
 void main() async {

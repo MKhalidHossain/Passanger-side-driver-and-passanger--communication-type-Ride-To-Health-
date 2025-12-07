@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:rideztohealth/feature/home/domain/request_model/create_payment_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/add_saved_place_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/delete_saved_place_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_all_services_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
+import '../domain/request_model/ride_booking_info_request_model.dart';
 import '../../../core/constants/urls.dart';
 import '../domain/reponse_model/get_a_category_response_model.dart';
 import '../domain/reponse_model/get_recent_trips_response_model.dart';
 import '../domain/reponse_model/get_saved_places_response_model.dart';
+import '../domain/reponse_model/request_ride_response_model.dart';
 import '../services/home_service_interface.dart';
 
 
@@ -37,6 +41,10 @@ class HomeController extends GetxController implements GetxService {
 
   GetSearchDestinationForFindNearestDriversResponseModel getSearchDestinationForFindNearestDriversResponseModel = 
       GetSearchDestinationForFindNearestDriversResponseModel();
+
+    CreatePaymentResponseModel? createPaymentResponseModel;
+  
+  RequestRideResponseModel requestRideResponseModel = RequestRideResponseModel();
 
 
   bool isLoading = false;
@@ -198,7 +206,7 @@ Future<void> getRecentTrips() async {
 }
 
 
-Future<void> getSearchDestinationForFindNearestDrivers(
+  Future<void> getSearchDestinationForFindNearestDrivers(
   String latitude,
   String longitude,
 ) async {
@@ -233,6 +241,97 @@ Future<void> getSearchDestinationForFindNearestDrivers(
     update();
   }
 }
+
+  Future<RequestRideResponseModel> requestRide(
+    RideBookingInfo requestModel,
+  ) async {
+    try {
+      isLoading = true;
+      update();
+
+      final response = await homeServiceInterface.requestRide(requestModel);
+
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final parsedBody = _responseToMap(response.body);
+        final parsedResponse = RequestRideResponseModel.fromJson(parsedBody);
+        requestRideResponseModel = parsedResponse;
+        return parsedResponse;
+      }
+
+      final message =
+          _extractErrorMessage(response.body) ?? 'Unable to request ride';
+      throw Exception(message);
+    } catch (e) {
+      debugPrint("⚠️ Error fetching HomeController : requestRide : $e\n");
+      rethrow;
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
+
+ Future<CreatePaymentResponseModel> createPayment(
+    CreatePaymentRequestModel requestModel,
+  ) async {
+    try {
+      isLoading = true;
+      update();
+
+      final response = await homeServiceInterface.createPayment(requestModel);
+
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final parsedBody = _responseToMap(response.body);
+        final parsedResponse =
+            CreatePaymentResponseModel.fromJson(parsedBody);
+        createPaymentResponseModel = parsedResponse;
+        return parsedResponse;
+      }
+
+      final message =
+          _extractErrorMessage(response.body) ?? 'Unable to create payment';
+      throw Exception(message);
+    } catch (e) {
+      debugPrint(
+        "⚠️ Error fetching HomeController : createPayment : $e\n",
+      );
+      rethrow;
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
+   Map<String, dynamic> _responseToMap(dynamic body) {
+    if (body is Map<String, dynamic>) {
+      return body;
+    }
+    if (body is String && body.isNotEmpty) {
+      return jsonDecode(body) as Map<String, dynamic>;
+    }
+    return <String, dynamic>{};
+  }
+
+  String? _extractErrorMessage(dynamic body) {
+    if (body is Map<String, dynamic>) {
+      if (body['message'] != null) {
+        return body['message'].toString();
+      }
+      if (body['error'] != null) {
+        return body['error'].toString();
+      }
+    } else if (body is String && body.isNotEmpty) {
+      return body;
+    }
+    return null;
+  }
+
 
 // Future<void> getSearchDestinationForFindNearestDrivers(
 //   String latitude,
@@ -278,4 +377,3 @@ Future<void> getSearchDestinationForFindNearestDrivers(
 
 
 }
-

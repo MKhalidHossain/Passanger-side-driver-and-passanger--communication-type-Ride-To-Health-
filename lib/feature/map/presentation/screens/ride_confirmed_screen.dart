@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/helpers/custom_snackbar.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/normal_custom_button.dart';
@@ -123,8 +124,10 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
     );
   }
 
-  String _calculatedPrice() {
-    if (widget.selectedDriver == null) return "\$32.50";
+  double _calculatePriceValue() {
+    if (widget.selectedDriver == null) {
+      return bookingController.estimatedPrice.value;
+    }
     final service = widget.selectedDriver!.service;
     final distance = locationController.distance.value;
     double price =
@@ -132,6 +135,11 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
     if (service.minimumFare > 0 && price < service.minimumFare) {
       price = service.minimumFare.toDouble();
     }
+    return double.parse(price.toStringAsFixed(2));
+  }
+
+  String _calculatedPrice() {
+    final price = _calculatePriceValue();
     return "\$${price.toStringAsFixed(2)}";
   }
 
@@ -441,28 +449,44 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                 },
                               ),
                             ),
-                             SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Expanded(
                               flex: 3,
                               child: NormalCustomButton(
                                 height: 51,
                                 fontSize: 18,
                                 circularRadious: 30,
-                              text: "Continue",
-                              onPressed: () {
-                                  final fare = bookingController.estimatedPrice.value;
+                                text: "Continue",
+                                onPressed: () {
+                                  final fare = _calculatePriceValue();
                                   final driverId =
-                                      bookingController.currentBooking.value?.driverId ??
+                                      widget.selectedDriver?.driver.id ??
+                                          bookingController
+                                              .currentBooking.value?.driverId ??
                                           bookingController.driver.value?.id;
+                                  final stripeDriverId =
+                                      widget.selectedDriver?.driver.payoutAccountId;
+
+                                  if (driverId == null ||
+                                      stripeDriverId == null) {
+                                    showCustomSnackBar(
+                                      'Unable to continue',
+                                      subMessage:
+                                          'Missing driver payment information.',
+                                    );
+                                    return;
+                                  }
+
                                   Get.to(
                                     () => WalletScreen(
-                                      // rideAmount: fare,
-                                      // driverId: driverId,
+                                      rideAmount: fare,
+                                      driverId: driverId,
+                                      stripeDriverId: stripeDriverId,
                                     ),
                                   );
-                              },
+                                },
+                              ),
                             ),
-                          ),
                           ],
                         ),
 

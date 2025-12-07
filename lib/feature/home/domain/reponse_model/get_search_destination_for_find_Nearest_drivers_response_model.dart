@@ -1,3 +1,9 @@
+String? _normalizeStripeId(String? raw) {
+  if (raw == null) return null;
+  final value = raw.trim();
+  return value.isEmpty ? null : value;
+}
+
 class GetSearchDestinationForFindNearestDriversResponseModel {
   final bool ?success;
   final String ?message;
@@ -72,6 +78,7 @@ class Driver {
   final num? accuracy;
   final List<dynamic> paymentMethods;
   final List<dynamic> withdrawals;
+  final String? stripeDriverId;
   final int v;
 
   Driver({
@@ -89,6 +96,7 @@ class Driver {
     this.accuracy,
     required this.paymentMethods,
     required this.withdrawals,
+    this.stripeDriverId,
     required this.v,
   });
 
@@ -109,6 +117,14 @@ class Driver {
       accuracy: json['accuracy'] as num?,
       paymentMethods: (json['paymentMethods'] as List<dynamic>?) ?? [],
       withdrawals: (json['withdrawals'] as List<dynamic>?) ?? [],
+      stripeDriverId: _normalizeStripeId(
+        json['stripeDriverId'] as String? ??
+            json['stripe_account_id'] as String? ??
+            json['stripeAccountId'] as String? ??
+            json['stripeAccount'] as String? ??
+            json['stripeId'] as String? ??
+            json['stripe'] as String?,
+      ),
       v: json['__v'] as int,
     );
   }
@@ -129,9 +145,13 @@ class Driver {
       'accuracy': accuracy,
       'paymentMethods': paymentMethods,
       'withdrawals': withdrawals,
+      if (stripeDriverId != null) 'stripeDriverId': stripeDriverId,
       '__v': v,
     };
   }
+
+  String? get payoutAccountId =>
+      stripeDriverId ?? userId.payoutAccountId;
 }
 
 class CurrentLocation {
@@ -237,12 +257,14 @@ class DriverUserId {
   final String fullName;
   final String phoneNumber;
   final String? profileImage;
+  final String? stripeAccountId;
 
   DriverUserId({
     required this.id,
     required this.fullName,
     required this.phoneNumber,
     this.profileImage,
+    this.stripeAccountId,
   });
 
   factory DriverUserId.fromJson(Map<String, dynamic> json) {
@@ -251,6 +273,13 @@ class DriverUserId {
       fullName: json['fullName'] as String,
       phoneNumber: json['phoneNumber'] as String,
       profileImage: json['profileImage'] as String?,
+      stripeAccountId: _normalizeStripeId(
+        json['stripeAccountId'] as String? ??
+            json['stripe_account_id'] as String? ??
+            json['stripeAccount'] as String? ??
+            json['stripeId'] as String? ??
+            json['stripe'] as String?,
+      ),
     );
   }
 
@@ -260,8 +289,11 @@ class DriverUserId {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'profileImage': profileImage,
+      if (stripeAccountId != null) 'stripeAccountId': stripeAccountId,
     };
   }
+
+  String? get payoutAccountId => stripeAccountId;
 }
 
 class Vehicle {

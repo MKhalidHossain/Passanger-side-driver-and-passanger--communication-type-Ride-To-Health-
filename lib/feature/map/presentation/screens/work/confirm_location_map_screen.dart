@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
+import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/home/domain/request_model/ride_booking_info_request_model.dart';
 import '../../../controllers/app_controller.dart';
-import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'finding_your_driver_screen.dart';
 
@@ -18,7 +19,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
   ConfirmYourLocationScreen({super.key, this.selectedDriver});
 
   final LocationController locationController = Get.find<LocationController>();
-  final BookingController bookingController = Get.find<BookingController>();
+  final HomeController homeController = Get.find<HomeController>();
   final AppController appController = Get.find<AppController>();
   final NearestDriverData? selectedDriver;
 
@@ -29,6 +30,95 @@ class ConfirmYourLocationScreen extends StatelessWidget {
     target: LatLng(23.8103, 90.4125), // Default to Dhaka, Bangladesh
     zoom: 14.0,
   );
+
+  String _calculateEstimatedPrice(
+    double distanceKm, {
+    num? baseFare,
+    num? perKmRate,
+    num? minimumFare,
+  }) {
+    final double resolvedBaseFare = (baseFare ?? 5).toDouble();
+    final double resolvedPerKmRate = (perKmRate ?? 2.5).toDouble();
+
+    double price = resolvedBaseFare + (distanceKm * resolvedPerKmRate);
+
+    if (minimumFare != null) {
+      price = price < minimumFare ? minimumFare.toDouble() : price;
+    }
+
+    return price.toStringAsFixed(2);
+  }
+
+  Future<void> _handleConfirmLocation() async {
+    final driverData = selectedDriver;
+    final pickupLatLng =
+        locationController.pickupLocation.value ?? locationController.currentLocation.value;
+    final destinationLatLng = locationController.destinationLocation.value;
+
+    if (driverData == null) {
+      appController.showErrorSnackbar('Please select a driver to continue');
+      return;
+    }
+
+    if (pickupLatLng == null) {
+      appController.showErrorSnackbar('Pickup location is missing');
+      return;
+    }
+
+    if (destinationLatLng == null) {
+      appController.showErrorSnackbar('Please select a destination');
+      return;
+    }
+
+    final totalFare = _calculateEstimatedPrice(
+      locationController.distance.value,
+      baseFare: driverData.service.baseFare,
+      perKmRate: driverData.service.perKmRate,
+      minimumFare: driverData.service.minimumFare,
+    );
+
+    final bookingInfo = RideBookingInfo(
+      driverId: driverData.driver.id,
+      pickupLocation: Location(
+        coordinates: [pickupLatLng.longitude, pickupLatLng.latitude],
+        address: locationController.pickupAddress.value.isNotEmpty
+            ? locationController.pickupAddress.value
+            : 'Current Location',
+      ),
+      dropoffLocation: Location(
+        coordinates: [destinationLatLng.longitude, destinationLatLng.latitude],
+        address: locationController.destinationAddress.value.isNotEmpty
+            ? locationController.destinationAddress.value
+            : 'Destination',
+      ),
+      totalFare: totalFare,
+    );
+
+    appController.showLoading();
+    try {
+      final response = await homeController.requestRide(bookingInfo);
+
+      if (response.success == true) {
+        appController.showSuccessSnackbar(
+          response.message ?? 'Ride requested successfully',
+        );
+        appController.setCurrentScreen('confirm');
+        Get.to(
+          () => FindingYourDriverScreen(
+            selectedDriver: selectedDriver,
+          ),
+        );
+      } else {
+        appController.showErrorSnackbar(
+          response.message ?? 'Unable to request ride',
+        );
+      }
+    } catch (e) {
+      appController.showErrorSnackbar(e.toString());
+    } finally {
+      appController.hideLoading();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -361,14 +451,10 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                       SizedBox(height: 12),
                       // Confirm Location Button
 
-                      WideCustomButton(text:  'Confirm Location',  onPressed: () {
-                            appController.setCurrentScreen('confirm');
-                            Get.to(
-                              () => FindingYourDriverScreen(
-                                selectedDriver: selectedDriver,
-                              ),
-                            );
-                          }, ),
+                      WideCustomButton(
+                        text: 'Confirm Location',
+                        onPressed: _handleConfirmLocation,
+                      ),
                       // Container(
                       //   width: double.infinity,
                       //   child: ElevatedButton(
@@ -721,8 +807,6 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 //     );
 //   }
 // }
-
-
 
 
 

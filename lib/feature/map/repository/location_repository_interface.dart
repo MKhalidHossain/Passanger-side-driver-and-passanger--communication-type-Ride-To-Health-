@@ -8,6 +8,7 @@ abstract class LocationRepositoryInterface {
 
   Future<List<PlacePrediction>> searchPlaces({required String query}); 
 
+
   // FutureRequest<Success<Coordinate>> getCurrentLocation();
 
   // FutureRequest<Success<PlaceDetails>> getPlaceDetails(String placeId);

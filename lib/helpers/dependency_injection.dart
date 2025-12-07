@@ -22,9 +22,16 @@ import '../feature/home/services/home_service_interface.dart';
 import '../feature/map/repository/location_repository_interface.dart';
 import '../feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'remote/data/api_client.dart';
+import 'remote/data/socket_client.dart';
 
 Future<void> initDI() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+    final socket = SocketClient();
+
+    socket.connect(
+    url: Urls.socketUrl,
+     autoConnect: true
+     );
 
   ApiClient apiClient = ApiClient(
     appBaseUrl: Urls.baseUrl,

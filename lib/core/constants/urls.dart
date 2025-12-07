@@ -4,6 +4,8 @@ class Urls {
   static const String baseUrl = 'http://10.0.2.2:5001/api';
   // static const String baseUrl = 'https://ridetohealth-backend.onrender.com/api';
 
+
+    static const String socketUrl = 'http://10.10.5.85:5001'; 
   // ------------------------ Authentication ------------------------
 
   static const String register = '/auth/register';
@@ -33,6 +35,9 @@ class Urls {
   static const String updateNotificationSettings =
       '/user/notification-settings';
   static const String getSearchDestinationForFindNearestDrivers = '/user/find-rider?';
+  static const String createPayment = '/stripe/payment/create';
+
+
 
   // ------------------------ Category------------------------
   static const String allCategories = '/admin/categories';
