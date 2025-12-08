@@ -32,6 +32,7 @@ Future<void> initDI() async {
     url: Urls.socketUrl,
      autoConnect: true
      );
+     
 
   ApiClient apiClient = ApiClient(
     appBaseUrl: Urls.baseUrl,

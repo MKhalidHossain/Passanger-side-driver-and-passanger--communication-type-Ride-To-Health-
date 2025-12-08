@@ -235,7 +235,7 @@ class AuthController extends GetxController implements GetxService {
           socketClient.emit('join-user', {
           'userId': logInResponseModel!.data!.user!.id,  // ei key ta backend expect korche
             });
-            print('socket join with sender id : ${logInResponseModel!.data!.user!.id}');
+            print('socket join with sender id To chekkkkkkkikk: ${logInResponseModel!.data!.user!.id}');
           Get.offAll(() => AppMain());
       });
 

@@ -20,8 +20,11 @@ class SocketClient {
     Duration timeout = const Duration(seconds: 10),
   }) {
     try {
+      print('✅ Socket connected 0000000000');
       final builder = IO.OptionBuilder()
           .setTransports(['websocket'])
+          .enableForceNew()
+          .setExtraHeaders({'Connection': 'upgrade'})
           .setQuery(query ?? {})
           .setAuth(auth ?? {})
           .setTimeout(timeout.inMilliseconds);
@@ -30,15 +33,18 @@ class SocketClient {
         builder.disableAutoConnect();
       }
 
-      _socket = IO.io(
-        url,
-        builder.build(),
-      );
+      _socket = IO.io(url, builder.build());
 
-      _socket?.onConnect((_) {
+      _socket?.on('connect', (_) {
         _isConnected = true;
         print('✅ Socket connected');
       });
+
+      // _socket?.onConnect((_) {
+
+      //   _isConnected = true;
+      //   print('✅ Socket connected');
+      // });
 
       _socket?.onDisconnect((_) {
         _isConnected = false;
