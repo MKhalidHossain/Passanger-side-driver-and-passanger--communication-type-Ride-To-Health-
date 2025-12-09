@@ -224,7 +224,8 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
             left: 0,
             right: 0,
             child: Container(
-              height: MediaQuery.of(context).size.height *
+              height:
+                  MediaQuery.of(context).size.height *
                   _sheetHeightFactor, // change factor to adjust default height
               padding: EdgeInsets.only(
                 top: 10,
@@ -252,10 +253,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                           ),
                           Text(
                             'Your driver is coming in ${widget.selectedDriver?.service.estimatedArrivalTime ?? 3} min',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ],
                       ),
@@ -273,7 +271,10 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                               backgroundColor: Colors.grey,
                               child: widget.selectedDriver != null
                                   ? Text(
-                                      widget.selectedDriver!.driver.userId
+                                      widget
+                                          .selectedDriver!
+                                          .driver
+                                          .userId
                                           .fullName[0]
                                           .toUpperCase(),
                                       style: const TextStyle(
@@ -290,7 +291,10 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.selectedDriver?.driver.userId
+                                    widget
+                                            .selectedDriver
+                                            ?.driver
+                                            .userId
                                             .fullName ??
                                         'Max Johnson',
                                     style: TextStyle(
@@ -307,7 +311,8 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                         color: Colors.white,
                                         size: 16,
                                       ),
-                                      "${locationController.distance.value.toStringAsFixed(1)}km".text12White(),
+                                      "${locationController.distance.value.toStringAsFixed(1)}km"
+                                          .text12White(),
                                     ],
                                   ),
                                   SizedBox(height: 4),
@@ -320,9 +325,12 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                       ),
                                       SizedBox(width: 5),
                                       (widget.selectedDriver != null
-                                              ? widget.selectedDriver!.driver
-                                                  .ratings.average
-                                                  .toStringAsFixed(1)
+                                              ? widget
+                                                    .selectedDriver!
+                                                    .driver
+                                                    .ratings
+                                                    .average
+                                                    .toStringAsFixed(1)
                                               : "4.9")
                                           .text14White(),
                                       " ("
@@ -412,85 +420,88 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                       SizedBox(height: 10),
 
                       Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: NormalCustomIconButton(
-                                icon: Icons.call_outlined,
-                                iconSize: 25,
-                                onPressed: () {
-                                  Get.to(CallScreen());
-                                },
-                              ),
+                        children: [
+                          // Expanded(
+                          //   flex: 1,
+                          //   child: NormalCustomIconButton(
+                          //     icon: Icons.call_outlined,
+                          //     iconSize: 25,
+                          //     onPressed: () {
+                          //       Get.to(CallScreen());
+                          //     },
+                          //   ),
+                          // ),
+                          SizedBox(width: 15),
+                          SizedBox(
+                            width: size.width * 0.4,
+                            child: NormalCustomIconButton(
+                              icon: Icons.messenger_outline,
+                              iconSize: 32,
+                              onPressed: () {
+                                Get.to(ChatScreenRTH());
+                              },
                             ),
-                            SizedBox(width: 15),
-                            Expanded(
-                              flex: 1,
-                              child: NormalCustomIconButton(
-                                icon: Icons.messenger_outline,
-                                iconSize: 25,
-                                onPressed: () {
-                                  Get.to(ChatScreenRTH());
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 15),
-                            Expanded(
-                              flex: 3,
-                              child: SmallSemiTranparentButton(
-                                fillColor: Color(0xffBFC1C5),
-                                height: 51,
-                                fontSize: 18,
-                                circularRadious: 30,
-                                textColor: Colors.black,
-                                text: "Cancel Ride",
-                                onPressed: () {
-                                  // Handle cancel
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              flex: 3,
-                              child: NormalCustomButton(
-                                height: 51,
-                                fontSize: 18,
-                                circularRadious: 30,
-                                text: "Continue",
-                                onPressed: () {
-                                  final fare = _calculatePriceValue();
-                                  final driverId =
-                                      widget.selectedDriver?.driver.id ??
-                                          bookingController
-                                              .currentBooking.value?.driverId ??
-                                          bookingController.driver.value?.id;
-                                  final stripeDriverId =
-                                      widget.selectedDriver?.driver.payoutAccountId;
+                          ),
+                          SizedBox(width: 15),
+                          // Expanded(
+                          //   flex: 3,
+                          //   child: SmallSemiTranparentButton(
+                          //     fillColor: Color(0xffBFC1C5),
+                          //     height: 51,
+                          //     fontSize: 18,
+                          //     circularRadious: 30,
+                          //     textColor: Colors.black,
+                          //     text: "Cancel Ride",
+                          //     onPressed: () {
+                          //       // Handle cancel
+                          //     },
+                          //   ),
+                          // ),
+                          SizedBox(width: 8),
+                          SizedBox(
+                            width: size.width * 0.4,
+                            child: NormalCustomButton(
+                              height: 51,
+                              weight: size.width * 0.4, // or double.infinity
+                              fontSize: 18,
+                              circularRadious: 30,
+                              text: "Continue",
+                              onPressed: () {
+                                final fare = _calculatePriceValue();
+                                final driverId =
+                                    widget.selectedDriver?.driver.id ??
+                                    bookingController
+                                        .currentBooking
+                                        .value
+                                        ?.driverId ??
+                                    bookingController.driver.value?.id;
+                                final stripeDriverId = widget
+                                    .selectedDriver
+                                    ?.driver
+                                    .payoutAccountId;
 
-                                  if (driverId == null ||
-                                      stripeDriverId == null) {
-                                    showCustomSnackBar(
-                                      'Unable to continue',
-                                      subMessage:
-                                          'Missing driver payment information.',
-                                    );
-                                    return;
-                                  }
-
-                                  Get.to(
-                                    () => WalletScreen(
-                                      rideAmount: fare,
-                                      driverId: driverId,
-                                      stripeDriverId: stripeDriverId,
-                                    ),
+                                if (driverId == null ||
+                                    stripeDriverId == null) {
+                                  showCustomSnackBar(
+                                    'Unable to continue',
+                                    subMessage:
+                                        'Missing driver payment information.',
                                   );
-                                },
-                              ),
+                                  return;
+                                }
+
+                                Get.to(
+                                  () => WalletScreen(
+                                    rideAmount: fare,
+                                    driverId: driverId,
+                                    stripeDriverId: stripeDriverId,
+                                  ),
+                                );
+                              },
                             ),
-                          ],
-                        ),
-
-
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

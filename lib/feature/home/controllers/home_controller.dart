@@ -8,6 +8,7 @@ import 'package:rideztohealth/feature/home/domain/reponse_model/add_saved_place_
 import 'package:rideztohealth/feature/home/domain/reponse_model/delete_saved_place_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_all_services_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/home/presentation/screens/home_screen.dart';
 import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
 import '../domain/request_model/ride_booking_info_request_model.dart';
 import '../../../core/constants/urls.dart';
@@ -291,6 +292,7 @@ Future<void> getRecentTrips() async {
         final parsedResponse =
             CreatePaymentResponseModel.fromJson(parsedBody);
         createPaymentResponseModel = parsedResponse;
+        Get.to(HomeScreen());
         return parsedResponse;
       }
 

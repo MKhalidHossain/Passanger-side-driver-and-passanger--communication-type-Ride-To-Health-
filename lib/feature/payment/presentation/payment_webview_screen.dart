@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/feature/home/presentation/screens/home_screen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           onProgress: (progress) {
             setState(() {
               _progress = progress / 100;
+             
             });
           },
           onPageStarted: (_) {
@@ -38,6 +40,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           },
           onPageFinished: (_) {
             setState(() => _progress = 1);
+             Get.to(HomeScreen()); 
           },
           onWebResourceError: (error) {
             final message = error.description.isNotEmpty
