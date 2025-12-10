@@ -503,9 +503,12 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
 
                                 Get.to(
                                   () => WalletScreen(
+                                    
                                     rideAmount: fare,
                                     driverId: driverId,
-                                    stripeDriverId: stripeDriverId,
+                                    stripeDriverId: stripeDriverId, 
+                                    selectedDriver: widget.selectedDriver ,
+
                                   ),
                                 );
                               },

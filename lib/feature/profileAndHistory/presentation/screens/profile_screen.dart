@@ -212,14 +212,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                 ),
                 _divider(),
-                _buildMenuItem(
-                  Icons.wallet_outlined,
-                  "Wallet",
-                  "Term of services",
-                  onTap: () {
-                    Get.to(() => WalletScreen());
-                  },
-                ),
+                // _buildMenuItem(
+                //   Icons.wallet_outlined,
+                //   "Wallet",
+                //   "Term of services",
+                //   onTap: () {
+                //     Get.to(() => WalletScreen());
+                //   },
+                // ),
                 _divider(),
                 _buildMenuItem(
                   Icons.notifications_outlined,

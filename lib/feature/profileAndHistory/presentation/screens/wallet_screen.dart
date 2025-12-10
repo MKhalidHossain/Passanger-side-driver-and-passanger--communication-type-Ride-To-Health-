@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
+import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/home/presentation/screens/home_screen.dart';
+import 'package:rideztohealth/feature/map/presentation/screens/work/finding_your_driver_screen.dart';
 import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
 import 'package:rideztohealth/feature/payment/presentation/payment_webview_screen.dart';
 import '../widgets/payment_method_card.dart';
@@ -11,15 +15,18 @@ import 'add_funds_screen.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({
+
     super.key,
     this.rideAmount,
     this.driverId,
     this.stripeDriverId,
+   required this.selectedDriver,
   });
 
   final double? rideAmount;
   final String? driverId;
   final String? stripeDriverId;
+  final NearestDriverData? selectedDriver;
 
   @override
   State<WalletScreen> createState() => _WalletScreenState();
@@ -28,8 +35,8 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   double balance = 225.0;
   List<PaymentMethod> paymentMethods = [
-    PaymentMethod('PayPal', 'assets/paypal.png', true),
-    PaymentMethod('Visa', 'assets/visa.png', false),
+    PaymentMethod('Stripe', 'assets/images/Stripe_Logo.png', true),
+    // PaymentMethod('Visa', 'assets/images/Stripe_Logo.png', false),
   ];
   late final HomeController _homeController;
   bool _isProcessingPayment = false;
@@ -281,27 +288,27 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
         const SizedBox(height: 20),
 
-        Container(
-          width: double.infinity,
-          child: TextButton(
-            onPressed: () => _navigateToAddCard(),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.red),
-              ),
-            ),
-            child: Text(
-              '+ Add new card/method',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
+        // Container(
+        //   width: double.infinity,
+        //   child: TextButton(
+        //     onPressed: () => _navigateToAddCard(),
+        //     style: TextButton.styleFrom(
+        //       padding: EdgeInsets.symmetric(vertical: 15),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(8),
+        //         side: BorderSide(color: Colors.red),
+        //       ),
+        //     ),
+        //     child: Text(
+        //       '+ Add new card/method',
+        //       style: TextStyle(
+        //         color: Colors.red,
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -357,7 +364,7 @@ class _WalletScreenState extends State<WalletScreen> {
     if (method.name == 'Visa' && !_hasVisaCard()) {
       _navigateToAddCard();
     } else {
-      setState(() {
+      setState(() { 
         paymentMethods = paymentMethods
             .map(
               (pm) =>
@@ -561,18 +568,27 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
       );
 
+  
+
       final paymentUrl = response.url;
       if (paymentUrl == null || paymentUrl.isEmpty) {
         _showErrorMessage('Payment link is unavailable');
         return;
       }
+      if (!mounted) return;
 
-      Get.to(
+      // Wait for the webview to report completion (expected to return bool)
+      final completed = await Get.to<bool>(
         () => PaymentWebViewScreen(
           paymentUrl: paymentUrl,
-          sessionId: response.sessionId,
+          sessionId: response.sessionId, 
+          selectedDriver: widget.selectedDriver,
         ),
       );
+
+      if (completed == true && mounted) {
+        Get.offAll(() => const FindingYourDriverScreen());
+      }
     } catch (e) {
       _showErrorMessage(e.toString().replaceFirst('Exception:', '').trim());
     } finally {
