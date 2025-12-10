@@ -438,7 +438,18 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                               icon: Icons.messenger_outline,
                               iconSize: 32,
                               onPressed: () {
-                                Get.to(ChatScreenRTH());
+                                Get.to(
+                                  () => ChatScreenRTH(
+                                    receiverName: widget.selectedDriver
+                                            ?.driver.userId.fullName ??
+                                        'Customer Support',
+                                    receiverAvatar: widget
+                                        .selectedDriver
+                                        ?.driver
+                                        .userId
+                                        .profileImage,
+                                  ),
+                                );
                               },
                             ),
                           ),
