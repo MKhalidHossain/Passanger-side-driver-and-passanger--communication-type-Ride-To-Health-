@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../helpers/remote/data/socket_client.dart';
+import '../../../home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import '../../../home/domain/reponse_model/request_ride_response_model.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/chat_controller.dart';
 import '../../domain/models/message.dart';
@@ -17,11 +20,14 @@ ImageProvider? _avatarImageProvider(String? path) {
 }
 
 class ChatScreenRTH extends StatefulWidget {
-  const ChatScreenRTH({Key? key, this.receiverName, this.receiverAvatar})
+  const ChatScreenRTH({Key? key, 
+   this.selectedDriver,
+   this.rideBookingInfoFromResponse
+   })
     : super(key: key);
 
-  final String? receiverName;
-  final String? receiverAvatar;
+  final NearestDriverData? selectedDriver;
+      final RequestRideResponseModel ? rideBookingInfoFromResponse;
 
   @override
   State<ChatScreenRTH> createState() => _ChatScreenRTHState();
@@ -34,11 +40,53 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
   final ScrollController scrollController = ScrollController();
   Worker? _messageWatcher;
 
+   final SocketClient socketClient = SocketClient();
+
   @override
   void initState() {
     super.initState();
     _messageWatcher = ever<List<Message>>(chatController.messages, (_) {
       _scrollToBottom();
+    });
+    _setupSocketListeners();
+    _joinChatRoom();
+  }
+
+
+    void _joinChatRoom() {
+   
+     final customerId= widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+    final driverId = widget.selectedDriver?.driver.userId.id ?? '';// adjust field name
+
+    if (driverId == null || customerId == null) return;
+
+    // Save participants in controller (for sendMessage)
+    chatController.setParticipants(
+      senderId: customerId ,
+      receiverId: driverId,
+    );
+
+    socketClient.emit('join-chat', {
+      'senderId': customerId,
+      'receiverId': driverId,
+    });
+  }
+
+
+  void _setupSocketListeners() {
+    // when backend broadcasts messages
+    socketClient.on('receive-message', (data) {
+      // backend currently does: io.to(chatRoom).emit('receive-message', message);
+      // so `data` is just the text string
+      chatController.onIncomingMessage(data);
+    });
+
+    socketClient.on('user-typing', (data) {
+      chatController.isTyping.value = true;
+    });
+
+    socketClient.on('user-stop-typing', (data) {
+      chatController.isTyping.value = false;
     });
   }
 
@@ -47,11 +95,35 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
     _messageWatcher?.dispose();
     messageController.dispose();
     scrollController.dispose();
+
+    final p = chatController.participants;
+    if (p != null) {
+      socketClient.emit('leave-chat', {
+        'senderId': p.senderId,
+        'receiverId': p.receiverId,
+      });
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    final driverImage = widget.selectedDriver?.driver.userId.profileImage;
+   // final rideId= widget.rideBookingInfoFromResponse?.data?.rideId ?? '';
+
+final contactName =
+        widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value;
+    final contactPhone =  widget.selectedDriver?.driver.userId.phoneNumber ?? '';
+    final contactRating =  widget.selectedDriver?.driver.ratings.totalRatings;
+    final contactAvatar = _avatarImageProvider(widget.selectedDriver?.driver.userId.profileImage);
+    final subtitleParts = <String>[
+    
+      if (contactRating != null)
+        '${contactRating.toStringAsFixed(1)} rating',
+      if (contactPhone.isNotEmpty) contactPhone,
+    ];
+
     return Scaffold(
       backgroundColor: _chatBackground,
       appBar: AppBar(
@@ -67,8 +139,8 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
             CircleAvatar(
               radius: 18,
               backgroundColor: Colors.white,
-              backgroundImage: _avatarImageProvider(widget.receiverAvatar),
-              child: _avatarImageProvider(widget.receiverAvatar) == null
+              backgroundImage: _avatarImageProvider(driverImage),
+              child: _avatarImageProvider(driverImage) == null
                   ? const Icon(Icons.person, color: Colors.black87)
                   : null,
             ),
@@ -77,7 +149,7 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.receiverName ?? chatController.supportAgentName.value,
+                  widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -141,9 +213,9 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
                           ? appController.userName.value[0].toUpperCase()
                           : '',
                       receiverName:
-                          widget.receiverName ??
+                          widget.selectedDriver?.driver.userId.fullName ??
                           chatController.supportAgentName.value,
-                      receiverAvatar: widget.receiverAvatar,
+                      receiverAvatar: widget.selectedDriver?.driver.userId.profileImage ?? '',
                     );
                   },
                 ),

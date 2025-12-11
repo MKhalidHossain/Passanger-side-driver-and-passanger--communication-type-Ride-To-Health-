@@ -106,6 +106,8 @@ class ConfirmYourLocationScreen extends StatelessWidget {
         Get.to(
           () => FindingYourDriverScreen(
             selectedDriver: selectedDriver,
+            rideBookingInfoFromResponse: response
+            
           ),
         );
       } else {

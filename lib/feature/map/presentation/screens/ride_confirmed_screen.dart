@@ -8,6 +8,7 @@ import 'package:rideztohealth/helpers/custom_snackbar.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/normal_custom_button.dart';
 import '../../../../core/widgets/normal_custom_icon_button.dart';
+import '../../../home/domain/reponse_model/request_ride_response_model.dart';
 import '../../../profileAndHistory/presentation/screens/wallet_screen.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/booking_controller.dart';
@@ -20,9 +21,14 @@ import 'chat_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class RideConfirmedScreen extends StatefulWidget {
-  const RideConfirmedScreen({Key? key, this.selectedDriver}) : super(key: key);
+  const RideConfirmedScreen({
+  Key? key,
+  this.selectedDriver, 
+  this.rideBookingInfoFromResponse
+  }) : super(key: key);
 
   final NearestDriverData? selectedDriver;
+    final RequestRideResponseModel ? rideBookingInfoFromResponse;
 
   @override
   State<RideConfirmedScreen> createState() => _RideConfirmedScreenState();
@@ -440,14 +446,9 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                               onPressed: () {
                                 Get.to(
                                   () => ChatScreenRTH(
-                                    receiverName: widget.selectedDriver
-                                            ?.driver.userId.fullName ??
-                                        'Customer Support',
-                                    receiverAvatar: widget
-                                        .selectedDriver
-                                        ?.driver
-                                        .userId
-                                        .profileImage,
+                                    selectedDriver: widget.selectedDriver,
+                                    rideBookingInfoFromResponse:
+                                        widget.rideBookingInfoFromResponse,
                                   ),
                                 );
                               },

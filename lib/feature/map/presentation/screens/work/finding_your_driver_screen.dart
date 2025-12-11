@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import '../../../../home/domain/reponse_model/request_ride_response_model.dart';
+import '../../../../home/domain/request_model/ride_booking_info_request_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
@@ -12,10 +14,14 @@ import '../ride_confirmed_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class FindingYourDriverScreen extends StatefulWidget {
-  const FindingYourDriverScreen({Key? key, this.selectedDriver})
+  const FindingYourDriverScreen({Key? key,
+   this.selectedDriver, 
+    this.rideBookingInfoFromResponse})
       : super(key: key);
 
   final NearestDriverData? selectedDriver;
+  final RequestRideResponseModel ? rideBookingInfoFromResponse;
+
 
   @override
   State<FindingYourDriverScreen> createState() =>
@@ -45,6 +51,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
       Get.to(
         () => RideConfirmedScreen(
           selectedDriver: widget.selectedDriver,
+          rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
         ),
       ); // Replace with your screen
     });
