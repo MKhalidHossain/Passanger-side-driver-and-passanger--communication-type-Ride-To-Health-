@@ -176,29 +176,29 @@ class PaymentScreen extends StatelessWidget {
               // Action Buttons
               Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Get.to(() => ChatScreenRTH()),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF34495E),
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.chat, color: Colors.white),
-                          SizedBox(width: 8),
-                          Text(
-                            'Support',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     // onPressed: () => Get.to(() => ChatScreenRTH()),
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: Color(0xFF34495E),
+                  //       padding: EdgeInsets.symmetric(vertical: 16),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //     ),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Icon(Icons.chat, color: Colors.white),
+                  //         SizedBox(width: 8),
+                  //         Text(
+                  //           'Support',
+                  //           style: TextStyle(color: Colors.white),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   SizedBox(width: 16),
                   Expanded(
                     flex: 2,

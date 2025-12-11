@@ -1,7 +1,13 @@
+String? _normalizeStripeId(String? raw) {
+  if (raw == null) return null;
+  final value = raw.trim();
+  return value.isEmpty ? null : value;
+}
+
 class GetSearchDestinationForFindNearestDriversResponseModel {
   final bool ?success;
-  final dynamic message;
-  final List<DriverData> ?data;
+  final String ?message;
+  final List<NearestDriverData> ?data;
 
   GetSearchDestinationForFindNearestDriversResponseModel({
      this.success,
@@ -12,147 +18,172 @@ class GetSearchDestinationForFindNearestDriversResponseModel {
   factory GetSearchDestinationForFindNearestDriversResponseModel.fromJson(
       Map<String, dynamic> json) {
     return GetSearchDestinationForFindNearestDriversResponseModel(
-      success: json['success'] ?? false,
-      message: json['message']?.toString() ?? "",
-      data: (json['data'] as List<dynamic>? ?? [])
-          .map((e) => DriverData.fromJson(e))
+      success: json['success'] as bool,
+      message: json['message'] as String,
+      data: (json['data'] as List<dynamic>)
+          .map((e) => NearestDriverData.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
-}
 
-class DriverData {
-  final CurrentLocation? currentLocation;
-  final Earnings? earnings;
-  final Ratings? ratings;
-  final String? vehicleId;
-  final String id;
-  final UserId? userId;
-  final String? licenseNumber;
-  final String? licenseImage;
-  final String? nidNumber;
-  final String? nidImage;
-  final String? selfieImage;
-  final Vehicle? vehicle;
-  final List<String> serviceTypes;
-  final String? status;
-  final bool isOnline;
-  final bool isAvailable;
-  final List<dynamic> withdrawals;
-  final List<dynamic> suspensions;
-  final String createdAt;
-  final int v;
-  final double heading;
-  final double speed;
-  final String? stripeDriverId;
-  final String? city;
-  final String? dateOfBirth;
-  final EmergencyContact? emergencyContact;
-  final String? state;
-  final String? streetAddress;
-  final String? zipcode;
-  final String? currentRideId;
-  final List<dynamic> paymentMethods;
-
-  DriverData({
-    this.currentLocation,
-    this.earnings,
-    this.ratings,
-    this.vehicleId,
-    required this.id,
-    this.userId,
-    this.licenseNumber,
-    this.licenseImage,
-    this.nidNumber,
-    this.nidImage,
-    this.selfieImage,
-    this.vehicle,
-    required this.serviceTypes,
-    this.status,
-    required this.isOnline,
-    required this.isAvailable,
-    required this.withdrawals,
-    required this.suspensions,
-    required this.createdAt,
-    required this.v,
-    required this.heading,
-    required this.speed,
-    this.stripeDriverId,
-    this.city,
-    this.dateOfBirth,
-    this.emergencyContact,
-    this.state,
-    this.streetAddress,
-    this.zipcode,
-    this.currentRideId,
-    required this.paymentMethods,
-  });
-
-  factory DriverData.fromJson(Map<String, dynamic> json) {
-    return DriverData(
-      currentLocation: json['currentLocation'] != null
-          ? CurrentLocation.fromJson(json['currentLocation'])
-          : null,
-      earnings:
-          json['earnings'] != null ? Earnings.fromJson(json['earnings']) : null,
-      ratings:
-          json['ratings'] != null ? Ratings.fromJson(json['ratings']) : null,
-      vehicleId: json['vehicleId'],
-      id: json['_id'],
-      userId: json['userId'] != null ? UserId.fromJson(json['userId']) : null,
-      licenseNumber: json['licenseNumber'],
-      licenseImage: json['licenseImage'],
-      nidNumber: json['nidNumber'],
-      nidImage: json['nidImage'],
-      selfieImage: json['selfieImage'],
-      vehicle:
-          json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
-      serviceTypes:
-          (json['serviceTypes'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
-      status: json['status'],
-      isOnline: json['isOnline'] ?? false,
-      isAvailable: json['isAvailable'] ?? false,
-      withdrawals: json['withdrawals'] ?? [],
-      suspensions: json['suspensions'] ?? [],
-      createdAt: json['createdAt'] ?? "",
-      v: json['__v'] ?? 0,
-      heading: (json['heading'] ?? 0).toDouble(),
-      speed: (json['speed'] ?? 0).toDouble(),
-      stripeDriverId: json['stripeDriverId'],
-      city: json['city'],
-      dateOfBirth: json['date_of_birth'],
-      emergencyContact: json['emergency_contact'] != null
-          ? EmergencyContact.fromJson(json['emergency_contact'])
-          : null,
-      state: json['state'],
-      streetAddress: json['street_address'],
-      zipcode: json['zipcode'],
-      currentRideId: json['currentRideId'],
-      paymentMethods: json['paymentMethods'] ?? [],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'message': message,
+      'data': data!.map((e) => e.toJson()).toList(),
+    };
   }
 }
 
+class NearestDriverData {
+  final Driver driver;
+  final Vehicle vehicle;
+  final Service service;
+
+  NearestDriverData({
+    required this.driver,
+    required this.vehicle,
+    required this.service,
+  });
+
+  factory NearestDriverData.fromJson(Map<String, dynamic> json) {
+    return NearestDriverData(
+      driver: Driver.fromJson(json['driver'] as Map<String, dynamic>),
+      vehicle: Vehicle.fromJson(json['vehicle'] as Map<String, dynamic>),
+      service: Service.fromJson(json['service'] as Map<String, dynamic>),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'driver': driver.toJson(),
+      'vehicle': vehicle.toJson(),
+      'service': service.toJson(),
+    };
+  }
+}
+
+class Driver {
+  final CurrentLocation currentLocation;
+  final Earnings earnings;
+  final Ratings ratings;
+  final String id;
+  final DriverUserId userId;
+  final String vehicleId;
+  final String status;
+  final bool isAvailable;
+  final num heading;
+  final bool isOnline;
+  final num speed;
+  final num? accuracy;
+  final List<dynamic> paymentMethods;
+  final List<dynamic> withdrawals;
+  final String? stripeDriverId;
+  final int v;
+
+  Driver({
+    required this.currentLocation,
+    required this.earnings,
+    required this.ratings,
+    required this.id,
+    required this.userId,
+    required this.vehicleId,
+    required this.status,
+    required this.isAvailable,
+    required this.heading,
+    required this.isOnline,
+    required this.speed,
+    this.accuracy,
+    required this.paymentMethods,
+    required this.withdrawals,
+    this.stripeDriverId,
+    required this.v,
+  });
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+      currentLocation:
+          CurrentLocation.fromJson(json['currentLocation'] as Map<String, dynamic>),
+      earnings: Earnings.fromJson(json['earnings'] as Map<String, dynamic>),
+      ratings: Ratings.fromJson(json['ratings'] as Map<String, dynamic>),
+      id: json['_id'] as String,
+      userId: DriverUserId.fromJson(json['userId'] as Map<String, dynamic>),
+      vehicleId: json['vehicleId'] as String,
+      status: json['status'] as String,
+      isAvailable: json['isAvailable'] as bool,
+      heading: json['heading'] as num,
+      isOnline: json['isOnline'] as bool,
+      speed: json['speed'] as num,
+      accuracy: json['accuracy'] as num?,
+      paymentMethods: (json['paymentMethods'] as List<dynamic>?) ?? [],
+      withdrawals: (json['withdrawals'] as List<dynamic>?) ?? [],
+      stripeDriverId: _normalizeStripeId(
+        json['stripeDriverId'] as String? ??
+            json['stripe_account_id'] as String? ??
+            json['stripeAccountId'] as String? ??
+            json['stripeAccount'] as String? ??
+            json['stripeId'] as String? ??
+            json['stripe'] as String?,
+      ),
+      v: json['__v'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'currentLocation': currentLocation.toJson(),
+      'earnings': earnings.toJson(),
+      'ratings': ratings.toJson(),
+      '_id': id,
+      'userId': userId.toJson(),
+      'vehicleId': vehicleId,
+      'status': status,
+      'isAvailable': isAvailable,
+      'heading': heading,
+      'isOnline': isOnline,
+      'speed': speed,
+      'accuracy': accuracy,
+      'paymentMethods': paymentMethods,
+      'withdrawals': withdrawals,
+      if (stripeDriverId != null) 'stripeDriverId': stripeDriverId,
+      '__v': v,
+    };
+  }
+
+  String? get payoutAccountId =>
+      stripeDriverId ?? userId.payoutAccountId;
+}
+
 class CurrentLocation {
-  final String? type;
+  final String type;
   final List<double> coordinates;
 
-  CurrentLocation({this.type, required this.coordinates});
+  CurrentLocation({
+    required this.type,
+    required this.coordinates,
+  });
 
   factory CurrentLocation.fromJson(Map<String, dynamic> json) {
     return CurrentLocation(
-      type: json['type'],
+      type: json['type'] as String,
       coordinates: (json['coordinates'] as List<dynamic>)
           .map((e) => (e as num).toDouble())
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'coordinates': coordinates,
+    };
+  }
 }
 
 class Earnings {
-  final double total;
-  final double available;
-  final double withdrawn;
+  final num total;
+  final num available;
+  final num withdrawn;
 
   Earnings({
     required this.total,
@@ -162,16 +193,23 @@ class Earnings {
 
   factory Earnings.fromJson(Map<String, dynamic> json) {
     return Earnings(
-      total: (json['total'] as num).toDouble(),
-      available: (json['available'] as num).toDouble(),
-      withdrawn: (json['withdrawn'] as num).toDouble(),
+      total: json['total'] as num,
+      available: json['available'] as num,
+      withdrawn: json['withdrawn'] as num,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'total': total,
+      'available': available,
+      'withdrawn': withdrawn,
+    };
   }
 }
 
 class Ratings {
-  final double average;
-  final int count;
+  final num average;
   final int count1;
   final int count2;
   final int count3;
@@ -181,7 +219,6 @@ class Ratings {
 
   Ratings({
     required this.average,
-    required this.count,
     required this.count1,
     required this.count2,
     required this.count3,
@@ -192,81 +229,225 @@ class Ratings {
 
   factory Ratings.fromJson(Map<String, dynamic> json) {
     return Ratings(
-      average: (json['average'] as num).toDouble(),
-      count: json['count'] ?? 0,
-      count1: json['count1'] ?? 0,
-      count2: json['count2'] ?? 0,
-      count3: json['count3'] ?? 0,
-      count4: json['count4'] ?? 0,
-      count5: json['count5'] ?? 0,
-      totalRatings: json['totalRatings'] ?? 0,
+      average: json['average'] as num,
+      count1: json['count1'] as int,
+      count2: json['count2'] as int,
+      count3: json['count3'] as int,
+      count4: json['count4'] as int,
+      count5: json['count5'] as int,
+      totalRatings: json['totalRatings'] as int,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'average': average,
+      'count1': count1,
+      'count2': count2,
+      'count3': count3,
+      'count4': count4,
+      'count5': count5,
+      'totalRatings': totalRatings,
+    };
   }
 }
 
-class UserId {
+class DriverUserId {
   final String id;
   final String fullName;
   final String phoneNumber;
+  final String? profileImage;
+  final String? stripeAccountId;
 
-  UserId({
+  DriverUserId({
     required this.id,
     required this.fullName,
     required this.phoneNumber,
+    this.profileImage,
+    this.stripeAccountId,
   });
 
-  factory UserId.fromJson(Map<String, dynamic> json) {
-    return UserId(
-      id: json['_id'],
-      fullName: json['fullName'],
-      phoneNumber: json['phoneNumber'],
+  factory DriverUserId.fromJson(Map<String, dynamic> json) {
+    return DriverUserId(
+      id: json['_id'] as String,
+      fullName: json['fullName'] as String,
+      phoneNumber: json['phoneNumber'] as String,
+      profileImage: json['profileImage'] as String?,
+      stripeAccountId: _normalizeStripeId(
+        json['stripeAccountId'] as String? ??
+            json['stripe_account_id'] as String? ??
+            json['stripeAccount'] as String? ??
+            json['stripeId'] as String? ??
+            json['stripe'] as String?,
+      ),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'fullName': fullName,
+      'phoneNumber': phoneNumber,
+      'profileImage': profileImage,
+      if (stripeAccountId != null) 'stripeAccountId': stripeAccountId,
+    };
+  }
+
+  String? get payoutAccountId => stripeAccountId;
 }
 
 class Vehicle {
-  final String? type;
-  final String? model;
-  final int? year;
-  final String? plateNumber;
-  final String? color;
-  final String? image;
+  final String id;
+  final String serviceId;
+  final String driverId;
+  final String taxiName;
+  final String model;
+  final String plateNumber;
+  final String color;
+  final int year;
+  final String vin;
+  final bool assignedDrivers;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int v;
 
   Vehicle({
-    this.type,
-    this.model,
-    this.year,
-    this.plateNumber,
-    this.color,
-    this.image,
+    required this.id,
+    required this.serviceId,
+    required this.driverId,
+    required this.taxiName,
+    required this.model,
+    required this.plateNumber,
+    required this.color,
+    required this.year,
+    required this.vin,
+    required this.assignedDrivers,
+    this.createdAt,
+    this.updatedAt,
+    required this.v,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     return Vehicle(
-      type: json['type'],
-      model: json['model'],
-      year: json['year'],
-      plateNumber: json['plateNumber'],
-      color: json['color'],
-      image: json['image'],
+      id: json['_id'] as String,
+      serviceId: json['serviceId'] as String,
+      driverId: json['driverId'] as String,
+      taxiName: json['taxiName'] as String,
+      model: json['model'] as String,
+      plateNumber: json['plateNumber'] as String,
+      color: json['color'] as String,
+      year: json['year'] as int,
+      vin: json['vin'] as String,
+      assignedDrivers: json['assignedDrivers'] as bool,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : null,
+      v: json['__v'] as int,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'serviceId': serviceId,
+      'driverId': driverId,
+      'taxiName': taxiName,
+      'model': model,
+      'plateNumber': plateNumber,
+      'color': color,
+      'year': year,
+      'vin': vin,
+      'assignedDrivers': assignedDrivers,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      '__v': v,
+    };
   }
 }
 
-class EmergencyContact {
-  final String? name;
-  final String? phoneNumber;
+class Service {
+  final String id;
+  final String name;
+  final String description;
+  final num baseFare;
+  final String serviceImage;
+  final num perKmRate;
+  final num perMinuteRate;
+  final num minimumFare;
+  final num cancellationFee;
+  final int capacity;
+  final bool isActive;
+  final List<dynamic> features;
+  final int estimatedArrivalTime;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int v;
 
-  EmergencyContact({
+  Service({
+    required this.id,
     required this.name,
-    this.phoneNumber,
+    required this.description,
+    required this.baseFare,
+    required this.serviceImage,
+    required this.perKmRate,
+    required this.perMinuteRate,
+    required this.minimumFare,
+    required this.cancellationFee,
+    required this.capacity,
+    required this.isActive,
+    required this.features,
+    required this.estimatedArrivalTime,
+    this.createdAt,
+    this.updatedAt,
+    required this.v,
   });
 
-  factory EmergencyContact.fromJson(Map<String, dynamic> json) {
-    return EmergencyContact(
-      name: json['name']?.toString(),
-      phoneNumber: json['phoneNumber']?.toString(),
+  factory Service.fromJson(Map<String, dynamic> json) {
+    return Service(
+      id: json['_id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      baseFare: json['baseFare'] as num,
+      serviceImage: json['serviceImage'] as String,
+      perKmRate: json['perKmRate'] as num,
+      perMinuteRate: json['perMinuteRate'] as num,
+      minimumFare: json['minimumFare'] as num,
+      cancellationFee: json['cancellationFee'] as num,
+      capacity: json['capacity'] as int,
+      isActive: json['isActive'] as bool,
+      features: (json['features'] as List<dynamic>?) ?? [],
+      estimatedArrivalTime: json['estimatedArrivalTime'] as int,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'] as String)
+          : null,
+      v: json['__v'] as int,
     );
   }
-}
 
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'description': description,
+      'baseFare': baseFare,
+      'serviceImage': serviceImage,
+      'perKmRate': perKmRate,
+      'perMinuteRate': perMinuteRate,
+      'minimumFare': minimumFare,
+      'cancellationFee': cancellationFee,
+      'capacity': capacity,
+      'isActive': isActive,
+      'features': features,
+      'estimatedArrivalTime': estimatedArrivalTime,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+      '__v': v,
+    };
+  }
+}

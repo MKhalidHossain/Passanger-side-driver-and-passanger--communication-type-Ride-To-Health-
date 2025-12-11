@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
@@ -18,10 +20,17 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
   final LocationController locationController = Get.find<LocationController>();
 
   late HomeController homeController;
-
   final BookingController bookingController = Get.find<BookingController>();
 
   final AppController appController = Get.find<AppController>();
+
+  final RxString currentLocation = ''.obs;
+
+  // Bottom sheet height control (adjust default to change initial height)
+  static const double _sheetInitialSize = 0.45; // 40% height by default
+
+  List<NearestDriverData> _latestNearbyDrivers = [];
+  NearestDriverData? _selectedDriver;
 
   // Calculate estimated time based on distance
   String _calculateEstimatedTime(double distanceKm) {
@@ -41,18 +50,29 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
   }
 
   // Calculate estimated price based on distance
-  String _calculateEstimatedPrice(double distanceKm) {
-    // Base fare + per km rate
-    double baseFare = 5.0;
-    double perKmRate = 2.5;
-    double price = baseFare + (distanceKm * perKmRate);
+  String _calculateEstimatedPrice(
+    double distanceKm, {
+    num? baseFare,
+    num? perKmRate,
+    num? minimumFare,
+  }) {
+    // Base fare + per km rate with graceful defaults
+    final double resolvedBaseFare = (baseFare ?? 5).toDouble();
+    final double resolvedPerKmRate = (perKmRate ?? 2.5).toDouble();
+    double price = resolvedBaseFare + (distanceKm * resolvedPerKmRate);
+
+    // Respect minimum fare when provided
+    if (minimumFare != null) {
+      price = price < minimumFare ? minimumFare.toDouble() : price;
+    }
+
     return price.toStringAsFixed(2);
   }
 
   @override
   void initState() {
     super.initState();
-    print("this is for print forom car selection 4545454545454");
+    homeController = Get.find<HomeController>();
     locationController.getCurrentLocation().then((value) {
       getCarData();
     });
@@ -61,35 +81,24 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
     // homeController = Get.find<HomeController>();
     //   print("this is for print forom car selection 00000000000000");
     // 2. React to changes in currentLocation
-    
   }
 
   void getCarData() async {
-
-    homeController = Get.find<HomeController>();
-
-    print("this is for print forom car selection 00000000000000");
-
-    debugPrint("this is for print forom car selection 1");
-    if (locationController.currentLocation.value != null) {
+    final current = locationController.currentLocation.value;
+    if (current != null) {
       debugPrint(
-        "this is for print ll ${locationController.currentLocation.value!.latitude.toString()},",
+        " CarSelectionMapScreen: fetching nearby drivers for ${current.latitude}, ${current.longitude}",
       );
       try {
         await homeController.getSearchDestinationForFindNearestDrivers(
-          '1','1'
-          // locationController.currentLocation.value!.latitude.toString(),
-          // locationController.currentLocation.value!.longitude.toString(),
+          current.latitude.toString(),
+          current.longitude.toString(),
         );
       } catch (e) {
         print(
           "⚠️ Error fetching CarSelectionMapScreen : getSearchDestinationForFindNearestDrivers : $e\n",
         );
       }
-
-      debugPrint(
-        "this is for print ll ${locationController.currentLocation.value!.latitude.toString()},",
-      );
     } else {
       debugPrint("location are not found");
     }
@@ -231,428 +240,456 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
               ),
             ),
 
-            // Bottom Sheet
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.only(
-                  top: 10,
-                  left: 20,
-                  right: 20,
-                  bottom: MediaQuery.of(context).padding.bottom + 10,
-                ),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2E2E38),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+            // Bottom Sheet (draggable, defaults to 40% height)
+            DraggableScrollableSheet(
+              initialChildSize: _sheetInitialSize,
+              minChildSize: 0.45,
+              maxChildSize: 0.9,
+              builder: (context, scrollController) {
+                return Container(
+                  padding: EdgeInsets.only(
+                    top: 10,
+                    left: 20,
+                    right: 20,
+                    bottom: MediaQuery.of(context).padding.bottom + 10,
                   ),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      height: 5,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[700],
-                        borderRadius: BorderRadius.circular(2.5),
-                      ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF2E2E38),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        GestureDetector(
-                          onTap: () => Get.back(),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const Text(
-                          'Set Ride',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 24),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Distance and time info
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        // color: const Color(0xFF3B3B42),
-                        color: Colors.white10,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              const Text(
-                                'Distance',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Obx(
-                                () => Text(
-                                  '${locationController.distance.value.toStringAsFixed(1)} km',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            height: 30,
-                            width: 1,
+                        Container(
+                          height: 5,
+                          width: 50,
+                          decoration: BoxDecoration(
                             color: Colors.grey[700],
+                            borderRadius: BorderRadius.circular(2.5),
                           ),
-                          Column(
-                            children: [
-                              const Text(
-                                'Est. Time',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
+                        ),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () => Get.back(),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
                               ),
-                              const SizedBox(height: 4),
-                              Obx(
-                                () => Text(
-                                  _calculateEstimatedTime(
-                                    locationController.distance.value,
-                                  ),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    GetBuilder<HomeController>(
-                      builder: (homeController) {
-                        print(
-                          "this is for print forom car selection 3333333333333333",
-                        );
-                        // 1️⃣ Loader check
-                        if (homeController.isLoading ||
-                            locationController.currentLocation.value == null) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        print(
-                          "this is for print forom car selection 44444444444444",
-                        );
-                        final model = homeController
-                            .getSearchDestinationForFindNearestDriversResponseModel;
-
-                        print(
-                          "this is for print forom car selection :${model.data?.first.licenseNumber}",
-                        );
-
-                        // 2️⃣ Empty check
-                        if (model.data == null || model.data!.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              "No nearby drivers found",
-                              style: TextStyle(color: Colors.white),
                             ),
-                          );
-                        }
-
-                        // 3️⃣ LIST VIEW FOR ALL DRIVERS
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: model.data!.length,
-                          itemBuilder: (context, index) {
-                            final driver = model.data![index];
-                            final vehicle = driver.vehicle;
-                            final user = driver.userId;
-
-                            final carName = vehicle?.model ?? "Unknown model";
-                            final carType = vehicle?.type ?? "Unknown type";
-                            final carImage =
-                                vehicle?.image ??
-                                'assets/images/privet_car.png';
-                            final driverName =
-                                user?.fullName ?? "Unknown driver";
-
-                            print("Driver $index Car: $carName");
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 15),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 15,
+                            const Text(
+                              'Set Ride',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              decoration: BoxDecoration(
-                                color: Colors.white10,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
+                            ),
+                            const SizedBox(width: 24),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Distance and time info
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white10,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
                                 children: [
-                                  // Vehicle Image
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      carImage,
-                                      height: 60,
-                                      width: 80,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) {
-                                        return Image.asset(
-                                          'assets/images/privet_car.png',
-                                          height: 60,
-                                          width: 80,
-                                          fit: BoxFit.cover,
-                                        );
-                                      },
+                                  const Text(
+                                    'Distance',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                  const SizedBox(width: 15),
-
-                                  // Vehicle + Driver Info
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          carName, // CAR NAME
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "$carType • $driverName", // Car type + Driver name
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ],
+                                  const SizedBox(height: 4),
+                                  Obx(
+                                    () => Text(
+                                      '${locationController.distance.value.toStringAsFixed(1)} km',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    // Car option 1
-                    // GetBuilder<HomeController>(
-                    //   builder: (homeController){
-                    //    final vehicleName =  homeController.getSearchDestinationForFindNearestDriversResponseModel.data?.first.vehicle?.model;
-                    //    print('Frist vehicleName : $vehicleName');
-                    //   return (homeController.isLoading || locationController.currentLocation.value == null)
-                    //   ? const Center(child: CircularProgressIndicator(),)
-                    //   : Container(
-                    //     padding: const EdgeInsets.symmetric(
-                    //       vertical: 10,
-                    //       horizontal: 15,
-                    //     ),
-                    //     decoration: BoxDecoration(
-                    //       // color: const Color(0xFF3B3B42),
-                    //       color:  Colors.white10,
-                    //       borderRadius: BorderRadius.circular(10),
-                    //     ),
-                    //     child: Row(
-                    //       children: [
-                    //         Image.asset(
-                    //           'assets/images/privet_car.png',
-                    //           width: 80,
-                    //           height: 50,
-                    //           fit: BoxFit.contain,
-                    //         ),
-                    //         const SizedBox(width: 15),
-                    //         Expanded(
-                    //           child: Column(
-                    //             crossAxisAlignment: CrossAxisAlignment.start,
-                    //             children: const [
-                    //               Text(
-                    //                 'Copen GR SPORT',
-                    //                 style: TextStyle(
-                    //                   color: Colors.white,
-                    //                   fontSize: 16,
-                    //                   fontWeight: FontWeight.bold,
-                    //                 ),
-                    //               ),
-                    //               Text(
-                    //                 'Affordable rides for everyday',
-                    //                 style: TextStyle(
-                    //                   color: Colors.grey,
-                    //                   fontSize: 13,
-                    //                 ),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ),
-                    //         Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.end,
-                    //           children: [
-                    //             Obx(
-                    //               () => Text(
-                    //                 '\$${_calculateEstimatedPrice(locationController.distance.value)}',
-                    //                 style: const TextStyle(
-                    //                   color: Colors.white,
-                    //                   fontSize: 16,
-                    //                   fontWeight: FontWeight.bold,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //             Obx(
-                    //               () => Text(
-                    //                 _calculateEstimatedTime(
-                    //                   locationController.distance.value,
-                    //                 ),
-                    //                 style: const TextStyle(
-                    //                   color: Colors.grey,
-                    //                   fontSize: 13,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   );
-                    // }
-
-                    // ),
-                    const SizedBox(height: 20),
-
-                    // Car option 2
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B3B42),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/texi.png',
-                            width: 80,
-                            height: 50,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  'Taxi Service',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Standard taxi service',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Obx(
-                                () => Text(
-                                  '\$${(double.parse(_calculateEstimatedPrice(locationController.distance.value)) * 0.9).toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              Container(
+                                height: 30,
+                                width: 1,
+                                color: Colors.grey[700],
                               ),
-                              Obx(
-                                () => Text(
-                                  _calculateEstimatedTime(
-                                    locationController.distance.value,
+                              Column(
+                                children: [
+                                  const Text(
+                                    'Est. Time',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
+                                  const SizedBox(height: 4),
+                                  Obx(
+                                    () => Text(
+                                      _calculateEstimatedTime(
+                                        locationController.distance.value,
+                                      ),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30),
+                        ),
+                        const SizedBox(height: 2),
+                        GetBuilder<HomeController>(
+                          builder: (homeController) {
+                            final isBusy =
+                                homeController.isLoading ||
+                                locationController.currentLocation.value ==
+                                    null;
 
-                    // Choose car button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          appController.setCurrentScreen('confirm');
-                          Get.to(() => ConfirmYourLocationScreen());
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFC0392B),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                            if (isBusy) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            final model = homeController
+                                .getSearchDestinationForFindNearestDriversResponseModel;
+                            final nearbyDrivers = model.data ?? [];
+                            _latestNearbyDrivers = nearbyDrivers;
+
+                            final selectedDriverId = _selectedDriver?.driver.id;
+                            final selectedStillExists = selectedDriverId != null &&
+                                nearbyDrivers.any(
+                                  (driver) => driver.driver.id == selectedDriverId,
+                                );
+
+                            if (nearbyDrivers.length == 1) {
+                              // Auto-pick when only one option exists.
+                              _selectedDriver = nearbyDrivers.first;
+                            } else if (!selectedStillExists) {
+                              // Require an explicit tap when multiple cars are available.
+                              _selectedDriver = null;
+                            }
+
+                            if (nearbyDrivers.isEmpty) {
+                              return const Center(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      "No nearby drivers found",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              itemCount: nearbyDrivers.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final data = nearbyDrivers[index];
+                                final vehicle = data.vehicle;
+                                final driver = data.driver;
+                                final user = driver.userId;
+                                final service = data.service;
+
+                                final carName = service.name.isNotEmpty
+                                    ? service.name
+                                    : vehicle.model;
+                                final driverName = user.fullName;
+                                final carDetails =
+                                    "${vehicle.taxiName} • Plate ${vehicle.plateNumber}";
+                                final carImage = service.serviceImage;
+                                final eta = service.estimatedArrivalTime > 0
+                                    ? "${service.estimatedArrivalTime} min"
+                                    : _calculateEstimatedTime(
+                                        locationController.distance.value,
+                                      );
+                                final price = _calculateEstimatedPrice(
+                                  locationController.distance.value,
+                                  baseFare: service.baseFare,
+                                  perKmRate: service.perKmRate,
+                                  minimumFare: service.minimumFare,
+                                );
+                                final rating = driver.ratings.average
+                                    .toStringAsFixed(1);
+                                final isSelected =
+                                    _selectedDriver?.driver.id ==
+                                    data.driver.id;
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedDriver = data;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? Colors.white24
+                                          : Colors.white10,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? Colors.redAccent
+                                            : Colors.transparent,
+                                        width: 1.2,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Vehicle Image
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          child: Image.network(
+                                            carImage,
+                                            height: 60,
+                                            width: 80,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) {
+                                              return Image.asset(
+                                                'assets/images/privet_car.png',
+                                                height: 60,
+                                                width: 80,
+                                                fit: BoxFit.cover,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(width: 15),
+
+                                        // Vehicle + Driver Info
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                carName,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                carDetails,
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                "Driver: $driverName • ⭐ $rating",
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              '\$$price',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+
+                                            Obx(
+                                              () => Text(
+                                                _calculateEstimatedTime(
+                                                  locationController
+                                                      .distance
+                                                      .value,
+                                                ),
+                                                style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                            // Text(
+                                            //   eta,
+                                            //   style: const TextStyle(
+                                            //     color: Colors.grey,
+                                            //     fontSize: 12,
+                                            //   ),
+                                            // ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
-                        child: const Text(
-                          'Choose car',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+
+                        const SizedBox(height: 2),
+
+                        if (_latestNearbyDrivers.length > 1 &&
+                            _selectedDriver == null)
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 8.0),
+                            child: Text(
+                              'Select a car to enable the button',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
                           ),
+
+                        WideCustomButton(
+                          text: 'Choose car',
+                          enabled: _selectedDriver != null,
+                          onPressed: () {
+                            if (_selectedDriver == null &&
+                                _latestNearbyDrivers.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Please select a car to continue',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final chosen =
+                                _selectedDriver ??
+                                (_latestNearbyDrivers.isNotEmpty
+                                    ? _latestNearbyDrivers.first
+                                    : null);
+                            if (chosen == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Please select a car to continue',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            appController.setCurrentScreen('confirm');
+                            Get.to(
+                              () => ConfirmYourLocationScreen(
+                                selectedDriver: chosen,
+                              ),
+                            );
+                          },
                         ),
-                      ),
+
+                        // Choose car button
+                        // SizedBox(
+                        //   width: double.infinity,
+                        //   child: ElevatedButton(
+                        //     onPressed: () {
+                        //       if (_selectedDriver == null &&
+                        //           _latestNearbyDrivers.isEmpty) {
+                        //         ScaffoldMessenger.of(context).showSnackBar(
+                        //           const SnackBar(
+                        //             content:
+                        //                 Text('Please select a car to continue'),
+                        //           ),
+                        //         );
+                        //         return;
+                        //       }
+
+                        //       final chosen = _selectedDriver ??
+                        //           (_latestNearbyDrivers.isNotEmpty
+                        //               ? _latestNearbyDrivers.first
+                        //               : null);
+                        //       if (chosen == null) {
+                        //         ScaffoldMessenger.of(context).showSnackBar(
+                        //           const SnackBar(
+                        //             content:
+                        //                 Text('Please select a car to continue'),
+                        //           ),
+                        //         );
+                        //         return;
+                        //       }
+
+                        //       appController.setCurrentScreen('confirm');
+                        //       Get.to(
+                        //         () => ConfirmYourLocationScreen(
+                        //           selectedDriver: chosen,
+                        //         ),
+                        //       );
+                        //     },
+                        //     style: ElevatedButton.styleFrom(
+                        //       backgroundColor: const Color(0xFFC0392B),
+                        //       padding: const EdgeInsets.symmetric(vertical: 15),
+                        //       shape: RoundedRectangleBorder(
+                        //         borderRadius: BorderRadius.circular(10),
+                        //       ),
+                        //     ),
+                        //     child: const Text(
+                        //       'Choose car',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontSize: 16,
+                        //         fontWeight: FontWeight.bold,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
 
             // Loading overlay

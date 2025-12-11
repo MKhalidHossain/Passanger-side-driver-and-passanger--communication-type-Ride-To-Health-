@@ -1,14 +1,47 @@
 import 'package:get/get.dart';
+import '../../../helpers/remote/data/socket_client.dart';
 import '../domain/models/message.dart';
+
+
+class ChatParticipants {
+  final String senderId;
+  final String receiverId;
+
+  ChatParticipants({
+    required this.senderId,
+    required this.receiverId,
+  });
+}
 
 class ChatController extends GetxController {
   // Chat state
   var messages = <Message>[].obs;
   var isTyping = false.obs;
   var isConnected = true.obs;
-  
+
+  String? senderId;
+  String? receiverId;
+
+  final SocketClient socketClient = SocketClient();
+
+    // 🔹 Add this getter:
+  ChatParticipants? get participants {
+    if (senderId == null || receiverId == null) return null;
+    return ChatParticipants(
+      senderId: senderId!,
+      receiverId: receiverId!,
+    );
+  }
+
+    void setParticipants({
+    required String senderId,
+    required String receiverId,
+  }) {
+    this.senderId = senderId;
+    this.receiverId = receiverId;
+  }
   // Support agent info
-  var supportAgentName = 'Sarah Johnson'.obs;
+  var supportAgentName = 'Customer Name'.obs;
   var supportAgentStatus = 'Online'.obs;
   var supportAgentId = 'agent_001'.obs;
   
@@ -23,6 +56,11 @@ class ChatController extends GetxController {
     initializeChat();
   }
   
+   // Called from AppController
+  void setConnectionStatus(bool connected) {
+    isConnected.value = connected;
+    supportAgentStatus.value = connected ? 'Online' : 'Offline';
+  }
   void initializeChat() {
     // Add welcome message
     messages.add(Message(
@@ -44,35 +82,68 @@ class ChatController extends GetxController {
       supportAgentStatus.value = 'Online';
     });
   }
+
+
+    void onIncomingMessage(dynamic data) {
+    // If backend sends just text:
+    final text = data is String ? data : (data['message'] ?? '');
+
+    final msg = Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      text: text,
+      isFromUser: false,
+      timestamp: DateTime.now(),
+      status: MessageStatus.delivered,
+    );
+
+    messages.add(msg);
+    lastMessageTime.value = DateTime.now();
+  }
+
   
   void sendMessage(String text) {
     if (text.trim().isEmpty) return;
-    
-    // Add user message
+    if (senderId == null || receiverId == null) {
+      print('❌ senderId/receiverId not set');
+      return;
+    }
+
+    final cleanText = text.trim();
+
+    // 1) Update UI immediately
     final userMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      text: text.trim(),
+      text: cleanText,
       isFromUser: true,
       timestamp: DateTime.now(),
       status: MessageStatus.sending,
     );
-    
+
     messages.add(userMessage);
     lastMessageTime.value = DateTime.now();
-    
-    // Simulate message sending
-    Future.delayed(Duration(milliseconds: 500), () {
-      // Update message status to sent
-      final index = messages.indexWhere((m) => m.id == userMessage.id);
-      if (index != -1) {
-        messages[index] = userMessage.copyWith(status: MessageStatus.sent);
-        messages.refresh();
-      }
-      
-      // Simulate agent typing
-      simulateAgentResponse(text);
+
+    // 2) Emit through socket
+    socketClient.emit('send-message', {
+      'senderId': senderId,
+      'receiverId': receiverId,
+      'message': cleanText,
     });
+
+    // 3) Mark as sent (optimistic)
+    final index = messages.indexWhere((m) => m.id == userMessage.id);
+    if (index != -1) {
+      messages[index] = userMessage.copyWith(status: MessageStatus.sent);
+      messages.refresh();
+    }
+
+    // 4) (OPTIONAL) also call your REST API to store in DB
+    // Get.find<HomeController>().sendMessage(
+    //   SentMessageBody(
+    //     rideId: ..., sender: senderId!, recipient: receiverId!, message: cleanText,
+    //   ),
+    // );
   }
+
   
   void simulateAgentResponse(String userMessage) {
     // Show typing indicator
@@ -186,10 +257,10 @@ class ChatController extends GetxController {
   }
   
   // Connection management
-  void setConnectionStatus(bool connected) {
-    isConnected.value = connected;
-    supportAgentStatus.value = connected ? 'Online' : 'Offline';
-  }
+  // void setConnectionStatus(bool connected) {
+  //   isConnected.value = connected;
+  //   supportAgentStatus.value = connected ? 'Online' : 'Offline';
+  // }
   
   void reconnect() {
     isConnected.value = false;
@@ -220,3 +291,5 @@ class ChatController extends GetxController {
     ).toList();
   }
 }
+
+

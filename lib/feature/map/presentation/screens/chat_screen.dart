@@ -1,307 +1,464 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../helpers/remote/data/socket_client.dart';
+import '../../../home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import '../../../home/domain/reponse_model/request_ride_response_model.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/chat_controller.dart';
 import '../../domain/models/message.dart';
-import 'call_screen.dart';
 
-class ChatScreenRTH extends StatelessWidget {
+const Color _chatBackground = Color(0xFF2E3747);
+const Color _inputBackground = Color(0xFF252D3A);
+const Color _incomingBubble = Color(0xFFE9EDF0);
+const Color _outgoingBubble = Color(0xFFF1D9D8);
+const Color _accentRed = Color(0xFFE53935);
+
+ImageProvider? _avatarImageProvider(String? path) {
+  if (path == null || path.isEmpty) return null;
+  if (path.startsWith('http')) return NetworkImage(path);
+  return AssetImage(path);
+}
+
+class ChatScreenRTH extends StatefulWidget {
+  const ChatScreenRTH({Key? key, 
+   this.selectedDriver,
+   this.rideBookingInfoFromResponse
+   })
+    : super(key: key);
+
+  final NearestDriverData? selectedDriver;
+      final RequestRideResponseModel ? rideBookingInfoFromResponse;
+
+  @override
+  State<ChatScreenRTH> createState() => _ChatScreenRTHState();
+}
+
+class _ChatScreenRTHState extends State<ChatScreenRTH> {
   final ChatController chatController = Get.find<ChatController>();
   final AppController appController = Get.find<AppController>();
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  Worker? _messageWatcher;
+
+   final SocketClient socketClient = SocketClient();
+
+  @override
+  void initState() {
+    super.initState();
+    _messageWatcher = ever<List<Message>>(chatController.messages, (_) {
+      _scrollToBottom();
+    });
+    _setupSocketListeners();
+    _joinChatRoom();
+  }
+
+
+    void _joinChatRoom() {
+   
+     final customerId= widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+    final driverId = widget.selectedDriver?.driver.userId.id ?? '';// adjust field name
+
+    if (driverId == null || customerId == null) return;
+
+    // Save participants in controller (for sendMessage)
+    chatController.setParticipants(
+      senderId: customerId ,
+      receiverId: driverId,
+    );
+
+    socketClient.emit('join-chat', {
+      'senderId': customerId,
+      'receiverId': driverId,
+    });
+  }
+
+
+  void _setupSocketListeners() {
+    // when backend broadcasts messages
+    socketClient.on('receive-message', (data) {
+      // backend currently does: io.to(chatRoom).emit('receive-message', message);
+      // so `data` is just the text string
+      chatController.onIncomingMessage(data);
+    });
+
+    socketClient.on('user-typing', (data) {
+      chatController.isTyping.value = true;
+    });
+
+    socketClient.on('user-stop-typing', (data) {
+      chatController.isTyping.value = false;
+    });
+  }
+
+  @override
+  void dispose() {
+    _messageWatcher?.dispose();
+    messageController.dispose();
+    scrollController.dispose();
+
+    final p = chatController.participants;
+    if (p != null) {
+      socketClient.emit('leave-chat', {
+        'senderId': p.senderId,
+        'receiverId': p.receiverId,
+      });
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    final driverImage = widget.selectedDriver?.driver.userId.profileImage;
+   // final rideId= widget.rideBookingInfoFromResponse?.data?.rideId ?? '';
+
+final contactName =
+        widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value;
+    final contactPhone =  widget.selectedDriver?.driver.userId.phoneNumber ?? '';
+    final contactRating =  widget.selectedDriver?.driver.ratings.totalRatings;
+    final contactAvatar = _avatarImageProvider(widget.selectedDriver?.driver.userId.profileImage);
+    final subtitleParts = <String>[
+    
+      if (contactRating != null)
+        '${contactRating.toStringAsFixed(1)} rating',
+      if (contactPhone.isNotEmpty) contactPhone,
+    ];
+
     return Scaffold(
-      backgroundColor: Color(0xFF2C3E50),
+      backgroundColor: _chatBackground,
       appBar: AppBar(
-        backgroundColor: Color(0xFF2C3E50),
+        backgroundColor: _chatBackground,
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Get.back(),
         ),
+        titleSpacing: 0,
         title: Row(
           children: [
             CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.support_agent, color: Colors.white),
+              radius: 18,
+              backgroundColor: Colors.white,
+              backgroundImage: _avatarImageProvider(driverImage),
+              child: _avatarImageProvider(driverImage) == null
+                  ? const Icon(Icons.person, color: Colors.black87)
+                  : null,
             ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(
-                    () => Text(
-                      chatController.supportAgentName.value,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Obx(
-                    () => Text(
-                      chatController.supportAgentStatus.value,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.call),
-            onPressed: () => Get.to(() => CallScreen()),
-          ),
-          IconButton(
-            icon: Icon(Icons.more_vert),
-            onPressed: () => _showMoreOptions(),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Connection Status
-          Obx(
-            () => !chatController.isConnected.value
-                ? Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(8),
-                    color: Colors.orange,
-                    child: Text(
-                      'Connection lost. Trying to reconnect...',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                : SizedBox.shrink(),
-          ),
-
-          // Messages List
-          Expanded(
-            child: Obx(
-              () => ListView.builder(
-                controller: scrollController,
-                padding: EdgeInsets.all(16),
-                itemCount: chatController.messages.length,
-                itemBuilder: (context, index) {
-                  final message = chatController.messages[index];
-                  return _buildMessageBubble(message);
-                },
-              ),
-            ),
-          ),
-
-          // Typing Indicator
-          Obx(
-            () => chatController.isTyping.value
-                ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.grey,
-                          child: Icon(
-                            Icons.support_agent,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Customer service is typing...',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : SizedBox.shrink(),
-          ),
-
-          // Message Input
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Color(0xFF34495E),
-              border: Border(top: BorderSide(color: Colors.grey[700]!)),
-            ),
-            child: Row(
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  icon: Icon(Icons.attach_file, color: Colors.grey),
-                  onPressed: () =>
-                      Get.snackbar('Info', 'File attachment coming soon!'),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Color(0xFF2C3E50),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                    ),
-                    maxLines: null,
-                    onSubmitted: (text) => _sendMessage(),
+                Text(
+                  widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(width: 8),
-                GestureDetector(
-                  onTap: _sendMessage,
-                  child: Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.send, color: Colors.white, size: 20),
+                Obx(
+                  () => Text(
+                    chatController.supportAgentStatus.value,
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Obx(
+              () => chatController.isConnected.value
+                  ? const SizedBox.shrink()
+                  : Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      color: Colors.orange.withOpacity(0.9),
+                      child: const Text(
+                        'Connection lost. Reconnecting...',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+            ),
+            Expanded(
+              child: Obx(
+                () => ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  itemCount: chatController.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = chatController.messages[index];
+                    final showAvatar =
+                        !message.isFromUser &&
+                        (index == 0 ||
+                            chatController.messages[index - 1].isFromUser);
+                    return _MessageRow(
+                      message: message,
+                      showAvatar: showAvatar,
+                      userInitial: appController.userName.value.isNotEmpty
+                          ? appController.userName.value[0].toUpperCase()
+                          : '',
+                      receiverName:
+                          widget.selectedDriver?.driver.userId.fullName ??
+                          chatController.supportAgentName.value,
+                      receiverAvatar: widget.selectedDriver?.driver.userId.profileImage ?? '',
+                    );
+                  },
+                ),
+              ),
+            ),
+            Obx(
+              () => chatController.isTyping.value
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 8,
+                      ),
+                      child: Row(
+                        children: const [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.support_agent,
+                              color: Colors.black87,
+                              size: 16,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Customer service is typing...',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            _buildComposer(context),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMessageBubble(Message message) {
+  Widget _buildComposer(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(
+        left: 14,
+        right: 14,
+        top: 10,
+        bottom: MediaQuery.of(context).padding.bottom + 10,
+      ),
+      decoration: BoxDecoration(
+        color: _inputBackground.withOpacity(0.9),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.18),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
       child: Row(
-        mainAxisAlignment: message.isFromUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!message.isFromUser) ...[
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.support_agent, color: Colors.white, size: 16),
-            ),
-            SizedBox(width: 8),
-          ],
-          Flexible(
+          Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: message.isFromUser ? Colors.red : Color(0xFF34495E),
-                borderRadius: BorderRadius.circular(18),
+                color: Colors.grey.shade800.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    _formatTime(message.timestamp),
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
+              child: TextField(
+                controller: messageController,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+                minLines: 1,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Type your message...',
+                  hintStyle: TextStyle(color: Colors.white54, fontSize: 14),
+                ),
+                onSubmitted: (_) => _sendMessage(),
               ),
             ),
           ),
-          if (message.isFromUser) ...[
-            SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.blue,
-              child: Text(
-                appController.userName.value[0].toUpperCase(),
-                style: TextStyle(color: Colors.white, fontSize: 14),
+          const SizedBox(width: 12),
+          GestureDetector(
+            onTap: _sendMessage,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: const BoxDecoration(
+                color: _accentRed,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 20,
               ),
             ),
-          ],
+          ),
         ],
       ),
     );
   }
 
   void _sendMessage() {
-    if (messageController.text.trim().isNotEmpty) {
-      chatController.sendMessage(messageController.text);
-      messageController.clear();
+    final text = messageController.text.trim();
+    if (text.isEmpty) return;
 
-      // Scroll to bottom
-      Future.delayed(Duration(milliseconds: 100), () {
-        scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
-    }
+    chatController.sendMessage(text);
+    messageController.clear();
+    _scrollToBottom();
   }
 
-  void _showMoreOptions() {
-    Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Color(0xFF34495E),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.clear_all, color: Colors.white),
-              title: Text('Clear Chat', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                chatController.clearChat();
-                Get.back();
-                appController.showSnackbar('Info', 'Chat cleared');
-              },
+  void _scrollToBottom() {
+    if (!scrollController.hasClients) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent + 80,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+}
+
+class _MessageRow extends StatelessWidget {
+  final Message message;
+  final bool showAvatar;
+  final String userInitial;
+  final String receiverName;
+  final String? receiverAvatar;
+
+  const _MessageRow({
+    Key? key,
+    required this.message,
+    required this.showAvatar,
+    required this.userInitial,
+    required this.receiverName,
+    required this.receiverAvatar,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isUser = message.isFromUser;
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: 12,
+        left: isUser ? 60 : 0,
+        right: isUser ? 0 : 60,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
+        children: [
+          if (!isUser) ...[
+            showAvatar
+                ? CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.white,
+                    backgroundImage: _avatarImageProvider(receiverAvatar),
+                    child: _avatarImageProvider(receiverAvatar) == null
+                        ? Text(
+                            receiverName.isNotEmpty
+                                ? receiverName[0].toUpperCase()
+                                : 'R',
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                  )
+                : const SizedBox(width: 36),
+            const SizedBox(width: 8),
+          ],
+
+          Flexible(
+            child: Column(
+              crossAxisAlignment: isUser
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isUser ? _outgoingBubble : _incomingBubble,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(isUser ? 18 : 8),
+                      topRight: Radius.circular(isUser ? 8 : 18),
+                      bottomLeft: const Radius.circular(18),
+                      bottomRight: const Radius.circular(18),
+                    ),
+                  ),
+                  child: Text(
+                    message.text,
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _formatTime(message.timestamp),
+                  style: const TextStyle(color: Colors.white70, fontSize: 11),
+                ),
+              ],
             ),
-            ListTile(
-              leading: Icon(Icons.block, color: Colors.red),
-              title: Text('Block User', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Get.back();
-                appController.showSnackbar('Info', 'User blocked');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.report, color: Colors.orange),
-              title: Text(
-                'Report Issue',
-                style: TextStyle(color: Colors.orange),
+          ),
+
+          if (isUser) ...[
+            const SizedBox(width: 8),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white.withOpacity(0.2),
+              child: Text(
+                userInitial,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              onTap: () {
-                Get.back();
-                appController.showSnackbar('Info', 'Issue reported');
-              },
             ),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  String _formatTime(DateTime dateTime) {
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  String _formatTime(DateTime time) {
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final suffix = time.hour >= 12 ? 'pm' : 'am';
+    return '$hour:$minute $suffix';
   }
 }

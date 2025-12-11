@@ -1,6 +1,8 @@
 import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
 
 import '../repositories/home_repository_interface.dart';
+import '../domain/request_model/ride_booking_info_request_model.dart';
 import 'home_service_interface.dart';
 
 class HomeService implements HomeServiceInterface{
@@ -42,5 +44,15 @@ class HomeService implements HomeServiceInterface{
   @override
   Future<Response> getSearchDestinationForFindNearestDrivers(String latitude, String longitude) async{
     return await homeRepositoryInterface.getSearchDestinationForFindNearestDrivers(latitude, longitude);
+  }
+
+    @override
+  Future<Response<dynamic>> createPayment(CreatePaymentRequestModel requestModel)async {
+    return await homeRepositoryInterface.createPayment(requestModel);
+  }
+
+  @override
+  Future<Response> requestRide(RideBookingInfo requestModel) async {
+    return await homeRepositoryInterface.requestRide(requestModel);
   }
 }

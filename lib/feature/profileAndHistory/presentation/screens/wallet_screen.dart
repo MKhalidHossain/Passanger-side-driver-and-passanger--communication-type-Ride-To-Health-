@@ -2,23 +2,57 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
+import 'package:rideztohealth/feature/auth/presentation/screens/user_login_screen.dart';
+import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
+import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/home/presentation/screens/home_screen.dart';
+import 'package:rideztohealth/feature/map/presentation/screens/work/finding_your_driver_screen.dart';
+import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
+import 'package:rideztohealth/feature/payment/presentation/payment_webview_screen.dart';
 import '../widgets/payment_method_card.dart';
 import 'add_card_screen.dart';
 import 'add_funds_screen.dart';
 
 class WalletScreen extends StatefulWidget {
-  const WalletScreen({super.key});
+  const WalletScreen({
+
+    super.key,
+    this.rideAmount,
+    this.driverId,
+    this.stripeDriverId,
+   required this.selectedDriver,
+  });
+
+  final double? rideAmount;
+  final String? driverId;
+  final String? stripeDriverId;
+  final NearestDriverData? selectedDriver;
 
   @override
-  _WalletScreenState createState() => _WalletScreenState();
+  State<WalletScreen> createState() => _WalletScreenState();
 }
 
 class _WalletScreenState extends State<WalletScreen> {
   double balance = 225.0;
   List<PaymentMethod> paymentMethods = [
-    PaymentMethod('PayPal', 'assets/paypal.png', true),
-    PaymentMethod('Visa', 'assets/visa.png', false),
+    PaymentMethod('Stripe', 'assets/images/Stripe_Logo.png', true),
+    // PaymentMethod('Visa', 'assets/images/Stripe_Logo.png', false),
   ];
+  late final HomeController _homeController;
+  bool _isProcessingPayment = false;
+
+  bool get _canStartPayment =>
+      widget.rideAmount != null &&
+      widget.driverId != null &&
+      widget.driverId!.isNotEmpty &&
+      widget.stripeDriverId != null &&
+      widget.stripeDriverId!.isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    _homeController = Get.find<HomeController>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,13 +113,26 @@ class _WalletScreenState extends State<WalletScreen> {
               ],
             ),
             SizedBox(height: 20),
-            _buildBalanceSection(),
+            // _buildBalanceSection(),
+            if (widget.rideAmount != null) ...[
+              SizedBox(height: 20),
+              _buildFareSummaryCard(),
+            ],
             SizedBox(height: 40),
             _buildPaymentMethodsSection(),
             Spacer(),
             WideCustomButton(
-              text: '+  Add Payment Method',
-              onPressed: () => _showRemoveCardDialog(),
+              text: _canStartPayment
+                  ? (_isProcessingPayment ? 'Processing...' : 'Continue to Pay')
+                  : 'Continue',
+              onPressed: () {
+                if (_canStartPayment) {
+                  if (_isProcessingPayment) return;
+                  _handleContinue();
+                } else {
+                  _showRemoveCardDialog();
+                }
+              },
             ),
           ],
         ),
@@ -118,6 +165,23 @@ class _WalletScreenState extends State<WalletScreen> {
             'Rider Cash',
             style: TextStyle(color: Colors.grey[400], fontSize: 16),
           ),
+          if (widget.rideAmount != null) ...[
+            SizedBox(height: 12),
+            Divider(color: Colors.white12, height: 1),
+            SizedBox(height: 12),
+            Text(
+              'Ride Fare Due',
+              style: TextStyle(color: Colors.grey[400], fontSize: 14),
+            ),
+            Text(
+              '\$${widget.rideAmount!.toStringAsFixed(2)}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           SizedBox(height: 20),
           SizedBox(
             width: size.width * 0.5,
@@ -166,6 +230,43 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
+  Widget _buildFareSummaryCard() {
+    final amount = widget.rideAmount;
+    if (amount == null) return SizedBox.shrink();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Trip Fare',
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '\$${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'The payment link will open once you continue.',
+            style: TextStyle(color: Colors.grey[400]),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPaymentMethodsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,27 +288,27 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
         const SizedBox(height: 20),
 
-        Container(
-          width: double.infinity,
-          child: TextButton(
-            onPressed: () => _navigateToAddCard(),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.red),
-              ),
-            ),
-            child: Text(
-              '+ Add new card/method',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
+        // Container(
+        //   width: double.infinity,
+        //   child: TextButton(
+        //     onPressed: () => _navigateToAddCard(),
+        //     style: TextButton.styleFrom(
+        //       padding: EdgeInsets.symmetric(vertical: 15),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(8),
+        //         side: BorderSide(color: Colors.red),
+        //       ),
+        //     ),
+        //     child: Text(
+        //       '+ Add new card/method',
+        //       style: TextStyle(
+        //         color: Colors.red,
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.w500,
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -263,7 +364,7 @@ class _WalletScreenState extends State<WalletScreen> {
     if (method.name == 'Visa' && !_hasVisaCard()) {
       _navigateToAddCard();
     } else {
-      setState(() {
+      setState(() { 
         paymentMethods = paymentMethods
             .map(
               (pm) =>
@@ -445,5 +546,59 @@ class _WalletScreenState extends State<WalletScreen> {
         duration: Duration(seconds: 3),
       ),
     );
+  }
+
+  Future<void> _handleContinue() async {
+    final amount = widget.rideAmount;
+    final driverId = widget.driverId;
+    final stripeDriverId = widget.stripeDriverId;
+
+    if (amount == null || driverId == null || stripeDriverId == null) {
+      _showErrorMessage('Payment details are missing');
+      return;
+    }
+
+    try {
+      setState(() => _isProcessingPayment = true);
+      final response = await _homeController.createPayment(
+        CreatePaymentRequestModel(
+          amount: _convertToMinorUnit(amount),
+          driverId: driverId,
+          stripeDriverId: stripeDriverId,
+        ),
+      );
+
+  
+
+      final paymentUrl = response.url;
+      if (paymentUrl == null || paymentUrl.isEmpty) {
+        _showErrorMessage('Payment link is unavailable');
+        return;
+      }
+      if (!mounted) return;
+
+      // Wait for the webview to report completion (expected to return bool)
+      final completed = await Get.to<bool>(
+        () => PaymentWebViewScreen(
+          paymentUrl: paymentUrl,
+          sessionId: response.sessionId, 
+          selectedDriver: widget.selectedDriver,
+        ),
+      );
+
+      if (completed == true && mounted) {
+        Get.offAll(() => const FindingYourDriverScreen());
+      }
+    } catch (e) {
+      _showErrorMessage(e.toString().replaceFirst('Exception:', '').trim());
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessingPayment = false);
+      }
+    }
+  }
+
+  int _convertToMinorUnit(double amount) {
+    return (amount * 100).round();
   }
 }

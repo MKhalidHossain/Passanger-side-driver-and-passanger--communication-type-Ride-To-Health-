@@ -78,6 +78,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
   final Color fillColor;
   final bool showIcon;
   final IconData? sufixIcon;
+  final double circularRadious;
 
   const SmallSemiTranparentButton({
     super.key,
@@ -90,6 +91,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
     this.fillColor = Colors.white12,
     this.showIcon = false,
     this.sufixIcon,
+    this.circularRadious = 8,
   });
 
   @override
@@ -101,7 +103,7 @@ class SmallSemiTranparentButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: fillColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(circularRadious),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         ),

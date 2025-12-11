@@ -36,7 +36,7 @@ class NormalCustomIconButton extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             // borderRadius: BorderRadius.circular(8),
@@ -52,10 +52,7 @@ class NormalCustomIconButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Icon(icon, color: Colors.white, size: iconSize),
-              ),
+              Icon(icon, color: Colors.white, size: iconSize),
               if (showIcon && sufixIcon != null) ...[
                 const SizedBox(width: 5),
                 Icon(sufixIcon, color: Colors.white),
@@ -103,16 +100,13 @@ class SmallSemiTranparentIconButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 5),
         ),
         onPressed: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Icon(icon, color: Colors.white, size: iconSize),
-            ),
+            Icon(icon, color: Colors.white, size: iconSize),
             if (showIcon && sufixIcon != null) ...[
               const SizedBox(width: 0),
               Icon(sufixIcon, color: Colors.white),

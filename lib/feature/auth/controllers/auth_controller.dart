@@ -12,6 +12,7 @@ import '../../../helpers/custom_snackbar.dart';
 import '../../../helpers/remote/data/api_checker.dart';
 import '../../../helpers/remote/data/api_client.dart';
 
+import '../../../helpers/remote/data/socket_client.dart';
 import '../../../utils/app_constants.dart';
 import '../domain/model/login_user_response_model.dart';
 import '../domain/model/registration_user_response_model.dart';
@@ -43,6 +44,7 @@ class AuthController extends GetxController implements GetxService {
   List<MultipartBody> multipartList = [];
   String countryDialCode = '+880';
   String email = '';
+  final socketClient = SocketClient();
 
   void setCountryCode(String code) {
     countryDialCode = code;
@@ -230,10 +232,14 @@ class AuthController extends GetxController implements GetxService {
       await setUserToken(token, refreshToken).then((_)async{
         // await Future.delayed(Duration(seconds: 3), 
         // );
+          socketClient.emit('join-user', {
+          'userId': logInResponseModel!.data!.user!.id,  // ei key ta backend expect korche
+            });
+            print('socket join with sender id To chekkkkkkkikk: ${logInResponseModel!.data!.user!.id}');
           Get.offAll(() => AppMain());
       });
 
-      
+
 
       //Get.offAll(BottomNavbar());
 
@@ -264,6 +270,10 @@ class AuthController extends GetxController implements GetxService {
     update();
   }
 
+  
+  
+  
+  
   Future<void> logOut() async {
     logging = true;
     update();

@@ -4,6 +4,7 @@ import 'package:rideztohealth/helpers/remote/data/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/urls.dart';
+import '../domain/request_model/ride_booking_info_request_model.dart';
 
 class HomeRepository implements HomeRepositoryInterface{
   final ApiClient apiClient;
@@ -56,4 +57,13 @@ class HomeRepository implements HomeRepositoryInterface{
     return await apiClient.getData(Urls.getSearchDestinationForFindNearestDrivers + "latitude="+latitude+ "&longitude=" + longitude);
   }
   
+  @override
+  Future<Response<dynamic>> createPayment(requestModel)async {
+    return await apiClient.postData(Urls.createPayment, requestModel.toJson());
+  }
+
+  @override
+  Future<Response> requestRide(RideBookingInfo requestModel) async {
+    return await apiClient.postData(Urls.requestRide, requestModel.toJson());
+  }
 }
