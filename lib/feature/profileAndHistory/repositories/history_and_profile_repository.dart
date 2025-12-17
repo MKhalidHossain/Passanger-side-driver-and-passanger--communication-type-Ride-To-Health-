@@ -3,6 +3,7 @@ import 'package:rideztohealth/helpers/remote/data/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/constants/urls.dart';
+import '../domain/request_model/update_profile_request_model.dart';
 import 'history_and_profile_repository_interface.dart';
 
 class HistoryAndProfileRepository
@@ -39,5 +40,15 @@ class HistoryAndProfileRepository
   @override
   Future<Response> updateProfileImage(String image) async {
     return await apiClient.postData(Urls.uploadProfileImage, {"image": image});
+  }
+
+  @override
+  Future<Response> updateUserProfile(
+    UpdateProfileRequestModel requestModel,
+  ) async {
+    return await apiClient.putData(
+      Urls.updateProfile,
+      requestModel.toJson(),
+    );
   }
 }

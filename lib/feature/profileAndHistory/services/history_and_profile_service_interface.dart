@@ -1,4 +1,5 @@
 import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
 
 abstract class HistoryAndProfileServiceInterface {
   Future<Response> getProfile();
@@ -9,4 +10,5 @@ abstract class HistoryAndProfileServiceInterface {
     String longitude,
     String address,
   );
+  Future<Response> updateUserProfile(UpdateProfileRequestModel requestModel);
 }

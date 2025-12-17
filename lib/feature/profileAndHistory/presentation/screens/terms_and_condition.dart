@@ -10,7 +10,10 @@ class TermsAndCondition extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: const BackButton(color: Colors.white),
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: const Text(
           'Terms And Conditions',
           style: TextStyle(

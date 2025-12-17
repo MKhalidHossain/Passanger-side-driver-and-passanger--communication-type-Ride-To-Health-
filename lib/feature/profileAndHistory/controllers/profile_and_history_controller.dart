@@ -4,6 +4,7 @@ import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/update_location_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/update_profile_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/upload_profile_image_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service_interface.dart';
 
 class ProfileAndHistoryController extends GetxController implements GetxService {
@@ -151,6 +152,36 @@ class ProfileAndHistoryController extends GetxController implements GetxService 
       }
     } catch (e) {
       print("⚠️ Error updating profile : updateLocation : $e\n");
+    } finally {
+      isLoading = false;
+      update();
+    }
+  }
+
+  Future<void> updateUserProfile(
+    UpdateProfileRequestModel requestModel,
+  ) async {
+    try {
+      isLoading = true;
+      update();
+
+      final response = await historyAndProfileServiceInterface
+          .updateUserProfile(requestModel);
+
+      debugPrint("Status Code : ${response.statusCode}");
+      debugPrint("Response Body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        updateProfileResponseModel = UpdateProfileResponseModel.fromJson(
+          response.body,
+        );
+      } else {
+        updateProfileResponseModel = UpdateProfileResponseModel.fromJson(
+          response.body,
+        );
+      }
+    } catch (e) {
+      print("⚠️ Error updating profile : updateUserProfile : $e\n");
     } finally {
       isLoading = false;
       update();

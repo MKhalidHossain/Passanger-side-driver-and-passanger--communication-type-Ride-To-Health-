@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rideztohealth/feature/map/presentation/screens/ride_confirmed_screen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
@@ -94,12 +93,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
-            onPressed: () =>   Get.to(
-        () => RideConfirmedScreen(
-          selectedDriver: widget.selectedDriver,
+          onPressed: () => Get.back(result: false),
         ),
-            )
-          ),
         
         
         title: const Text('Complete Payment'),
@@ -111,11 +106,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () => Get.to(
-        () => RideConfirmedScreen(
-          selectedDriver: widget.selectedDriver,
-        ),
-            ),
+            onPressed: () => Get.back(result: false),
           ),
         ],
       ),

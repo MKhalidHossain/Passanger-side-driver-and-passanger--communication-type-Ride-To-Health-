@@ -28,7 +28,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    BackButton(color: Colors.white),
+                    BackButton(
+                      color: Colors.white,
+                      onPressed: () => Get.back(),
+                    ),
                     Text(
                       'Notifications',
                       style: TextStyle(color: Colors.white, fontSize: 18),

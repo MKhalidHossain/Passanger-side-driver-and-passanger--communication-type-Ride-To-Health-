@@ -332,7 +332,10 @@ Future<void> performSearch(String query) async {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              BackButton(color: Colors.white),
+              BackButton(
+                color: Colors.white,
+                onPressed: () => Get.back(),
+              ),
               Text(
                 'Search your destination',
                 style: TextStyle(color: Colors.white, fontSize: 16),

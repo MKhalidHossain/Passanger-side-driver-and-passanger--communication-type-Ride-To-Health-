@@ -96,7 +96,10 @@ class _WalletScreenState extends State<WalletScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BackButton(color: Colors.white),
+                BackButton(
+                  color: Colors.white,
+                  onPressed: () => Get.back(),
+                ),
                 Text(
                   'Wallet',
                   style: TextStyle(

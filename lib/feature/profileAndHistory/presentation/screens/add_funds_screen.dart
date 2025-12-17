@@ -62,7 +62,10 @@ class _AddFundsScreenState extends State<AddFundsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BackButton(color: Colors.white),
+                BackButton(
+                  color: Colors.white,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
                 // IconButton(
                 //   icon: Icon(Icons.arrow_back, color: Colors.white),
                 //   onPressed: () => Navigator.pop(context),

@@ -1,4 +1,5 @@
 import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository_interface.dart';
 
 import 'history_and_profile_service_interface.dart';
@@ -38,5 +39,14 @@ class HistoryAndProfileService implements HistoryAndProfileServiceInterface {
   @override
   Future<Response> updateProfileImage(String image) async {
     return await historyAndProfileRepositoryInterface.updateProfileImage(image);
+  }
+
+  @override
+  Future<Response> updateUserProfile(
+    UpdateProfileRequestModel requestModel,
+  ) async {
+    return await historyAndProfileRepositoryInterface.updateUserProfile(
+      requestModel,
+    );
   }
 }

@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
+import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
 
@@ -19,10 +23,16 @@ class _EditProfileState extends State<EditProfile> {
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
+  late TextEditingController countryController;
+  late TextEditingController cityController;
 
   final FocusNode nameFocus = FocusNode();
   final FocusNode emailFocus = FocusNode();
   final FocusNode phoneFocus = FocusNode();
+  final FocusNode countryFocus = FocusNode();
+  final FocusNode cityFocus = FocusNode();
+  final ImagePicker _picker = ImagePicker();
+  File? _localImageFile;
 
   bool isEditing = false; // Track whether user is editing
 
@@ -39,6 +49,8 @@ class _EditProfileState extends State<EditProfile> {
     phoneController = TextEditingController(
       text: widget.userProfile?.phoneNumber,
     );
+    countryController = TextEditingController();
+    cityController = TextEditingController();
 
     profileController = Get.find<ProfileAndHistoryController>();
   }
@@ -51,7 +63,35 @@ class _EditProfileState extends State<EditProfile> {
     nameFocus.dispose();
     emailFocus.dispose();
     phoneFocus.dispose();
+    countryFocus.dispose();
+    cityFocus.dispose();
+    countryController.dispose();
+    cityController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked == null) return;
+
+    setState(() {
+      _localImageFile = File(picked.path);
+    });
+
+    try {
+      final bytes = await picked.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      await profileController.updateProfileImage(base64Image);
+      await profileController.getProfile();
+      setState(() {
+        widget.userProfile = profileController.getProfileResponseModel.data;
+      });
+    } catch (e) {
+      Get.snackbar('Upload failed', 'Could not update profile image.');
+    }
   }
 
   @override
@@ -63,7 +103,10 @@ class _EditProfileState extends State<EditProfile> {
             : Scaffold(
                 appBar: AppBar(
                   backgroundColor: Colors.transparent,
-                  leading: BackButton(color: Colors.white),
+                  leading: BackButton(
+                    color: Colors.white,
+                    onPressed: () => Get.back(),
+                  ),
                   title: 'My Profile'.text20white(),
                 ),
                 //backgroundColor: Color(0xffB0E0CF), // light gray-blue background
@@ -184,11 +227,19 @@ class _EditProfileState extends State<EditProfile> {
                                               borderRadius: BorderRadius.circular(
                                                 16,
                                               ), // adjust for how round you want it
-                                              child: Builder(
-                                                builder: (context) {
-                                                  final imageUrl = widget
-                                                      .userProfile
-                                                      ?.profileImage;
+                                          child: Builder(
+                                            builder: (context) {
+                                              if (_localImageFile != null) {
+                                                return Image.file(
+                                                  _localImageFile!,
+                                                  width: 170,
+                                                  height: 170,
+                                                  fit: BoxFit.cover,
+                                                );
+                                              }
+                                              final imageUrl = widget
+                                                  .userProfile
+                                                  ?.profileImage;
 
                                                   if (imageUrl == null ||
                                                       imageUrl.isEmpty) {
@@ -285,7 +336,7 @@ class _EditProfileState extends State<EditProfile> {
 
                                 child: isEditing
                                     ? GestureDetector(
-                                        onTap: () {},
+                                        onTap: _pickAndUploadImage,
                                         child: Image.asset(
                                           'assets/icons/edit.png',
                                           // fit: BoxFit.fitWidth,
@@ -313,11 +364,36 @@ class _EditProfileState extends State<EditProfile> {
                                   focusNode: nameFocus,
 
                                   isEditing: isEditing,
-                                  nextFocusNode: isEditing
-                                      ? phoneFocus
-                                      : emailFocus,
+                                  nextFocusNode:
+                                      isEditing ? countryFocus : emailFocus,
                                   validator: (value) => value!.isEmpty
                                       ? 'Name is required'
+                                      : null,
+                                ),
+                                _buildCustomTextField(
+                                  title: 'Country',
+                                  context: context,
+                                  label: 'Bangladesh',
+                                  controller: countryController,
+                                  icon: Icons.flag,
+                                  focusNode: countryFocus,
+                                  nextFocusNode: cityFocus,
+                                  isEditing: isEditing,
+                                  validator: (value) => value!.isEmpty
+                                      ? 'Country is required'
+                                      : null,
+                                ),
+                                _buildCustomTextField(
+                                  title: 'City',
+                                  context: context,
+                                  label: 'City',
+                                  controller: cityController,
+                                  icon: Icons.location_city,
+                                  focusNode: cityFocus,
+                                  nextFocusNode: phoneFocus,
+                                  isEditing: isEditing,
+                                  validator: (value) => value!.isEmpty
+                                      ? 'City is required'
                                       : null,
                                 ),
                                 // Hide Email field when editing
@@ -370,23 +446,51 @@ class _EditProfileState extends State<EditProfile> {
                                             child: WideCustomButton(
                                               text: 'Save',
                                               //color: Colors.red,
-                                              onPressed: () {
-                                                // Handle save logic
+                                              onPressed: () async {
+                                                if (nameController
+                                                        .text
+                                                        .trim()
+                                                        .isEmpty ||
+                                                    countryController
+                                                        .text
+                                                        .trim()
+                                                        .isEmpty ||
+                                                    cityController.text
+                                                        .trim()
+                                                        .isEmpty) {
+                                                  Get.snackbar(
+                                                    'Missing info',
+                                                    'Please fill name, country, and city.',
+                                                  );
+                                                  return;
+                                                }
+
+                                                await profileController
+                                                    .updateUserProfile(
+                                                  UpdateProfileRequestModel(
+                                                    fullName: nameController
+                                                        .text
+                                                        .trim(),
+                                                    country: countryController
+                                                        .text
+                                                        .trim(),
+                                                    city: cityController.text
+                                                        .trim(),
+                                                  ),
+                                                );
+                                                await profileController
+                                                    .getProfile();
+
                                                 setState(() {
                                                   isEditing = false;
-                                                  if (nameController
-                                                          .text
-                                                          .isNotEmpty &&
-                                                      widget
-                                                              .userProfile
-                                                              ?.fullName ==
-                                                          nameController.text) {
-                                                    profileController
-                                                        .updateProfile(
-                                                          nameController.text,
-                                                          phoneController.text,
-                                                        );
-                                                  }
+                                                  widget.userProfile =
+                                                      profileController
+                                                          .getProfileResponseModel
+                                                          .data;
+                                                  nameController.text =
+                                                      widget.userProfile
+                                                              ?.fullName ??
+                                                          nameController.text;
                                                 });
                                               },
                                             ),

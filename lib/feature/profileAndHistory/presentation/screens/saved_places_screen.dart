@@ -32,7 +32,10 @@ class _SavedPlaceScreenState extends State<SavedPlaceScreen> {
               bottom: false,
               child: Scaffold(
                 appBar: AppBar(
-                  leading: const BackButton(color: Colors.white),
+                  leading: BackButton(
+                    color: Colors.white,
+                    onPressed: () => Get.back(),
+                  ),
                   centerTitle: false,
                   title: 'Your Saved Places'.text22White(),
                   backgroundColor: Colors.transparent,

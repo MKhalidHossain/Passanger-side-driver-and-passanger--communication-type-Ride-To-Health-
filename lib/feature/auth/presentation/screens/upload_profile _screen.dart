@@ -36,7 +36,10 @@ class _UploadProfileScreenState extends State<UploadProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
+        leading: BackButton(
+          color: Colors.black,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           "Upload Profile",
           style: TextStyle(

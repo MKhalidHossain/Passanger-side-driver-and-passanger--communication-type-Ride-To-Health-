@@ -22,7 +22,10 @@ class LocationConfirmationScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color(0xFF2E2E38), // Dark background color
-        leading: BackButton(color: Colors.white),
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () => Get.back(),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
