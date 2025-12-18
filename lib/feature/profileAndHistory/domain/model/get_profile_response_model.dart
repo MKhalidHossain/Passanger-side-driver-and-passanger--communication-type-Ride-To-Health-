@@ -29,6 +29,8 @@ class ProfileData {
   final String? phoneNumber;
   final String? role;
   final String? profileImage;
+  final String? country;
+  final String? city;
   final bool? isEmailVerified;
   final bool? isPhoneVerified;
   final String? refreshToken;
@@ -49,6 +51,8 @@ class ProfileData {
     this.phoneNumber,
     this.role,
     this.profileImage,
+    this.country,
+    this.city,
     this.isEmailVerified,
     this.isPhoneVerified,
     this.refreshToken,
@@ -75,6 +79,8 @@ class ProfileData {
       phoneNumber: json['phoneNumber'],
       role: json['role'],
       profileImage: json['profileImage'],
+      country: json['country'],
+      city: json['city'],
       isEmailVerified: json['isEmailVerified'],
       isPhoneVerified: json['isPhoneVerified'],
       refreshToken: json['refreshToken'],
@@ -100,6 +106,8 @@ class ProfileData {
       'phoneNumber': phoneNumber,
       'role': role,
       'profileImage': profileImage,
+      'country': country,
+      'city': city,
       'isEmailVerified': isEmailVerified,
       'isPhoneVerified': isPhoneVerified,
       'refreshToken': refreshToken,

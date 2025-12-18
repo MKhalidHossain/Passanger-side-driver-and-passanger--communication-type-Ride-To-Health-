@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/constants/urls.dart';
 import '../../../helpers/remote/data/api_client.dart';
 import '../../../utils/app_constants.dart';
+import '../domain/request_model/change_password_request_model.dart';
 import 'auth_repository_interface.dart';
 
 class AuthRepository implements AuthRepositoryInterface {
@@ -19,11 +20,11 @@ class AuthRepository implements AuthRepositoryInterface {
   }
 
   @override
-  Future changePassword(String currentPassword, String newPassword) async {
-    return await apiClient.postData(Urls.changePassword, {
-      'currentPassword': currentPassword,
-      'newPassword': newPassword,
-    });
+  Future changePassword(ChangePasswordRequestModel requestModel) async {
+    return await apiClient.postData(
+      Urls.changePassword,
+      requestModel.toJson(),
+    );
   }
 
   @override

@@ -1,3 +1,4 @@
+import '../domain/request_model/change_password_request_model.dart';
 import '../repositories/auth_repository_interface.dart';
 import 'auth_service_interface.dart';
 
@@ -12,11 +13,8 @@ class AuthService implements AuthServiceInterface {
   }
 
   @override
-  Future changePassword(String currentPassword, String newPassword) async {
-    return await authRepositoryInterface.changePassword(
-      currentPassword,
-      newPassword,
-    );
+  Future changePassword(ChangePasswordRequestModel requestModel) async {
+    return await authRepositoryInterface.changePassword(requestModel);
   }
 
   @override
@@ -85,7 +83,6 @@ class AuthService implements AuthServiceInterface {
   Future resetPassword(String emailOrPhone, String newPassword) async {
     return await authRepositoryInterface.resetPassword(
       emailOrPhone,
-
       newPassword,
     );
   }

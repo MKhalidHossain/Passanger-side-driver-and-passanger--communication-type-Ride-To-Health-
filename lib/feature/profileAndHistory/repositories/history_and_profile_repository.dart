@@ -1,4 +1,6 @@
+import 'package:http/http.dart' as http;
 import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rideztohealth/helpers/remote/data/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,8 +40,34 @@ class HistoryAndProfileRepository
   }
 
   @override
-  Future<Response> updateProfileImage(String image) async {
-    return await apiClient.postData(Urls.uploadProfileImage, {"image": image});
+  Future<Response> updateProfileImage(XFile image) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(Urls.baseUrl + Urls.uploadProfileImage),
+    );
+
+    final headers = apiClient.getHeader();
+    headers.remove('Content-Type'); // Multipart sets its own boundary
+    request.headers.addAll(headers);
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+        filename: image.name,
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    return apiClient.handleResponse(response, Urls.uploadProfileImage);
+  }
+
+  @override
+  Future<Response> getNotifications({int page = 1, int limit = 20}) async {
+    final query = '?page=$page&limit=$limit';
+    return await apiClient.getData(Urls.getNotifications + query);
   }
 
   @override

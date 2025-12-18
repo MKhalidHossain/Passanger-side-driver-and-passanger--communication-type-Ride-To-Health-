@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/widgets/wide_custom_button.dart';
 
@@ -33,6 +32,7 @@ class _EditProfileState extends State<EditProfile> {
   final FocusNode cityFocus = FocusNode();
   final ImagePicker _picker = ImagePicker();
   File? _localImageFile;
+  XFile? _pendingProfileImageFile;
 
   bool isEditing = false; // Track whether user is editing
 
@@ -49,8 +49,12 @@ class _EditProfileState extends State<EditProfile> {
     phoneController = TextEditingController(
       text: widget.userProfile?.phoneNumber,
     );
-    countryController = TextEditingController();
-    cityController = TextEditingController();
+    countryController = TextEditingController(
+      text: widget.userProfile?.country ?? '',
+    );
+    cityController = TextEditingController(
+      text: widget.userProfile?.city ?? '',
+    );
 
     profileController = Get.find<ProfileAndHistoryController>();
   }
@@ -70,27 +74,23 @@ class _EditProfileState extends State<EditProfile> {
     super.dispose();
   }
 
-  Future<void> _pickAndUploadImage() async {
+  Future<void> _pickProfileImage() async {
     final picked = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
     if (picked == null) return;
 
-    setState(() {
-      _localImageFile = File(picked.path);
-    });
-
     try {
-      final bytes = await picked.readAsBytes();
-      final base64Image = base64Encode(bytes);
-      await profileController.updateProfileImage(base64Image);
-      await profileController.getProfile();
       setState(() {
-        widget.userProfile = profileController.getProfileResponseModel.data;
+        _localImageFile = File(picked.path);
+        _pendingProfileImageFile = picked;
       });
     } catch (e) {
-      Get.snackbar('Upload failed', 'Could not update profile image.');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not read selected image.')),
+      );
     }
   }
 
@@ -336,7 +336,7 @@ class _EditProfileState extends State<EditProfile> {
 
                                 child: isEditing
                                     ? GestureDetector(
-                                        onTap: _pickAndUploadImage,
+                                        onTap: _pickProfileImage,
                                         child: Image.asset(
                                           'assets/icons/edit.png',
                                           // fit: BoxFit.fitWidth,
@@ -437,6 +437,9 @@ class _EditProfileState extends State<EditProfile> {
                                               onPressed: () {
                                                 setState(() {
                                                   isEditing = false;
+                                                  _pendingProfileImageFile =
+                                                      null;
+                                                  _localImageFile = null;
                                                 });
                                               },
                                             ),
@@ -458,40 +461,84 @@ class _EditProfileState extends State<EditProfile> {
                                                     cityController.text
                                                         .trim()
                                                         .isEmpty) {
-                                                  Get.snackbar(
-                                                    'Missing info',
-                                                    'Please fill name, country, and city.',
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Please fill name, country, and city.',
+                                                      ),
+                                                    ),
                                                   );
                                                   return;
                                                 }
 
-                                                await profileController
-                                                    .updateUserProfile(
-                                                  UpdateProfileRequestModel(
-                                                    fullName: nameController
-                                                        .text
-                                                        .trim(),
-                                                    country: countryController
-                                                        .text
-                                                        .trim(),
-                                                    city: cityController.text
-                                                        .trim(),
-                                                  ),
-                                                );
-                                                await profileController
-                                                    .getProfile();
+                                                try {
+                                                  if (_pendingProfileImageFile !=
+                                                      null) {
+                                                    await profileController
+                                                        .updateProfileImage(
+                                                      _pendingProfileImageFile!,
+                                                    );
+                                                  }
 
-                                                setState(() {
-                                                  isEditing = false;
-                                                  widget.userProfile =
-                                                      profileController
-                                                          .getProfileResponseModel
-                                                          .data;
-                                                  nameController.text =
-                                                      widget.userProfile
-                                                              ?.fullName ??
-                                                          nameController.text;
-                                                });
+                                                  await profileController
+                                                      .updateUserProfile(
+                                                    UpdateProfileRequestModel(
+                                                      fullName: nameController
+                                                          .text
+                                                          .trim(),
+                                                      country: countryController
+                                                          .text
+                                                          .trim(),
+                                                      city: cityController.text
+                                                          .trim(),
+                                                    ),
+                                                  );
+                                                  await profileController
+                                                      .getProfile();
+
+                                                  setState(() {
+                                                    isEditing = false;
+                                                  _pendingProfileImageFile =
+                                                        null;
+                                                    _localImageFile = null;
+                                                    widget.userProfile =
+                                                        profileController
+                                                            .getProfileResponseModel
+                                                            .data;
+                                                    nameController.text =
+                                                        widget.userProfile
+                                                                ?.fullName ??
+                                                            nameController.text;
+                                                    emailController.text =
+                                                        widget.userProfile
+                                                                ?.email ??
+                                                            emailController.text;
+                                                    phoneController.text =
+                                                        widget.userProfile
+                                                                ?.phoneNumber ??
+                                                            phoneController.text;
+                                                    countryController.text =
+                                                        widget.userProfile
+                                                                ?.country ??
+                                                            countryController
+                                                                .text;
+                                                    cityController.text =
+                                                        widget.userProfile
+                                                                ?.city ??
+                                                            cityController.text;
+                                                  });
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Could not update profile. Please try again.',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
                                               },
                                             ),
                                           ),

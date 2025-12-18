@@ -1,3 +1,5 @@
+import '../domain/request_model/change_password_request_model.dart';
+
 abstract class AuthServiceInterface {
   Future<dynamic> register(
     String fullName,
@@ -10,7 +12,7 @@ abstract class AuthServiceInterface {
   Future<dynamic> verifyOtp(String email, String otp, String type);
   Future<dynamic> forgetPassword(String? emailOrPhone);
   Future<dynamic> resetPassword(String emailOrPhone, String newPassword);
-  Future<dynamic> changePassword(String currentPassword, String newPassword);
+  Future<dynamic> changePassword(ChangePasswordRequestModel requestModel);
 
   Future<dynamic> accessAndRefreshToken(String refreshToken);
 

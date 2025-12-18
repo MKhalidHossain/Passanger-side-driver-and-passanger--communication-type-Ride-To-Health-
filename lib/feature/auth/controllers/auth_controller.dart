@@ -5,6 +5,7 @@ import 'package:rideztohealth/feature/auth/domain/model/change_password_response
 import 'package:rideztohealth/feature/auth/domain/model/request_password_reset_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/model/reset_password_with_otp_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/model/verify_otp_response_model.dart';
+import 'package:rideztohealth/feature/auth/domain/request_model/change_password_request_model.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app.dart';
@@ -469,26 +470,41 @@ class AuthController extends GetxController implements GetxService {
   }
 
   Future<void> changePassword(
-    String currentPassword,
-    String newPassword,
+    ChangePasswordRequestModel requestModel,
   ) async {
     changePasswordIsLoading = true;
     update();
 
     try {
       Response? response = await authServiceInterface.changePassword(
-        currentPassword,
-        newPassword,
+        requestModel,
       );
 
-      print("Check the response data-> ${response}");
-
-      if (response!.statusCode == 200) {
-        showCustomSnackBar('Password Change Successfully');
-        // logOut();
-        Get.offAll(() => UserLoginScreen());
+      if (response == null) {
+        showCustomSnackBar(
+          'Unable to reach the server. Please try again.',
+          isError: true,
+        );
       } else {
-        ApiChecker.checkApi(response);
+        changePasswordResponseModel =
+            ChangePasswordResponseModel.fromJson(response.body);
+
+        if (response.statusCode == 200 &&
+            (changePasswordResponseModel?.success ?? false)) {
+          showCustomSnackBar(
+            changePasswordResponseModel?.message ??
+                'Password changed successfully',
+          );
+          Get.back();
+        } else {
+          showCustomSnackBar(
+            changePasswordResponseModel?.message ??
+                response.body['message'] ??
+                'Unable to change password',
+            isError: true,
+          );
+          ApiChecker.checkApi(response);
+        }
       }
     } catch (e) {
       print("❌ Error changing password: $e");

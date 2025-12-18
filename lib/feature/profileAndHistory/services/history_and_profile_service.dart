@@ -1,4 +1,5 @@
 import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and_profile_repository_interface.dart';
 
@@ -37,8 +38,16 @@ class HistoryAndProfileService implements HistoryAndProfileServiceInterface {
   }
 
   @override
-  Future<Response> updateProfileImage(String image) async {
+  Future<Response> updateProfileImage(XFile image) async {
     return await historyAndProfileRepositoryInterface.updateProfileImage(image);
+  }
+
+  @override
+  Future<Response> getNotifications({int page = 1, int limit = 20}) async {
+    return await historyAndProfileRepositoryInterface.getNotifications(
+      page: page,
+      limit: limit,
+    );
   }
 
   @override

@@ -61,6 +61,7 @@ class Urls {
   static const String getEarnings = '/driver/earnings';
   static const String requestWithdrawal = '/driver/withdrawal';
   static const String getDriverReviews = '/driver/reviews';
+  static const String getNotifications = '/notification';
 
   // ------------------------ Service Management ------------------------
   static const String getAllServices = '/service';
