@@ -1,10 +1,12 @@
 class Urls {
   // Base URL
   // static const String baseUrl = 'http://localhost:5001/api';
-  static const String baseUrl = 'http://10.10.5.94:5001/api';
+  static const String baseUrl = 'http://10.0.2.2:5001/api';
+  // static const String baseUrl = 'http://10.10.5.94:5001/api';
   // static const String baseUrl = 'https://ridetohealth-backend.onrender.com/api';
 
-  static const String socketUrl = 'http://10.10.5.94:5001';
+  // static const String socketUrl = 'http://10.10.5.94:5001';
+  static const String socketUrl = 'http://10.0.2.2:5001:5001';
   // ------------------------ Authentication ------------------------
 
   static const String register = '/auth/register';
@@ -15,7 +17,6 @@ class Urls {
   static const String resetPasswordWithOtp = '/auth/reset-password';
   static const String changePassword = '/auth/change-password';
   static const String logOut = '/auth/logout';
-
   // ------------------------ User Management ------------------------
   static const String getProfile = '/user/profile';
   static const String updateProfile = '/user/profile';
