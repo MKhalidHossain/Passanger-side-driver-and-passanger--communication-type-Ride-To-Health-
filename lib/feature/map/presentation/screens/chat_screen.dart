@@ -53,42 +53,124 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
   }
 
 
-    void _joinChatRoom() {
+  //   void _joinChatRoom() {
    
-     final customerId= widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
-    final driverId = widget.selectedDriver?.driver.userId.id ?? '';// adjust field name
+  //    final customerId= widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+  //   final driverId = widget.selectedDriver?.driver.userId.id ?? '';// adjust field name
 
-    if (driverId == null || customerId == null) return;
+  //   if (driverId == null || customerId == null) return;
 
-    // Save participants in controller (for sendMessage)
-    chatController.setParticipants(
-      senderId: customerId ,
-      receiverId: driverId,
-    );
+  //   // Save participants in controller (for sendMessage)
+  //   chatController.setParticipants(
+  //     senderId: customerId ,
+  //     receiverId: driverId,
+  //   );
 
-    socketClient.emit('join-chat', {
-      'senderId': customerId,
-      'receiverId': driverId,
-    });
+  //   socketClient.emit('join-chat', {
+  //     'senderId': customerId,
+  //     'receiverId': driverId,
+  //   });
+  // }
+
+
+  // void _setupSocketListeners() {
+  //   // when backend broadcasts messages
+  //   socketClient.on('receive-message', (data) {
+  //     // backend currently does: io.to(chatRoom).emit('receive-message', message);
+  //     // so `data` is just the text string
+  //     chatController.onIncomingMessage(data);
+  //   });
+
+  //   socketClient.on('user-typing', (data) {
+  //     chatController.isTyping.value = true;
+  //   });
+
+  //   socketClient.on('user-stop-typing', (data) {
+  //     chatController.isTyping.value = false;
+  //   });
+  // }
+
+
+
+  // ✅ UPDATE 7: Updated _joinChatRoom to use rideId instead of senderId/receiverId
+void _joinChatRoom() {
+  final customerId = widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+  final driverId = widget.selectedDriver?.driver.userId.id ?? '';
+  
+  // ✅ UPDATE 7: Get rideId from your widget (adjust based on your data structure)
+  final rideId = widget.rideBookingInfoFromResponse?.data?.rideId ?? '';
+                print("Ride ID in chat screen: $rideId");
+
+  // ✅ UPDATE 7: Validate all required fields
+  if (customerId.isEmpty || driverId.isEmpty || rideId.isEmpty) {
+    print('❌ Missing required data: customerId=$customerId, driverId=$driverId, rideId=$rideId');
+    return;
   }
 
+  // ✅ UPDATE 7: Save participants in controller including rideId
+  chatController.setParticipants(
+    senderId: customerId,
+    receiverId: driverId,
+    rideId: rideId, // ✅ UPDATE 7: Added rideId
+  );
 
-  void _setupSocketListeners() {
-    // when backend broadcasts messages
-    socketClient.on('receive-message', (data) {
-      // backend currently does: io.to(chatRoom).emit('receive-message', message);
-      // so `data` is just the text string
-      chatController.onIncomingMessage(data);
-    });
+  // ✅ UPDATE 7: Backend now expects only rideId (it validates based on authenticated user)
+  socketClient.emit('join-chat', {
+    'rideId': rideId,
+  });
+  
+  print('✅ Joining chat room for ride: $rideId');
+}
 
-    socketClient.on('user-typing', (data) {
+
+// ✅ UPDATE 8: Updated socket listeners to handle new message format
+void _setupSocketListeners() {
+  // ✅ UPDATE 8: Handle joined-chat confirmation from backend
+  socketClient.on('joined-chat', (data) {
+    print('✅ Successfully joined chat room: ${data['rideId']}');
+    chatController.isConnected.value = true;
+  });
+
+  // ✅ UPDATE 8: Backend now sends full message object with all fields
+  socketClient.on('receive-message', (data) {
+    // Backend sends: { rideId, senderId, receiverId, message, timestamp }
+    print('📨 Received message: $data');
+    chatController.onIncomingMessage(data);
+  });
+
+  socketClient.on('user-typing', (data) {
+    // ✅ UPDATE 8: Optional - check if typing user is the other participant
+    final typingUserId = data['userId'] ?? data['senderId'];
+    if (typingUserId != chatController.senderId) {
       chatController.isTyping.value = true;
-    });
+    }
+  });
 
-    socketClient.on('user-stop-typing', (data) {
-      chatController.isTyping.value = false;
-    });
-  }
+  socketClient.on('user-stop-typing', (data) {
+    chatController.isTyping.value = false;
+  });
+  
+  // ✅ UPDATE 8: Handle connection errors
+  socketClient.on('error', (data) {
+    print('❌ Socket error: $data');
+    chatController.isConnected.value = false;
+  });
+  
+  // ✅ UPDATE 8: Handle disconnection
+  socketClient.on('disconnect', (data) {
+    print('⚠️ Socket disconnected');
+    chatController.isConnected.value = false;
+  });
+  
+  // ✅ UPDATE 8: Handle reconnection
+  socketClient.on('connect', (data) {
+    print('✅ Socket reconnected');
+    chatController.isConnected.value = true;
+    // Rejoin the chat room after reconnection
+    _joinChatRoom();
+  });
+}
+
 
   @override
   void dispose() {
@@ -103,6 +185,15 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
         'receiverId': p.receiverId,
       });
     }
+
+
+     socketClient.off('receive-message');
+  socketClient.off('user-typing');
+  socketClient.off('user-stop-typing');
+  socketClient.off('joined-chat');
+  socketClient.off('error');
+  socketClient.off('disconnect');
+  socketClient.off('connect');
     super.dispose();
   }
 

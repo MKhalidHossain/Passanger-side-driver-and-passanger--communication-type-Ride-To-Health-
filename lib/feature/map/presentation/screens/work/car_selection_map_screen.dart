@@ -383,7 +383,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                             final nearbyDrivers = model.data ?? [];
                             _latestNearbyDrivers = nearbyDrivers;
 
-                            final selectedDriverId = _selectedDriver?.driver.id;
+                            final selectedDriverId = _selectedDriver?.driver?.id;
                             final selectedStillExists = selectedDriverId != null &&
                                 nearbyDrivers.any(
                                   (driver) => driver.driver.id == selectedDriverId,
