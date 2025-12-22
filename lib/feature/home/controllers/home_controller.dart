@@ -10,6 +10,7 @@ import 'package:rideztohealth/feature/home/domain/reponse_model/get_all_services
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/feature/home/presentation/screens/home_screen.dart';
 import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
+import 'package:rideztohealth/helpers/custom_snackbar.dart';
 import '../domain/request_model/ride_booking_info_request_model.dart';
 import '../../../core/constants/urls.dart';
 import '../domain/reponse_model/get_a_category_response_model.dart';
@@ -259,7 +260,9 @@ Future<void> getRecentTrips() async {
         final parsedBody = _responseToMap(response.body);
         final parsedResponse = RequestRideResponseModel.fromJson(parsedBody);
         requestRideResponseModel = parsedResponse;
+        showCustomSnackBar('Ride requested successfully', isError: false);
         return parsedResponse;
+        
       }
 
       final message =
@@ -267,6 +270,7 @@ Future<void> getRecentTrips() async {
       throw Exception(message);
     } catch (e) {
       debugPrint("⚠️ Error fetching HomeController : requestRide : $e\n");
+      showCustomSnackBar(e.toString(), isError: true);
       rethrow;
     } finally {
       isLoading = false;

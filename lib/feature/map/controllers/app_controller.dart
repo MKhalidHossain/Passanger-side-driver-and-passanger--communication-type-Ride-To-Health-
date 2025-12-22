@@ -101,6 +101,11 @@ class AppController extends GetxController {
   
   // Utility methods
   void showSnackbar(String title, String message, {Color? backgroundColor}) {
+    final overlayContext = Get.overlayContext;
+    if (overlayContext == null) {
+      print('⚠️ Snackbar skipped (no Overlay): $title - $message');
+      return;
+    }
     Get.snackbar(
       title,
       message,

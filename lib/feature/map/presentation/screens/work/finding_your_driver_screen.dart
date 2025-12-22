@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import 'package:rideztohealth/feature/map/domain/models/ride_accept_socket_model.dart';
+import 'package:rideztohealth/feature/map/domain/models/ride_cancel_socket_model.dart';
+import '../../../../../helpers/remote/data/socket_client.dart';
 import '../../../../home/domain/reponse_model/request_ride_response_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
@@ -13,14 +16,14 @@ import '../ride_confirmed_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class FindingYourDriverScreen extends StatefulWidget {
-  const FindingYourDriverScreen({Key? key,
-   this.selectedDriver, 
-    this.rideBookingInfoFromResponse})
-      : super(key: key);
+  const FindingYourDriverScreen({
+    Key? key,
+    this.selectedDriver,
+    this.rideBookingInfoFromResponse,
+  }) : super(key: key);
 
   final NearestDriverData? selectedDriver;
-  final RequestRideResponseModel ? rideBookingInfoFromResponse;
-
+  final RequestRideResponseModel? rideBookingInfoFromResponse;
 
   @override
   State<FindingYourDriverScreen> createState() =>
@@ -33,6 +36,10 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
   final BookingController bookingController = Get.find<BookingController>();
 
   final AppController appController = Get.find<AppController>();
+  final SocketClient socketClient = SocketClient();
+  bool _hasNavigated = false;
+  RideAcceptSocketModel? _rideAcceptSocketModel;
+  RideCancelSocketModel? _rideCancelSocketModel;
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(23.8103, 90.4125), // Default to Dhaka, Bangladesh
@@ -45,15 +52,86 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      // Navigate to next screen after 3 seconds
-      Get.to(
-        () => RideConfirmedScreen(
-          selectedDriver: widget.selectedDriver,
-          rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
-        ),
-      ); // Replace with your screen
+    _setupRideStatusListeners();
+  }
+
+  void _setupRideStatusListeners() {
+    socketClient.on('connect', (_) {
+      _joinUserRoom();
     });
+    _joinUserRoom();
+    socketClient.on('ride_accepted', (data) {
+      print("socekt emit join from here =======");
+      print('🚗 Incoming ride : ride_accepted : $data');
+      try {
+        final request = RideAcceptSocketModel.fromSocket(data);
+        if (!mounted) return;
+        setState(() {
+          _rideAcceptSocketModel = request;
+        });
+      } catch (e) {
+        print('⚠️ Failed to parse ride_accepted payload: $e');
+      }
+      print("✅ Listening for ride_accepted events");
+      _goToRideConfirmed();
+    });
+    socketClient.on('ride_cancelled', (data) {
+      print("socekt emit join from here =======");
+      print('🚗 Incoming ride : ride_cancelled : $data');
+      try {
+        final request = RideCancelSocketModel.fromSocket(data);
+        if (!mounted) return;
+        setState(() {
+          _rideCancelSocketModel = request;
+        });
+      } catch (e) {
+        print('⚠️ Failed to parse ride_cancelled payload: $e');
+      }
+      print("✅ Listening for ride_cancelled events");
+      _handleRideCancelled();
+    });
+  }
+
+  void _joinUserRoom() {
+    final customerId =
+        widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+    if (customerId.isEmpty) {
+      print('⚠️ Missing customerId; cannot join socket room.');
+      return;
+    }
+    socketClient.join('user:$customerId');
+  }
+
+  void _goToRideConfirmed() {
+    if (!mounted || _hasNavigated) return;
+    if (_rideAcceptSocketModel == null) return;
+    _hasNavigated = true;
+    appController.showSuccessSnackbar('Ride accepted');
+    Get.to(
+      () => RideConfirmedScreen(
+        selectedDriver: widget.selectedDriver,
+        rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
+      ),
+    );
+  }
+
+  void _handleRideCancelled() {
+    if (!mounted || _hasNavigated) return;
+    if (_rideCancelSocketModel == null) return;
+    _hasNavigated = true;
+    final reason = _rideCancelSocketModel?.reason;
+    appController.showErrorSnackbar(
+      reason?.isNotEmpty == true ? reason! : 'Ride cancelled',
+    );
+    Get.back();
+  }
+
+  @override
+  void dispose() {
+    socketClient.off('connect');
+    socketClient.off('ride_accepted');
+    socketClient.off('ride_cancelled');
+    super.dispose();
   }
 
   @override
@@ -88,7 +166,8 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
             left: 0,
             right: 0,
             child: Container(
-              height: MediaQuery.of(context).size.height *
+              height:
+                  MediaQuery.of(context).size.height *
                   _sheetHeightFactor, // fixed height; tweak factor to change size
               padding: EdgeInsets.only(
                 top: 10,
@@ -178,7 +257,6 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                   ),
                                   Obx(
                                     () => Text(
-
                                       locationController
                                               .pickupAddress
                                               .value
@@ -201,9 +279,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20
-                        
-                        ), // Space between From and To
+                        SizedBox(height: 20), // Space between From and To
                         // To: Destination Location (Changeable/Editable)
                         GestureDetector(
                           onTap: () {
