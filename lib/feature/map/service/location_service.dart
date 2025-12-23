@@ -1,6 +1,8 @@
+import 'package:rideztohealth/feature/map/domain/models/add_save_place_response_model.dart';
 import 'package:rideztohealth/feature/map/domain/models/place_prediction.dart';
 import 'package:rideztohealth/feature/map/repository/location_repository_interface.dart';
 import 'package:rideztohealth/feature/map/service/location_service_interface.dart';
+import 'package:get/get_connect/http/src/response/response.dart';
 
 class LocationService implements LocationServiceInterface{
 
@@ -10,5 +12,8 @@ class LocationService implements LocationServiceInterface{
   @override
   Future<List<PlacePrediction>> searchPlaces({required String query}) async{
     return await locationRepositoryInterface.searchPlaces(query: query);
-  }
+  } 
+  
+  
+  
 } 

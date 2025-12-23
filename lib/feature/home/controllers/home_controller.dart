@@ -45,6 +45,8 @@ class HomeController extends GetxController implements GetxService {
   
   RequestRideResponseModel requestRideResponseModel = RequestRideResponseModel();
 
+  
+
 
   bool isLoading = false;
 

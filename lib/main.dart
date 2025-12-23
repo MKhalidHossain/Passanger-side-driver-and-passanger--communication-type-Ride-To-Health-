@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   //   return isFirstTimeInstaled;
   // }
 
+
   whichPageToNext(bool isFirstTimeInstaled) {
     if (isFirstTimeInstaled) {
       return SplashScreen(nextScreen: Onboarding1());

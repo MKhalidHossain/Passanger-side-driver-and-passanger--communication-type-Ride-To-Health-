@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/helpers/custom_snackbar.dart';
 
@@ -40,6 +41,8 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
   final LocationController locationController = Get.find<LocationController>();
 
   final BookingController bookingController = Get.find<BookingController>();
+
+  final HomeController homeController = Get.find<HomeController>();
 
   final AppController appController = Get.find<AppController>();
 
@@ -262,275 +265,297 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
               child: SafeArea(
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () => Get.back(),
-                          ),
-                          Text(
-                            'Your driver is coming in ${widget.selectedDriver?.service?.estimatedArrivalTime ?? 3} min',
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      Divider(color: Colors.grey[700], thickness: 0.5),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 15),
-                        child: Row(
+                  child: Obx(
+                    () =>
+                     Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundImage: widget.selectedDriver == null
-                                  ? const AssetImage('assets/images/user6.png')
-                                  : null,
-                              backgroundColor: Colors.grey,
-                              child: widget.selectedDriver != null
-                                  ? Text(
+                            IconButton(
+                              icon: Icon(Icons.arrow_back, color: Colors.white),
+                              onPressed: () => Get.back(),
+                            ),
+                            Text(
+                              'Your driver is coming  ...',
+                              
+                              //in ${widget.selectedDriver?.service?.estimatedArrivalTime ?? 3} min',
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
+                    
+                            NormalCustomButton(
+                              
+                              text: "Save Ride",
+                              weight: 100,
+                               onPressed: (){
+                                final name = locationController.destinationAddress.value ?? 'Saved Location';
+                                final addresss = locationController.destinationAddress.value ?? 'Unknown Address';
+                                final latitude = locationController.destinationLocation.value?.latitude ?? 0.0;
+                                final longitude = locationController.destinationLocation.value?.longitude ?? 0.0;
+                                final type = ['Home', 'Work', 'Favorite'].first;
+
+                                print('Name: $name, Address: $addresss, Latitude: $latitude, Longitude: $longitude, Type: $type');
+                                homeController.addSavedPlaces(name, addresss, latitude, longitude, type);
+                    
+                            })
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Divider(color: Colors.grey[700], thickness: 0.5),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage: widget.selectedDriver == null
+                                    ? const AssetImage('assets/images/user6.png')
+                                    : null,
+                                backgroundColor: Colors.grey,
+                                child: widget.selectedDriver != null
+                                    ? Text(
+                                        widget
+                                            .selectedDriver!
+                                            .driver
+                                            .userId
+                                            .fullName[0]
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              SizedBox(width: 15),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
                                       widget
-                                          .selectedDriver!
-                                          .driver
-                                          .userId
-                                          .fullName[0]
-                                          .toUpperCase(),
-                                      style: const TextStyle(
+                                              .selectedDriver
+                                              ?.driver
+                                              .userId
+                                              .fullName ??
+                                          'Max Johnson',
+                                      style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                    )
-                                  : null,
-                            ),
-                            SizedBox(width: 15),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget
-                                            .selectedDriver
-                                            ?.driver
-                                            .userId
-                                            .fullName ??
-                                        'Max Johnson',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.location_on_outlined,
-                                        color: Colors.white,
-                                        size: 16,
-                                      ),
-                                      "${locationController.distance.value.toStringAsFixed(1)}km"
-                                          .text12White(),
-                                    ],
-                                  ),
-                                  SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                        size: 16,
-                                      ),
-                                      SizedBox(width: 5),
-                                      (widget.selectedDriver != null
-                                              ? widget
-                                                    .selectedDriver!
-                                                    .driver
-                                                    .ratings
-                                                    .average
-                                                    .toStringAsFixed(1)
-                                              : "4.9")
-                                          .text14White(),
-                                      " ("
-                                              "${widget.selectedDriver?.driver.ratings.totalRatings ?? 127}"
-                                              ")"
-                                          .text12Grey(),
-                                    ],
-                                  ),
-                                ],
+                                    SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.location_on_outlined,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                        "${locationController.distance.value.toStringAsFixed(1)}km"
+                                            .text12White(),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                          size: 16,
+                                        ),
+                                        SizedBox(width: 5),
+                                        (widget.selectedDriver != null
+                                                ? widget
+                                                      .selectedDriver!
+                                                      .driver
+                                                      .ratings
+                                                      .average
+                                                      .toStringAsFixed(1)
+                                                : "4.9")
+                                            .text14White(),
+                                        " ("
+                                                "${widget.selectedDriver?.driver.ratings.totalRatings ?? 127}"
+                                                ")"
+                                            .text12Grey(),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            widget.selectedDriver != null
-                                ? Image.network(
-                                    widget.selectedDriver!.service?.serviceImage ??'',
-                                    width: 80,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => Image.asset(
+                              widget.selectedDriver != null
+                                  ? Image.network(
+                                      widget.selectedDriver!.service?.serviceImage ??'',
+                                      width: 80,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => Image.asset(
+                                        'assets/images/privet_car.png',
+                                        width: 80,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    )
+                                  : Image.asset(
                                       'assets/images/privet_car.png',
                                       width: 80,
                                       fit: BoxFit.contain,
                                     ),
-                                  )
-                                : Image.asset(
-                                    'assets/images/privet_car.png',
-                                    width: 80,
-                                    fit: BoxFit.contain,
-                                  ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Divider(color: Colors.grey[700], thickness: 0.5),
-                      SizedBox(height: 20),
-                      _buildProfileOption(
-                        type: "Cash",
-                        description: "Pay with cash after your ride",
-                        imagePath: 'assets/icons/dollarIcon.png',
-                      ),
-                      _buildProfileOption(
-                        type: "Wallet",
-                        description: "Balance: \$45.50",
-                        imagePath: 'assets/icons/walletIocn.png',
-                      ),
-                      SizedBox(height: 20),
-                      // Row(
-                      //   children: [
-                      //     SizedBox(
-                      //       height: 51,
-                      //       width: size.width * 0.7,
-                      //       child: TextField(
-                      //         decoration: InputDecoration(
-                      //           filled: true,
-                      //           fillColor: Colors.white12,
-                      //           hintText: 'Enter coupon code',
-                      //           hintStyle: const TextStyle(
-                      //             color: Colors.white54,
-                      //           ),
-                      //           border: OutlineInputBorder(
-                      //             borderRadius: BorderRadius.circular(8),
-                      //             borderSide: BorderSide.none,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //     NormalCustomButton(
-                      //       height: 51,
-                      //       weight: size.width * 0.2,
-                      //       text: "Apply",
-                      //       onPressed: () {},
-                      //     ),
-                      //   ],
-                      // ),
-                      // SizedBox(height: 20),
-                      Divider(color: Colors.grey[700], thickness: 1.5),
-                      Container(
-                        padding: EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
+                        Divider(color: Colors.grey[700], thickness: 0.5),
+                        SizedBox(height: 20),
+                        _buildProfileOption(
+                          type: "Cash",
+                          description: "Pay with cash after your ride",
+                          imagePath: 'assets/icons/dollarIcon.png',
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        _buildProfileOption(
+                          type: "Wallet",
+                          description: "Balance: \$45.50",
+                          imagePath: 'assets/icons/walletIocn.png',
+                        ),
+                        SizedBox(height: 20),
+                        // Row(
+                        //   children: [
+                        //     SizedBox(
+                        //       height: 51,
+                        //       width: size.width * 0.7,
+                        //       child: TextField(
+                        //         decoration: InputDecoration(
+                        //           filled: true,
+                        //           fillColor: Colors.white12,
+                        //           hintText: 'Enter coupon code',
+                        //           hintStyle: const TextStyle(
+                        //             color: Colors.white54,
+                        //           ),
+                        //           border: OutlineInputBorder(
+                        //             borderRadius: BorderRadius.circular(8),
+                        //             borderSide: BorderSide.none,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     NormalCustomButton(
+                        //       height: 51,
+                        //       weight: size.width * 0.2,
+                        //       text: "Apply",
+                        //       onPressed: () {},
+                        //     ),
+                        //   ],
+                        // ),
+                        // SizedBox(height: 20),
+                        Divider(color: Colors.grey[700], thickness: 1.5),
+                        Container(
+                          padding: EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              "Total".text16White500(),
+                              _calculatedPrice().text16White500(),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                    
+                        Row(
                           children: [
-                            "Total".text16White500(),
-                            _calculatedPrice().text16White500(),
+                            // Expanded(
+                            //   flex: 1,
+                            //   child: NormalCustomIconButton(
+                            //     icon: Icons.call_outlined,
+                            //     iconSize: 25,
+                            //     onPressed: () {
+                            //       Get.to(CallScreen());
+                            //     },
+                            //   ),
+                            // ),
+                            SizedBox(width: 15),
+                            SizedBox(
+                              width: size.width * 0.4,
+                              child: NormalCustomIconButton(
+                                icon: Icons.messenger_outline,
+                                iconSize: 32,
+                                onPressed: () {
+                                  Get.to(
+                                    () => ChatScreenRTH(
+                                      selectedDriver: widget.selectedDriver,
+                                      rideBookingInfoFromResponse:
+                                          widget.rideBookingInfoFromResponse,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 15),
+                            // Expanded(
+                            //   flex: 3,
+                            //   child: SmallSemiTranparentButton(
+                            //     fillColor: Color(0xffBFC1C5),
+                            //     height: 51,
+                            //     fontSize: 18,
+                            //     circularRadious: 30,
+                            //     textColor: Colors.black,
+                            //     text: "Cancel Ride",
+                            //     onPressed: () {
+                            //       // Handle cancel
+                            //     },
+                            //   ),
+                            // ),
+                            SizedBox(width: 8),
+                            SizedBox(
+                              width: size.width * 0.4,
+                              child: NormalCustomButton(
+                                height: 51,
+                                weight: size.width * 0.4, // or double.infinity
+                                fontSize: 18,
+                                circularRadious: 30,
+                                text: "Continue",
+                                onPressed: () {
+                                  final fare = _calculatePriceValue();
+                                  final driverId =
+                                      widget.selectedDriver?.driver.id ??
+                                      bookingController
+                                          .currentBooking
+                                          .value
+                                          ?.driverId ??
+                                      bookingController.driver.value?.id;
+                                  final stripeDriverId = widget
+                                      .selectedDriver
+                                      ?.driver
+                                      .payoutAccountId;
+                    
+                                  if (driverId == null ||
+                                      stripeDriverId == null) {
+                                    showCustomSnackBar(
+                                      'Unable to continue',
+                                      subMessage:
+                                          'Missing driver payment information.',
+                                    );
+                                    return;
+                                  }
+                    
+                                  Get.to(
+                                    () => WalletScreen(
+                                      
+                                      rideAmount: fare,
+                                      driverId: driverId,
+                                      stripeDriverId: stripeDriverId, 
+                                      selectedDriver: widget.selectedDriver ,
+                    
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: 10),
-
-                      Row(
-                        children: [
-                          // Expanded(
-                          //   flex: 1,
-                          //   child: NormalCustomIconButton(
-                          //     icon: Icons.call_outlined,
-                          //     iconSize: 25,
-                          //     onPressed: () {
-                          //       Get.to(CallScreen());
-                          //     },
-                          //   ),
-                          // ),
-                          SizedBox(width: 15),
-                          SizedBox(
-                            width: size.width * 0.4,
-                            child: NormalCustomIconButton(
-                              icon: Icons.messenger_outline,
-                              iconSize: 32,
-                              onPressed: () {
-                                Get.to(
-                                  () => ChatScreenRTH(
-                                    selectedDriver: widget.selectedDriver,
-                                    rideBookingInfoFromResponse:
-                                        widget.rideBookingInfoFromResponse,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 15),
-                          // Expanded(
-                          //   flex: 3,
-                          //   child: SmallSemiTranparentButton(
-                          //     fillColor: Color(0xffBFC1C5),
-                          //     height: 51,
-                          //     fontSize: 18,
-                          //     circularRadious: 30,
-                          //     textColor: Colors.black,
-                          //     text: "Cancel Ride",
-                          //     onPressed: () {
-                          //       // Handle cancel
-                          //     },
-                          //   ),
-                          // ),
-                          SizedBox(width: 8),
-                          SizedBox(
-                            width: size.width * 0.4,
-                            child: NormalCustomButton(
-                              height: 51,
-                              weight: size.width * 0.4, // or double.infinity
-                              fontSize: 18,
-                              circularRadious: 30,
-                              text: "Continue",
-                              onPressed: () {
-                                final fare = _calculatePriceValue();
-                                final driverId =
-                                    widget.selectedDriver?.driver.id ??
-                                    bookingController
-                                        .currentBooking
-                                        .value
-                                        ?.driverId ??
-                                    bookingController.driver.value?.id;
-                                final stripeDriverId = widget
-                                    .selectedDriver
-                                    ?.driver
-                                    .payoutAccountId;
-
-                                if (driverId == null ||
-                                    stripeDriverId == null) {
-                                  showCustomSnackBar(
-                                    'Unable to continue',
-                                    subMessage:
-                                        'Missing driver payment information.',
-                                  );
-                                  return;
-                                }
-
-                                Get.to(
-                                  () => WalletScreen(
-                                    
-                                    rideAmount: fare,
-                                    driverId: driverId,
-                                    stripeDriverId: stripeDriverId, 
-                                    selectedDriver: widget.selectedDriver ,
-
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
