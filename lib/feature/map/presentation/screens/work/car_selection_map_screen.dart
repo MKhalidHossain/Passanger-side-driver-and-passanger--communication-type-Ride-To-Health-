@@ -4,14 +4,16 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
+import '../../../../../utils/display_helper.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'confirm_location_map_screen.dart';
 
 class CarSelectionMapScreen extends StatefulWidget {
-  CarSelectionMapScreen({super.key});
-
+  
+  CarSelectionMapScreen({super.key, this.isshowCancelRideStatus = false});
+ bool isshowCancelRideStatus;
   @override
   State<CarSelectionMapScreen> createState() => _CarSelectionMapScreenState();
 }
@@ -76,6 +78,10 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
     locationController.getCurrentLocation().then((value) {
       getCarData();
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.isshowCancelRideStatus ? showCustomSnackBar("Ride cancelled successfully", isError: false) : null;
+    });
+
     // 1. Call the function to get current location
     // locationController.getCurrentLocation();
     // homeController = Get.find<HomeController>();
@@ -426,12 +432,12 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                 final user = driver.userId;
                                 final service = data.service;
 
-                                final carName = service.name.isNotEmpty
-                                    ? service.name
-                                    : vehicle.model;
+                                final carName = service!.name.isNotEmpty
+                                    ? service.name 
+                                    : vehicle?.model ?? "Unknown Car";
                                 final driverName = user.fullName;
                                 final carDetails =
-                                    "${vehicle.taxiName} • Plate ${vehicle.plateNumber}";
+                                    "${vehicle?.taxiName ?? 'TAXI'} • Plate ${vehicle?.plateNumber ?? 'N/A'}";
                                 final carImage = service.serviceImage;
                                 final eta = service.estimatedArrivalTime > 0
                                     ? "${service.estimatedArrivalTime} min"

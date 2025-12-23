@@ -5,23 +5,23 @@
 // }
 
 // class GetSearchDestinationForFindNearestDriversResponseModel {
-//   final bool ?success;
-//   final String ?message;
-//   final List<NearestDriverData> ?data;
+//   final bool? success;
+//   final String? message;
+//   final List<NearestDriverData>? data;
 
 //   GetSearchDestinationForFindNearestDriversResponseModel({
-//      this.success,
-//      this.message,
-//      this.data,
+//     this.success,
+//     this.message,
+//     this.data,
 //   });
 
 //   factory GetSearchDestinationForFindNearestDriversResponseModel.fromJson(
 //       Map<String, dynamic> json) {
 //     return GetSearchDestinationForFindNearestDriversResponseModel(
-//       success: json['success'] as bool,
-//       message: json['message'] as String,
-//       data: (json['data'] as List<dynamic>)
-//           .map((e) => NearestDriverData.fromJson(e as Map<String, dynamic>))
+//       success: json['success'] as bool?,
+//       message: json['message'] as String?,
+//       data: (json['data'] as List<dynamic>?)
+//           ?.map((e) => NearestDriverData.fromJson(e as Map<String, dynamic>))
 //           .toList(),
 //     );
 //   }
@@ -30,35 +30,39 @@
 //     return {
 //       'success': success,
 //       'message': message,
-//       'data': data!.map((e) => e.toJson()).toList(),
+//       'data': data?.map((e) => e.toJson()).toList(),
 //     };
 //   }
 // }
 
 // class NearestDriverData {
 //   final Driver driver;
-//   final Vehicle vehicle;
-//   final Service service;
+//   final Vehicle? vehicle;  // Make vehicle nullable
+//   final Service? service;  // Make service nullable
 
 //   NearestDriverData({
 //     required this.driver,
-//     required this.vehicle,
-//     required this.service,
+//     this.vehicle,  // Nullable
+//     this.service,  // Nullable
 //   });
 
 //   factory NearestDriverData.fromJson(Map<String, dynamic> json) {
 //     return NearestDriverData(
 //       driver: Driver.fromJson(json['driver'] as Map<String, dynamic>),
-//       vehicle: Vehicle.fromJson(json['vehicle'] as Map<String, dynamic>),
-//       service: Service.fromJson(json['service'] as Map<String, dynamic>),
+//       vehicle: json['vehicle'] != null
+//           ? Vehicle.fromJson(json['vehicle'] as Map<String, dynamic>)
+//           : null,  // Check if vehicle is not null
+//       service: json['service'] != null
+//           ? Service.fromJson(json['service'] as Map<String, dynamic>)
+//           : null,  // Check if service is not null
 //     );
 //   }
 
 //   Map<String, dynamic> toJson() {
 //     return {
 //       'driver': driver.toJson(),
-//       'vehicle': vehicle.toJson(),
-//       'service': service.toJson(),
+//       if (vehicle != null) 'vehicle': vehicle?.toJson(),  // Only include if not null
+//       if (service != null) 'service': service?.toJson(),  // Only include if not null
 //     };
 //   }
 // }
@@ -299,7 +303,7 @@
 // class Vehicle {
 //   final String id;
 //   final String serviceId;
-//   final String ?driverId;
+//   final String? driverId; // ✅ nullable
 //   final String taxiName;
 //   final String model;
 //   final String plateNumber;
@@ -331,7 +335,7 @@
 //     return Vehicle(
 //       id: json['_id'] as String,
 //       serviceId: json['serviceId'] as String,
-//       driverId: json['driverId'] as String,
+//       driverId: json['driverId'] as String?, // ✅ safe for null
 //       taxiName: json['taxiName'] as String,
 //       model: json['model'] as String,
 //       plateNumber: json['plateNumber'] as String,
@@ -494,13 +498,13 @@ class GetSearchDestinationForFindNearestDriversResponseModel {
 
 class NearestDriverData {
   final Driver driver;
-  final Vehicle vehicle;
-  final Service service;
+  final Vehicle? vehicle;
+  final Service ?service;
 
   NearestDriverData({
     required this.driver,
-    required this.vehicle,
-    required this.service,
+     this.vehicle,
+     this.service,
   });
 
   factory NearestDriverData.fromJson(Map<String, dynamic> json) {
@@ -514,8 +518,8 @@ class NearestDriverData {
   Map<String, dynamic> toJson() {
     return {
       'driver': driver.toJson(),
-      'vehicle': vehicle.toJson(),
-      'service': service.toJson(),
+      if (vehicle != null) 'vehicle': vehicle?.toJson(),  // Only include if not null
+      if (service != null) 'service': service?.toJson(),  // Only include if not null
     };
   }
 }

@@ -6,6 +6,7 @@ import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/feature/home/domain/request_model/ride_booking_info_request_model.dart';
+import '../../../../../utils/display_helper.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import 'finding_your_driver_screen.dart';
@@ -16,11 +17,13 @@ import 'finding_your_driver_screen.dart';
 
 // ignore: use_key_in_widget_constructors
 class ConfirmYourLocationScreen extends StatelessWidget {
-  ConfirmYourLocationScreen({super.key, this.selectedDriver});
 
-  final LocationController locationController = Get.find<LocationController>();
-  final HomeController homeController = Get.find<HomeController>();
-  final AppController appController = Get.find<AppController>();
+  ConfirmYourLocationScreen({
+    super.key, this.selectedDriver, 
+
+    
+    });
+
   final NearestDriverData? selectedDriver;
 
   // Bottom sheet height control for quick tweaking
@@ -30,6 +33,12 @@ class ConfirmYourLocationScreen extends StatelessWidget {
     target: LatLng(23.8103, 90.4125), // Default to Dhaka, Bangladesh
     zoom: 14.0,
   );
+
+  final LocationController locationController = Get.find<LocationController>();
+
+  final HomeController homeController = Get.find<HomeController>();
+
+  final AppController appController = Get.find<AppController>();
 
   String _calculateEstimatedPrice(
     double distanceKm, {
@@ -72,9 +81,9 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 
     final totalFare = _calculateEstimatedPrice(
       locationController.distance.value,
-      baseFare: driverData.service.baseFare,
-      perKmRate: driverData.service.perKmRate,
-      minimumFare: driverData.service.minimumFare,
+      baseFare: driverData.service?.baseFare,
+      perKmRate: driverData.service?.perKmRate,
+      minimumFare: driverData.service?.minimumFare,
     );
 
     final bookingInfo = RideBookingInfo(
@@ -505,20 +514,6 @@ class ConfirmYourLocationScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';

@@ -4,12 +4,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/feature/map/domain/models/ride_accept_socket_model.dart';
 import 'package:rideztohealth/feature/map/domain/models/ride_cancel_socket_model.dart';
+import 'package:rideztohealth/utils/display_helper.dart';
 import '../../../../../helpers/remote/data/socket_client.dart';
 import '../../../../home/domain/reponse_model/request_ride_response_model.dart';
 import '../../../controllers/app_controller.dart';
 import '../../../controllers/booking_controller.dart';
 import '../../../controllers/locaion_controller.dart';
 import '../ride_confirmed_screen.dart';
+import 'car_selection_map_screen.dart';
+import 'confirm_location_map_screen.dart';
 // import 'chat_screen.dart'; // Uncomment if you use these
 // import 'call_screen.dart'; // Uncomment if you use these
 // import 'payment_screen.dart'; // Uncomment if you use these// Import the new search screen
@@ -51,80 +54,207 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
 
   @override
   void initState() {
+    print ("FindingYourDriverScreen initState called : 0000000000000000");
     super.initState();
     _setupRideStatusListeners();
+    print ("FindingYourDriverScreen initState called : 0000000000000001");
   }
 
   void _setupRideStatusListeners() {
-    socketClient.on('connect', (_) {
-      _joinUserRoom();
-    });
-    _joinUserRoom();
+    print ("FindingYourDriverScreen initState called : 0000000000000002");
+
+    // socketClient.on('ride_accepted', (data) {
+    //   print("socekt emit join from here =======");
+    //   print('🚗 Incoming ride : ride_accepted : $data');
+    //   try {
+    //     final request = RideAcceptSocketModel.fromSocket(data);
+    //     if (!mounted) return;
+    //     setState(() {
+    //       _rideAcceptSocketModel = request;
+    //     });
+    //   } catch (e) {
+    //     print('⚠️ Failed to parse ride_accepted payload: $e');
+    //   }
+    //   print("✅ Listening for ride_accepted events");
+      
+
+    //   showCustomSnackBar("Ride accepted", isError: false);
+    //   Future.delayed(const Duration(milliseconds: 300), () {
+    //     // showCustomSnackBar("${_rideCancelSocketModel?.reason}", isError: true);
+    //     _goToRideConfirmed();
+    //   });
+      
+    // });
+
+
     socketClient.on('ride_accepted', (data) {
-      print("socekt emit join from here =======");
-      print('🚗 Incoming ride : ride_accepted : $data');
-      try {
-        final request = RideAcceptSocketModel.fromSocket(data);
-        if (!mounted) return;
-        setState(() {
-          _rideAcceptSocketModel = request;
-        });
-      } catch (e) {
-        print('⚠️ Failed to parse ride_accepted payload: $e');
-      }
-      print("✅ Listening for ride_accepted events");
+    print("socekt emit join from here =======");
+    print('🚗 Incoming ride : ride_accepted : $data');
+    try {
+      final request = RideAcceptSocketModel.fromSocket(data);
+      if (!mounted) return;
+      setState(() {
+        _rideAcceptSocketModel = request;
+      });
+    } catch (e) {
+      print('⚠️ Failed to parse ride_accepted payload: $e');
+    }
+    print("✅ Listening for ride_accepted events");
+    
+    Future.delayed(const Duration(milliseconds: 300), () {
       _goToRideConfirmed();
     });
+  });
+
+
+
+    // socketClient.on('ride_cancelled', (data) {
+    //   print("socekt emit join from here =======");
+    //   print('🚗 Incoming ride : ride_cancelled : $data');
+    //   try {
+    //     final request = RideCancelSocketModel.fromSocket(data);
+    //     if (!mounted) return;
+    //     setState(() {
+    //       _rideCancelSocketModel = request;
+    //     });
+    //   } catch (e) {
+    //     print('⚠️ Failed to parse ride_cancelled payload: $e');
+    //   }
+    //   print("✅ Listening for ride_cancelled events");
+
+    //   Future.delayed(const Duration(milliseconds: 300), () {
+    //     // showCustomSnackBar("${_rideCancelSocketModel?.reason}", isError: true);
+    //     _handleRideCancelled();
+    //   });
+     
+      
+    // });
+
+
     socketClient.on('ride_cancelled', (data) {
-      print("socekt emit join from here =======");
-      print('🚗 Incoming ride : ride_cancelled : $data');
-      try {
-        final request = RideCancelSocketModel.fromSocket(data);
-        if (!mounted) return;
-        setState(() {
-          _rideCancelSocketModel = request;
-        });
-      } catch (e) {
-        print('⚠️ Failed to parse ride_cancelled payload: $e');
+    print("socekt emit join from here =======");
+    print('🚗 Incoming ride : ride_cancelled : $data');
+    try {
+      final request = RideCancelSocketModel.fromSocket(data);
+      if (!mounted) return;
+      setState(() {
+        _rideCancelSocketModel = request;
+      });
+    } catch (e) {
+      print('⚠️ Failed to parse ride_cancelled payload: $e');
+    }
+    print("✅ Listening for ride_cancelled events");
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if(mounted){
+      showCustomSnackBar(
+       "${_rideCancelSocketModel?.reason}"?? "Ride cancelled", 
+      isError: true
+    );
       }
-      print("✅ Listening for ride_cancelled events");
       _handleRideCancelled();
     });
+  });
   }
 
-  void _joinUserRoom() {
-    final customerId =
-        widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
-    if (customerId.isEmpty) {
-      print('⚠️ Missing customerId; cannot join socket room.');
-      return;
-    }
-    socketClient.join('user:$customerId');
-  }
+  
+  
+  
+  // void _joinUserRoom() {
+  //   final customerId =
+  //       widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
+  //   if (customerId.isEmpty) {
+  //     print('⚠️ Missing customerId; cannot join socket room.');
+  //     return;
+  //   }
+  //   socketClient.join('user:$customerId');
+  // }
+
+  // void _goToRideConfirmed() {
+  //   if (!mounted || _hasNavigated) return;
+  //   if (_rideAcceptSocketModel == null) return;
+  //   _hasNavigated = true;
+  
+ 
+  //     Get.to(
+  //   () => RideConfirmedScreen(
+  //     selectedDriver: widget.selectedDriver,
+  //     rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
+  //   ),
+  // )?.then((_) {
+  //     appController.showSuccessSnackbar('Ride accepted from driver successfully.');
+  // });
+  // }
+
 
   void _goToRideConfirmed() {
-    if (!mounted || _hasNavigated) return;
-    if (_rideAcceptSocketModel == null) return;
-    _hasNavigated = true;
-    appController.showSuccessSnackbar('Ride accepted');
-    Get.to(
-      () => RideConfirmedScreen(
-        selectedDriver: widget.selectedDriver,
-        rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
-      ),
-    );
-  }
+  if (!mounted || _hasNavigated) return;
+  if (_rideAcceptSocketModel == null) return;
+  _hasNavigated = true;
+
+      if(mounted){
+   showCustomSnackBar("Ride accepted", isError: false);
+
+    }
+  
+  Get.to(
+    () => RideConfirmedScreen(
+      snackberMessage: "Ride accepted",
+      selectedDriver: widget.selectedDriver,
+      rideBookingInfoFromResponse: widget.rideBookingInfoFromResponse,
+    ),
+  );
+  // ?.then((_) {
+  //   debugPrint("is mounted after navigation back: ${mounted}");
+  //   if(mounted){
+   
+
+  //   }
+  // });
+}
+
+  // void _handleRideCancelled() {
+  //   if (!mounted || _hasNavigated) return;
+  //   if (_rideCancelSocketModel == null) return;
+  //   _hasNavigated = true;
+  //   final reason = _rideCancelSocketModel?.reason;
+  //   appController.showErrorSnackbar(
+  //     reason?.isNotEmpty == true ? reason! : 'Ride cancelled',
+  //   );
+
+
+
+  //   Get.back();
+
+  //   showCustomSnackBar("${_rideCancelSocketModel?.reason} "?? "Ride cancelled", isError: true);
+  // }
+
 
   void _handleRideCancelled() {
-    if (!mounted || _hasNavigated) return;
-    if (_rideCancelSocketModel == null) return;
-    _hasNavigated = true;
-    final reason = _rideCancelSocketModel?.reason;
-    appController.showErrorSnackbar(
-      reason?.isNotEmpty == true ? reason! : 'Ride cancelled',
-    );
-    Get.back();
-  }
+  if (!mounted || _hasNavigated) return;
+  if (_rideCancelSocketModel == null) return;
+  _hasNavigated = true;
+  final reason = _rideCancelSocketModel?.reason;
+
+  Get.to(() => CarSelectionMapScreen(
+    isshowCancelRideStatus: true,
+  ));
+
+ 
+    // Get.to(
+    //                           () => ConfirmYourLocationScreen(
+    //                             selectedDriver: widget.selectedDriver,
+    //                             isshowCancelRideStatus: true,
+    //                           ),
+    //                         );
+  // Show snackbar after navigation completes
+  Future.delayed(const Duration(milliseconds: 100), () {
+    // showCustomSnackBar(
+    //   reason?.isNotEmpty == true ? reason! : "Ride cancelled", 
+    //   isError: true
+    // );
+  });
+}
 
   @override
   void dispose() {

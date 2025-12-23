@@ -24,11 +24,13 @@ class RideConfirmedScreen extends StatefulWidget {
   const RideConfirmedScreen({
   Key? key,
   this.selectedDriver, 
-  this.rideBookingInfoFromResponse
+  this.rideBookingInfoFromResponse,
+  this.snackberMessage,
   }) : super(key: key);
 
   final NearestDriverData? selectedDriver;
-    final RequestRideResponseModel ? rideBookingInfoFromResponse;
+  final RequestRideResponseModel ? rideBookingInfoFromResponse;
+  final String ?snackberMessage ;
 
   @override
   State<RideConfirmedScreen> createState() => _RideConfirmedScreenState();
@@ -59,6 +61,17 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
     setState(() {
       _selectedPaymentType = profileType;
       _showProfileError = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+          if(mounted){
+   showCustomSnackBar("${widget.snackberMessage}", isError: false);
+
+    }
     });
   }
 
@@ -137,9 +150,9 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
     final service = widget.selectedDriver!.service;
     final distance = locationController.distance.value;
     double price =
-        service.baseFare.toDouble() + (distance * service.perKmRate.toDouble());
-    if (service.minimumFare > 0 && price < service.minimumFare) {
-      price = service.minimumFare.toDouble();
+        service?.baseFare.toDouble()?? 0.00 + (distance * (service?.perKmRate.toDouble()?? 0.00));
+    if ((service?.minimumFare ??0) > 0 && price < (service?.minimumFare ??0)) {
+      price = (service?.minimumFare.toDouble()?? 0.00);
     }
     return double.parse(price.toStringAsFixed(2));
   }
@@ -258,7 +271,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                             onPressed: () => Get.back(),
                           ),
                           Text(
-                            'Your driver is coming in ${widget.selectedDriver?.service.estimatedArrivalTime ?? 3} min',
+                            'Your driver is coming in ${widget.selectedDriver?.service?.estimatedArrivalTime ?? 3} min',
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ],
@@ -350,7 +363,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                             ),
                             widget.selectedDriver != null
                                 ? Image.network(
-                                    widget.selectedDriver!.service.serviceImage,
+                                    widget.selectedDriver!.service?.serviceImage ??'',
                                     width: 80,
                                     fit: BoxFit.contain,
                                     errorBuilder: (_, __, ___) => Image.asset(
