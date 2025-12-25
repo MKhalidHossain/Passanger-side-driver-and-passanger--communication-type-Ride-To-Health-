@@ -313,13 +313,16 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                     : null,
                                 backgroundColor: Colors.grey,
                                 child: widget.selectedDriver != null
+
+
                                     ? Text(
-                                        widget
+                                        (widget
                                             .selectedDriver!
                                             .driver
                                             .userId
-                                            .fullName[0]
-                                            .toUpperCase(),
+                                            ?.fullName ??
+                                            'U')[0]
+                                            .toUpperCase()  ,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,
@@ -338,7 +341,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                               .selectedDriver
                                               ?.driver
                                               .userId
-                                              .fullName ??
+                                              ?.fullName ??
                                           'Max Johnson',
                                       style: TextStyle(
                                         color: Colors.white,

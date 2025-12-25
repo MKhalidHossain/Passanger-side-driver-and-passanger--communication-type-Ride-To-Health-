@@ -435,10 +435,10 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                 final carName = service!.name.isNotEmpty
                                     ? service.name 
                                     : vehicle?.model ?? "Unknown Car";
-                                final driverName = user.fullName;
+                                final driverName = user?.fullName;
                                 final carDetails =
                                     "${vehicle?.taxiName ?? 'TAXI'} • Plate ${vehicle?.plateNumber ?? 'N/A'}";
-                                final carImage = service.serviceImage;
+                                final carImage = service.serviceImage ?? "";
                                 final eta = service.estimatedArrivalTime > 0
                                     ? "${service.estimatedArrivalTime} min"
                                     : _calculateEstimatedTime(

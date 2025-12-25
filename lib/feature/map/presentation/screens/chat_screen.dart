@@ -95,7 +95,7 @@ class _ChatScreenRTHState extends State<ChatScreenRTH> {
   // ✅ UPDATE 7: Updated _joinChatRoom to use rideId instead of senderId/receiverId
 void _joinChatRoom() {
   final customerId = widget.rideBookingInfoFromResponse?.notification?.senderId ?? '';
-  final driverId = widget.selectedDriver?.driver.userId.id ?? '';
+  final driverId = widget.selectedDriver?.driver.userId?.id ?? '';
   
   // ✅ UPDATE 7: Get rideId from your widget (adjust based on your data structure)
   final rideId = widget.rideBookingInfoFromResponse?.data?.rideId ?? '';
@@ -200,14 +200,14 @@ void _setupSocketListeners() {
   @override
   Widget build(BuildContext context) {
 
-    final driverImage = widget.selectedDriver?.driver.userId.profileImage;
+    final driverImage = widget.selectedDriver?.driver.userId?.profileImage;
    // final rideId= widget.rideBookingInfoFromResponse?.data?.rideId ?? '';
 
 final contactName =
-        widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value;
-    final contactPhone =  widget.selectedDriver?.driver.userId.phoneNumber ?? '';
+        widget.selectedDriver?.driver.userId?.fullName ?? chatController.supportAgentName.value;
+    final contactPhone =  widget.selectedDriver?.driver.userId?.phoneNumber ?? '';
     final contactRating =  widget.selectedDriver?.driver.ratings.totalRatings;
-    final contactAvatar = _avatarImageProvider(widget.selectedDriver?.driver.userId.profileImage);
+    final contactAvatar = _avatarImageProvider(widget.selectedDriver?.driver.userId?.profileImage);
     final subtitleParts = <String>[
     
       if (contactRating != null)
@@ -240,7 +240,7 @@ final contactName =
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.selectedDriver?.driver.userId.fullName ?? chatController.supportAgentName.value,
+                  widget.selectedDriver?.driver.userId?.fullName ?? chatController.supportAgentName.value,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -304,9 +304,9 @@ final contactName =
                           ? appController.userName.value[0].toUpperCase()
                           : '',
                       receiverName:
-                          widget.selectedDriver?.driver.userId.fullName ??
+                          widget.selectedDriver?.driver.userId?.fullName ??
                           chatController.supportAgentName.value,
-                      receiverAvatar: widget.selectedDriver?.driver.userId.profileImage ?? '',
+                      receiverAvatar: widget.selectedDriver?.driver.userId?.profileImage ?? '',
                     );
                   },
                 ),

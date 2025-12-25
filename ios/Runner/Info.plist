@@ -2,12 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-<key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app needs location access to show your position on the map.</string>
-    
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app needs location access even in the background.</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -30,16 +26,33 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access even in the background.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to show your position on the map.</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to let you upload images (e.g., profile photo or documents) in the app.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to let you take photos for upload.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need permission to save images to your photo library.</string>
+
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -47,9 +60,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>
