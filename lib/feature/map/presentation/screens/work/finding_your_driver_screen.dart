@@ -312,110 +312,49 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                   topRight: Radius.circular(20),
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 5,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[700],
-                      borderRadius: BorderRadius.circular(2.5),
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Get.back(), // Go back to previous screen
-                        child: Icon(Icons.arrow_back, color: Colors.white),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      height: 5,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[700],
+                        borderRadius: BorderRadius.circular(2.5),
                       ),
-                      Text(
-                        'Finding your driver...',
-                        style: TextStyle(
-                          color: Color(0xffEA0001),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 24), // For alignment
-                    ],
-                  ),
-                  SizedBox(height: 30),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 0),
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3B3B42), // Card background color
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Column(
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // From: Current Location
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xffEA0001),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                Container(
-                                  width: 2,
-                                  height: 25, // Height for the connecting line
-                                  color: Color(0xffEA0001),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'From:',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  Obx(
-                                    () => Text(
-                                      locationController
-                                              .pickupAddress
-                                              .value
-                                              .isEmpty
-                                          ? 'Current Location'
-                                          : locationController
-                                                .pickupAddress
-                                                .value,
-                                      style: TextStyle(
-                                        // overflow: TextOverflow.visible,
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20), // Space between From and To
-                        // To: Destination Location (Changeable/Editable)
                         GestureDetector(
-                          onTap: () {
-                            //  Get.to(() => DestinationSearchScreen());
-                          },
-                          child: Row(
+                          onTap: () => Get.back(), // Go back to previous screen
+                          child: Icon(Icons.arrow_back, color: Colors.white),
+                        ),
+                        Text(
+                          'Finding your driver...',
+                          style: TextStyle(
+                            color: Color(0xffEA0001),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 24), // For alignment
+                      ],
+                    ),
+                    SizedBox(height: 30),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 0),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3B3B42), // Card background color
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          // From: Current Location
+                          Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Column(
@@ -428,6 +367,11 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                       shape: BoxShape.circle,
                                     ),
                                   ),
+                                  Container(
+                                    width: 2,
+                                    height: 25, // Height for the connecting line
+                                    color: Color(0xffEA0001),
+                                  ),
                                 ],
                               ),
                               SizedBox(width: 10),
@@ -436,7 +380,7 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'To:',
+                                      'From:',
                                       style: TextStyle(
                                         color: Colors.grey,
                                         fontSize: 12,
@@ -445,14 +389,15 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                     Obx(
                                       () => Text(
                                         locationController
-                                                .destinationAddress
+                                                .pickupAddress
                                                 .value
                                                 .isEmpty
-                                            ? 'Select Destination' // Default text
+                                            ? 'Current Location'
                                             : locationController
-                                                  .destinationAddress
+                                                  .pickupAddress
                                                   .value,
                                         style: TextStyle(
+                                          // overflow: TextOverflow.visible,
                                           color: Colors.white,
                                           fontSize: 15,
                                         ),
@@ -463,127 +408,184 @@ class _FindingYourDriverScreenState extends State<FindingYourDriverScreen> {
                                   ],
                                 ),
                               ),
-                              Obx(() {
-                                // Only show distance if destination is set and distance is calculated
-                                if (locationController
-                                            .destinationLocation
-                                            .value !=
-                                        null &&
-                                    locationController.distance.value > 0) {
-                                  return Text(
-                                    '${locationController.distance.value.toStringAsFixed(1)}km',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                    ),
-                                  );
-                                }
-                                return SizedBox.shrink(); // Hide if no destination or distance is zero
-                              }),
                             ],
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 20), // Space between From and To
+                          // To: Destination Location (Changeable/Editable)
+                          GestureDetector(
+                            onTap: () {
+                              //  Get.to(() => DestinationSearchScreen());
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xffEA0001),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'To:',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      Obx(
+                                        () => Text(
+                                          locationController
+                                                  .destinationAddress
+                                                  .value
+                                                  .isEmpty
+                                              ? 'Select Destination' // Default text
+                                              : locationController
+                                                    .destinationAddress
+                                                    .value,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Obx(() {
+                                  // Only show distance if destination is set and distance is calculated
+                                  if (locationController
+                                              .destinationLocation
+                                              .value !=
+                                          null &&
+                                      locationController.distance.value > 0) {
+                                    return Text(
+                                      '${locationController.distance.value.toStringAsFixed(1)}km',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
+                                    );
+                                  }
+                                  return SizedBox.shrink(); // Hide if no destination or distance is zero
+                                }),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  // if (widget.selectedDriver != null)
-                  //   Container(
-                  //     padding: const EdgeInsets.all(14),
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.white10,
-                  //       borderRadius: BorderRadius.circular(10),
-                  //     ),
-                  //     child: Row(
-                  //       children: [
-                  //         ClipRRect(
-                  //           borderRadius: BorderRadius.circular(8),
-                  //           child: Image.network(
-                  //             widget.selectedDriver!.service.serviceImage,
-                  //             height: 60,
-                  //             width: 80,
-                  //             fit: BoxFit.cover,
-                  //             errorBuilder: (_, __, ___) => Image.asset(
-                  //               'assets/images/privet_car.png',
-                  //               height: 60,
-                  //               width: 80,
-                  //               fit: BoxFit.cover,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         const SizedBox(width: 12),
-                  //         Expanded(
-                  //           child: Column(
-                  //             crossAxisAlignment: CrossAxisAlignment.start,
-                  //             children: [
-                  //               Text(
-                  //                 widget.selectedDriver!.service.name,
-                  //                 style: const TextStyle(
-                  //                   color: Colors.white,
-                  //                   fontSize: 16,
-                  //                   fontWeight: FontWeight.bold,
-                  //                 ),
-                  //               ),
-                  //               Text(
-                  //                 "${widget.selectedDriver!.vehicle.taxiName} • Plate ${widget.selectedDriver!.vehicle.plateNumber}",
-                  //                 style: const TextStyle(
-                  //                   color: Colors.grey,
-                  //                   fontSize: 13,
-                  //                 ),
-                  //               ),
-                  //               const SizedBox(height: 4),
-                  //               Text(
-                  //                 "Driver: ${widget.selectedDriver!.driver.userId.fullName}",
-                  //                 style: const TextStyle(
-                  //                   color: Colors.grey,
-                  //                   fontSize: 12,
-                  //                 ),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //         Text(
-                  //           "${widget.selectedDriver!.service.estimatedArrivalTime} min",
-                  //           style: const TextStyle(
-                  //             color: Colors.white,
-                  //             fontSize: 14,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                  SizedBox(height: 10),
-                  // Confirm Location Button
-                  // Container(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       // Action for "Confirm Location"
-                  //       // For example, navigate to the next screen or trigger booking process
-                  //       appController.setCurrentScreen(
-                  //         'confirm',
-                  //       ); // Your existing logic
-                  //       // Get.to(() => LocationConfirmationScreen());
-                  //       //  Get.to(() => RideConfirmedScreen());
-                  //     },
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: const Color(0xFFC0392B), // Red color
-                  //       padding: EdgeInsets.symmetric(vertical: 15),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //     ),
-                  //     child: Text(
-                  //       'Confirm Location',
-                  //       style: TextStyle(
-                  //         color: Colors.white,
-                  //         fontSize: 16,
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                ],
+                    SizedBox(height: 20),
+                    // if (widget.selectedDriver != null)
+                    //   Container(
+                    //     padding: const EdgeInsets.all(14),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white10,
+                    //       borderRadius: BorderRadius.circular(10),
+                    //     ),
+                    //     child: Row(
+                    //       children: [
+                    //         ClipRRect(
+                    //           borderRadius: BorderRadius.circular(8),
+                    //           child: Image.network(
+                    //             widget.selectedDriver!.service.serviceImage,
+                    //             height: 60,
+                    //             width: 80,
+                    //             fit: BoxFit.cover,
+                    //             errorBuilder: (_, __, ___) => Image.asset(
+                    //               'assets/images/privet_car.png',
+                    //               height: 60,
+                    //               width: 80,
+                    //               fit: BoxFit.cover,
+                    //             ),
+                    //           ),
+                    //         ),
+                    //         const SizedBox(width: 12),
+                    //         Expanded(
+                    //           child: Column(
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: [
+                    //               Text(
+                    //                 widget.selectedDriver!.service.name,
+                    //                 style: const TextStyle(
+                    //                   color: Colors.white,
+                    //                   fontSize: 16,
+                    //                   fontWeight: FontWeight.bold,
+                    //                 ),
+                    //               ),
+                    //               Text(
+                    //                 "${widget.selectedDriver!.vehicle.taxiName} • Plate ${widget.selectedDriver!.vehicle.plateNumber}",
+                    //                 style: const TextStyle(
+                    //                   color: Colors.grey,
+                    //                   fontSize: 13,
+                    //                 ),
+                    //               ),
+                    //               const SizedBox(height: 4),
+                    //               Text(
+                    //                 "Driver: ${widget.selectedDriver!.driver.userId.fullName}",
+                    //                 style: const TextStyle(
+                    //                   color: Colors.grey,
+                    //                   fontSize: 12,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //         Text(
+                    //           "${widget.selectedDriver!.service.estimatedArrivalTime} min",
+                    //           style: const TextStyle(
+                    //             color: Colors.white,
+                    //             fontSize: 14,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    SizedBox(height: 10),
+                    // Confirm Location Button
+                    // Container(
+                    //   width: double.infinity,
+                    //   child: ElevatedButton(
+                    //     onPressed: () {
+                    //       // Action for "Confirm Location"
+                    //       // For example, navigate to the next screen or trigger booking process
+                    //       appController.setCurrentScreen(
+                    //         'confirm',
+                    //       ); // Your existing logic
+                    //       // Get.to(() => LocationConfirmationScreen());
+                    //       //  Get.to(() => RideConfirmedScreen());
+                    //     },
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: const Color(0xFFC0392B), // Red color
+                    //       padding: EdgeInsets.symmetric(vertical: 15),
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10),
+                    //       ),
+                    //     ),
+                    //     child: Text(
+                    //       'Confirm Location',
+                    //       style: TextStyle(
+                    //         color: Colors.white,
+                    //         fontSize: 16,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
             ),
           ),

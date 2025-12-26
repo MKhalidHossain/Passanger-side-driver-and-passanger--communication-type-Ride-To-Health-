@@ -53,8 +53,8 @@ class _MyAppState extends State<MyApp> {
   // }
 
 
-  whichPageToNext(bool isFirstTimeInstaled) {
-    if (isFirstTimeInstaled) {
+  whichPageToNext(bool _isFirstTimeInstaled) {
+    if (_isFirstTimeInstaled) {
       return SplashScreen(nextScreen: Onboarding1());
     } else if (authController.isLoggedIn()) {
       return AppMain();
@@ -67,6 +67,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      navigatorKey: Get.key,
       title: 'RidezToHealth',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(

@@ -432,23 +432,23 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                 final user = driver.userId;
                                 final service = data.service;
 
-                                final carName = service!.name.isNotEmpty
-                                    ? service.name 
+                                final carName = (service?.name.trim().isNotEmpty ?? false)
+                                    ? service!.name 
                                     : vehicle?.model ?? "Unknown Car";
                                 final driverName = user?.fullName;
                                 final carDetails =
                                     "${vehicle?.taxiName ?? 'TAXI'} • Plate ${vehicle?.plateNumber ?? 'N/A'}";
-                                final carImage = service.serviceImage ?? "";
-                                final eta = service.estimatedArrivalTime > 0
-                                    ? "${service.estimatedArrivalTime} min"
+                                final carImage = service?.serviceImage ?? "";
+                                final eta = service?.estimatedArrivalTime != null
+                                    ? "${service?.estimatedArrivalTime} min"
                                     : _calculateEstimatedTime(
                                         locationController.distance.value,
                                       );
                                 final price = _calculateEstimatedPrice(
                                   locationController.distance.value,
-                                  baseFare: service.baseFare,
-                                  perKmRate: service.perKmRate,
-                                  minimumFare: service.minimumFare,
+                                  baseFare: service?.baseFare,
+                                  perKmRate: service?.perKmRate,
+                                  minimumFare: service?.minimumFare,
                                 );
                                 final rating = driver.ratings.average
                                     .toStringAsFixed(1);

@@ -23,9 +23,11 @@ abstract class AuthRepositoryInterface {
   Future<bool> clearUserCredentials();
   bool clearSharedAddress();
   String getUserToken();
+  String getUserId();
 
   Future<dynamic> updateToken();
   Future<bool?> saveUserToken(String accessToken, String refreshToken);
+  Future<bool?> saveUserId(String userId);
   Future<dynamic> updateAccessAndRefreshToken();
 
   bool isFirstTimeInstall();

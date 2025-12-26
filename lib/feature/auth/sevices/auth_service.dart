@@ -32,6 +32,11 @@ class AuthService implements AuthServiceInterface {
     return authRepositoryInterface.getUserToken();
   }
 
+    @override
+  String getUserId() {
+    return authRepositoryInterface.getUserId();
+  }
+
   @override
   bool isFirstTimeInstall() {
     return authRepositoryInterface.isFirstTimeInstall();
@@ -92,6 +97,11 @@ class AuthService implements AuthServiceInterface {
     return await authRepositoryInterface.saveUserToken(accessToken, refreshToken);
   }
 
+    @override
+  Future<bool?> saveUserId(String userId) async{
+   return await authRepositoryInterface.saveUserId(userId);
+  }
+
   @override
   void setFirstTimeInstall() {
     authRepositoryInterface.setFirstTimeInstall();
@@ -111,4 +121,8 @@ class AuthService implements AuthServiceInterface {
   Future verifyOtp(String email, String otp, String type) async {
     return await authRepositoryInterface.verifyOtp(email, otp, type);
   }
+  
+
+  
+
 }

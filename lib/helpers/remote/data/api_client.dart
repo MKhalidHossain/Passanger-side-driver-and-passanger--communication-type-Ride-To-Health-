@@ -21,41 +21,42 @@ class ApiClient extends GetxService {
 
   final int timeoutInSeconds = 30;
 
-  late String token;
+  late String _accessToken;
 
 
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
-    token = sharedPreferences.getString(AppConstants.accessToken) ?? '';
+    _accessToken = sharedPreferences.getString(AppConstants.accessToken) ?? '';
     if (kDebugMode) {
-      print('Token: $token');
+      print('Token: $_accessToken');
     }
-    // updateHeader(token);
+    updateHeader(_accessToken);
   }
 
   Map<String, String> getHeader(){
-    token = sharedPreferences.getString(AppConstants.accessToken) ?? '';
+    _accessToken = sharedPreferences.getString(AppConstants.accessToken) ?? '';
      Map<String, String> header = {
       'Content-Type': 'application/json; charset=UTF-8',
       'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer $_accessToken',
     };
     return header;
   }
 
-  // void updateHeader(String token) {
-  //   Map<String, String> header = {
-  //     'Content-Type': 'application/json; charset=UTF-8',
-  //     'Accept': 'application/json',
-  //     'Authorization': 'Bearer $token',
-  //   };
+  void updateHeader(String token) {
+    Map<String, String> header = {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
 
-  //   print(
-  //     'User Token ${token.toString()} ================================== from api Client ',
-  //   );
-  //   getHeader() = header;
+    print(
+      'User Token ${token.toString()} ================================== from api Client ',
+    );
+    _accessToken = token;
 
-  //   print('New header: $getHeader()');
-  // }
+    print('New header: from api client : _token || updateedToken : $_accessToken');
+  }
+
 
   Future<Response> getData(
     String uri, {

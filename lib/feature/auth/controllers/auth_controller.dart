@@ -214,29 +214,32 @@ class AuthController extends GetxController implements GetxService {
     }
     if (response!.statusCode == 200) {
       Map map = response.body;
-      String token = '';
+      String accessToken = '';
       String refreshToken = '';
+      String userId = '';
 
-      print(token.toString());
+      print(accessToken.toString());
 
       logInResponseModel = LogInResponseModel.fromJson(response.body);
 
       refreshToken = logInResponseModel!.data!.refreshToken!;
-      token = logInResponseModel!.data!.accessToken!;
+      accessToken = logInResponseModel!.data!.accessToken!;
+      userId = logInResponseModel!.data!.user!.id!.trim();
       print(
         'accessToken ${logInResponseModel!.data!.accessToken}} NOW Iwalker',
       );
       print('refreshToken $refreshToken NOW Iwalker');
       print(
-        'User Token $token  ================================== from comtroller ',
+        'User Token $accessToken  ================================== from comtroller ',
       );
-      await setUserToken(token, refreshToken).then((_)async{
+      await setUserId(userId);
+      await setUserToken(accessToken, refreshToken).then((_)async{
         // await Future.delayed(Duration(seconds: 3), 
         // );
           socketClient.emit('join-user', {
-          'userId': logInResponseModel!.data!.user!.id,  // ei key ta backend expect korche
+          'userId': userId,  // ei key ta backend expect korche
             });
-            print('socket join with sender id To chekkkkkkkikk: ${logInResponseModel!.data!.user!.id}');
+            print('socket join with sender id To chekkkkkkkikk: ${userId}');
           Get.offAll(() => AppMain());
       });
 
@@ -282,14 +285,18 @@ class AuthController extends GetxController implements GetxService {
 
     if (isLoggedIn() == false) {
       if (response!.statusCode == 200) {
-        showCustomSnackBar('You have logout Successfully');
         Get.offAll(() => UserLoginScreen());
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCustomSnackBar('You have logout Successfully');
+        });
       } else {
         logging = false;
         ApiChecker.checkApi(response);
         print(response.body['message'] + ' for logout from controller');
         Get.snackbar('Error', response.body['message']);
         Get.offAll(() => UserLoginScreen());
+
+
       }
     } else {
       print(response.toString() + ' from controller');
@@ -580,8 +587,16 @@ class AuthController extends GetxController implements GetxService {
     return authServiceInterface.getUserToken();
   }
 
+  String getUserId() {
+    return authServiceInterface.getUserId();
+  }
+
   Future<void> setUserToken(String accessToken, String refreshToken) async {
     await authServiceInterface.saveUserToken(accessToken, refreshToken);
+  }
+
+    Future<void> setUserId(String userId) async {
+    await authServiceInterface.saveUserId(userId);
   }
 
   Future<bool> getFirsTimeInstall() async {

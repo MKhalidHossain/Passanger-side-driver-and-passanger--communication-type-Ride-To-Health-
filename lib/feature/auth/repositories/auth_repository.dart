@@ -41,8 +41,15 @@ class AuthRepository implements AuthRepositoryInterface {
   @override
   String getUserToken() {
     final token = sharedPreferences.getString(AppConstants.accessToken) ?? '';
-    // apiClient.updateHeader(token);
+     apiClient.updateHeader(token);
     return token;
+  }
+
+    @override
+  String getUserId() {
+    final userId = sharedPreferences.getString(AppConstants.userId) ?? '';
+    apiClient.updateHeader(userId);
+    return userId;
   }
 
   // @override
@@ -63,6 +70,7 @@ class AuthRepository implements AuthRepositoryInterface {
   bool isLoggedIn() {
     try {
       final token = sharedPreferences.getString(AppConstants.accessToken);
+      apiClient.updateHeader(token ?? '');
       return token != null && token.isNotEmpty;
     } catch (e) {
       print(e);
@@ -139,6 +147,11 @@ class AuthRepository implements AuthRepositoryInterface {
     return await sharedPreferences.setString(AppConstants.accessToken, accessToken);
   }
 
+    @override
+  Future<bool?> saveUserId(String userId) async{
+    return await sharedPreferences.setString(AppConstants.userId, userId);
+  }
+
   @override
   void setFirstTimeInstall() {
     sharedPreferences.setBool('firstTimeInstall', true);
@@ -165,4 +178,8 @@ class AuthRepository implements AuthRepositoryInterface {
       'type': type,
     });
   }
+  
+
+  
+
 }
