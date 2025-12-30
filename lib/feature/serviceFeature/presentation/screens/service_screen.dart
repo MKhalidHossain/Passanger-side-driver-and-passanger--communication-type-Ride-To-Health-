@@ -124,14 +124,24 @@ class _ServiceScreenState extends State<ServiceScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.network(
-                                        service.serviceImage ?? '',
+                            (service.serviceImage == null ||
+                                    service.serviceImage!.trim().isEmpty)
+                                ? const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.white,
+                                    size: 40,
+                                  )
+                                : Image.network(
+                                    service.serviceImage!,
                                         fit: BoxFit.contain,
                                         height: 60,
                                         errorBuilder: (context, error,
                                                 stackTrace) =>
-                                            const Icon(Icons.broken_image,
-                                                color: Colors.white, size: 40),
+                                        const Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
                                       ),
                             //Icon(Icons.local_taxi, size: 32, color: Colors.white),
                             const SizedBox(height: 8),
