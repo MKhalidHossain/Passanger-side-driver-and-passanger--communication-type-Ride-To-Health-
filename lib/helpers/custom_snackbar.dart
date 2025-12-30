@@ -154,6 +154,8 @@ Future<void> showCustomSnackBar(
           : Colors.black);
   final EdgeInsets effectiveMargin = margin ?? const EdgeInsets.all(10);
 
+  final bool showAtTop = snackPosition != SnackPosition.BOTTOM;
+
   // Wait for GetX overlay to be available (important during navigation)
   const int maxTries = 120; // ~120 frames ≈ 2s
   for (int i = 0; i < maxTries; i++) {
@@ -170,7 +172,8 @@ Future<void> showCustomSnackBar(
         final entry = OverlayEntry(
           builder: (context) {
             return Positioned(
-              top: 0,
+              top: showAtTop ? 0 : null,
+              bottom: showAtTop ? null : 0,
               left: 0,
               right: 0,
               child: SafeArea(
@@ -188,7 +191,8 @@ Future<void> showCustomSnackBar(
                     child: Material(
                       color: Colors.transparent,
                       child: Align(
-                        alignment: Alignment.topCenter,
+                        alignment:
+                            showAtTop ? Alignment.topCenter : Alignment.bottomCenter,
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 560),
                           child: GestureDetector(
@@ -266,7 +270,49 @@ Future<void> showCustomSnackBar(
     await Future.delayed(const Duration(milliseconds: 16)); // ~1 frame
   }
 
-  debugPrint('⚠️ Snackbar skipped: overlay not ready.');
+  final context = Get.context ?? Get.key.currentContext;
+  final messenger = context != null ? ScaffoldMessenger.maybeOf(context) : null;
+  if (messenger == null) {
+    debugPrint('⚠️ Snackbar skipped: overlay not ready.');
+    return;
+  }
+
+  messenger
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        duration: Duration(seconds: seconds),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: effectiveBackgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: effectiveMargin,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: effectiveTextColor,
+              ),
+            ),
+            if (subMessage != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                subMessage,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: effectiveTextColor,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
 }
 
 Future<void> showAppSnackBar(
@@ -274,7 +320,7 @@ Future<void> showAppSnackBar(
   String message, {
   bool isError = true,
   int seconds = 2,
-  SnackPosition snackPosition = SnackPosition.TOP,
+  SnackPosition snackPosition = SnackPosition.BOTTOM,
   Color? backgroundColor,
   Color? colorText,
   EdgeInsets? margin,

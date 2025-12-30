@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../helpers/custom_snackbar.dart';
 import '../domain/models/booking.dart';
 import '../domain/models/driver.dart';
 
@@ -237,14 +238,24 @@ class BookingController extends GetxController {
   void rateDriver(double rating) {
     if (driver.value != null) {
       // Here you would send the rating to your backend
-      Get.snackbar('Thank you!', 'Your rating has been submitted');
+      showAppSnackBar(
+        'Thank you!',
+        'Your rating has been submitted',
+        isError: false,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
   
   void reportDriver(String reason) {
     if (driver.value != null) {
       // Here you would send the report to your backend
-      Get.snackbar('Report Submitted', 'Thank you for your feedback');
+      showAppSnackBar(
+        'Report Submitted',
+        'Thank you for your feedback',
+        isError: false,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
   
@@ -278,12 +289,22 @@ class BookingController extends GetxController {
   
   // Emergency features
   void callEmergency() {
-    Get.snackbar('Emergency', 'Calling emergency services...');
+    showAppSnackBar(
+      'Emergency',
+      'Calling emergency services...',
+      isError: false,
+      snackPosition: SnackPosition.BOTTOM,
+    );
     // Implement emergency calling
   }
   
   void shareLocationWithEmergencyContact() {
-    Get.snackbar('Location Shared', 'Your location has been shared with emergency contacts');
+    showAppSnackBar(
+      'Location Shared',
+      'Your location has been shared with emergency contacts',
+      isError: false,
+      snackPosition: SnackPosition.BOTTOM,
+    );
     // Implement location sharing
   }
 }

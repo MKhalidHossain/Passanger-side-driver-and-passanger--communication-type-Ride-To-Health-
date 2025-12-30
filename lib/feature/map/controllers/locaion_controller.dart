@@ -10,8 +10,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/constants/app_constant.dart';
+import 'app_controller.dart';
 
 class LocationController extends GetxController {
+  final AppController appController = Get.find<AppController>();
   // Location state
   var currentPosition = Rxn<Position>(); // raw geolocator position
   var currentLocation = Rxn<LatLng>();   // LatLng format
@@ -215,7 +217,7 @@ Future<void> _initCustomMarkers() async {
         );
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to get current location: $e');
+      appController.showErrorSnackbar('Failed to get current location: $e');
     }
   }
 
@@ -244,7 +246,7 @@ Future<void> _initCustomMarkers() async {
         }
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to get address: $e');
+      appController.showErrorSnackbar('Failed to get address: $e');
     }
   }
 
@@ -512,8 +514,9 @@ Future<void> _initCustomMarkers() async {
         );
       }
     } catch (e) {
-      Get.snackbar(
-          'Error', 'Failed to get coordinates for selected address: $e');
+      appController.showErrorSnackbar(
+        'Failed to get coordinates for selected address: $e',
+      );
     }
   }
 
@@ -541,8 +544,9 @@ Future<void> _initCustomMarkers() async {
         );
       }
     } catch (e) {
-      Get.snackbar(
-          'Error', 'Failed to get coordinates for saved address: $e');
+      appController.showErrorSnackbar(
+        'Failed to get coordinates for saved address: $e',
+      );
     }
   }
 
@@ -1005,6 +1009,5 @@ Future<void> _initCustomMarkers() async {
 //     return distanceInMeters / 1000;
 //   }
 // }
-
 
 

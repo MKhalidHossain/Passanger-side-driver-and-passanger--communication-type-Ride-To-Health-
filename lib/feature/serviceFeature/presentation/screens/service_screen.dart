@@ -133,16 +133,16 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   )
                                 : Image.network(
                                     service.serviceImage!,
-                                        fit: BoxFit.contain,
-                                        height: 60,
-                                        errorBuilder: (context, error,
-                                                stackTrace) =>
+                                    fit: BoxFit.contain,
+                                    height: 60,
+                                    errorBuilder: (context, error,
+                                            stackTrace) =>
                                         const Icon(
                                           Icons.broken_image,
                                           color: Colors.white,
                                           size: 40,
                                         ),
-                                      ),
+                                  ),
                             //Icon(Icons.local_taxi, size: 32, color: Colors.white),
                             const SizedBox(height: 8),
                             Text(

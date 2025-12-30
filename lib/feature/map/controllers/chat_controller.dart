@@ -283,6 +283,7 @@
 
 
 import 'package:get/get.dart';
+import '../../../helpers/custom_snackbar.dart';
 import '../../../helpers/remote/data/socket_client.dart';
 import '../domain/models/message.dart';
 
@@ -547,11 +548,21 @@ class ChatController extends GetxController {
   }
   
   void reportMessage(String messageId) {
-    Get.snackbar('Report Submitted', 'Thank you for reporting this message');
+    showAppSnackBar(
+      'Report Submitted',
+      'Thank you for reporting this message',
+      isError: false,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
   
   void blockUser() {
-    Get.snackbar('User Blocked', 'This user has been blocked');
+    showAppSnackBar(
+      'User Blocked',
+      'This user has been blocked',
+      isError: false,
+      snackPosition: SnackPosition.BOTTOM,
+    );
     endChat();
   }
   
@@ -562,7 +573,12 @@ class ChatController extends GetxController {
     Future.delayed(Duration(seconds: 2), () {
       isConnected.value = true;
       supportAgentStatus.value = 'Online';
-      Get.snackbar('Connected', 'You are now connected to support');
+      showAppSnackBar(
+        'Connected',
+        'You are now connected to support',
+        isError: false,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     });
   }
   

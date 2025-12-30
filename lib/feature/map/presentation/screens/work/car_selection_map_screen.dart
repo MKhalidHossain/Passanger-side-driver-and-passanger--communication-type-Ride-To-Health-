@@ -486,20 +486,27 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                           borderRadius: BorderRadius.circular(
                                             8,
                                           ),
-                                          child: Image.network(
-                                            carImage,
-                                            height: 60,
-                                            width: 80,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (_, __, ___) {
-                                              return Image.asset(
-                                                'assets/images/privet_car.png',
-                                                height: 60,
-                                                width: 80,
-                                                fit: BoxFit.cover,
-                                              );
-                                            },
-                                          ),
+                                          child: (carImage.trim().isEmpty)
+                                              ? Image.asset(
+                                                  'assets/images/privet_car.png',
+                                                  height: 60,
+                                                  width: 80,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.network(
+                                                  carImage,
+                                                  height: 60,
+                                                  width: 80,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (_, __, ___) {
+                                                    return Image.asset(
+                                                      'assets/images/privet_car.png',
+                                                      height: 60,
+                                                      width: 80,
+                                                      fit: BoxFit.cover,
+                                                    );
+                                                  },
+                                                ),
                                         ),
                                         const SizedBox(width: 15),
 

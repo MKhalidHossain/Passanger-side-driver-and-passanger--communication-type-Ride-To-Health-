@@ -293,7 +293,13 @@ class AuthController extends GetxController implements GetxService {
         logging = false;
         ApiChecker.checkApi(response);
         print(response.body['message'] + ' for logout from controller');
-        Get.snackbar('Error', response.body['message']);
+        showAppSnackBar(
+          'Error',
+          response.body['message']?.toString() ?? 'Unknown error',
+          isError: true,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+        );
         Get.offAll(() => UserLoginScreen());
 
 

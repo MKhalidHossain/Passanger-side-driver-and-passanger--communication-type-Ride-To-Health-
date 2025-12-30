@@ -47,36 +47,35 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 
   Timer? _debounce;
 
-Future<void> performSearch(String query) async {
-  // Cancel previous timer
-  _debounce?.cancel();
+  Future<void> performSearch(String query) async {
+    // Cancel previous timer
+    _debounce?.cancel();
 
-  // Don't search for super short input
-  if (query.trim().length < 2) {
-    setState(() {
-      isSearchMode = query.isNotEmpty;
-      isSearching = false;
-    });
-    locationPickedController.autoCompliteSuggetion.clear();
-    return;
-  }
-
-  _debounce = Timer(const Duration(milliseconds: 400), () async {
-    setState(() {
-      isSearching = true;
-      isSearchMode = true;
-    });
-
-    await locationPickedController.searchChanged(query);
-
-    if (mounted) {
+    // Don't search for super short input
+    if (query.trim().length < 2) {
       setState(() {
+        isSearchMode = query.isNotEmpty;
         isSearching = false;
       });
+      locationPickedController.autoCompliteSuggetion.clear();
+      return;
     }
-  });
-}
 
+    _debounce = Timer(const Duration(milliseconds: 400), () async {
+      setState(() {
+        isSearching = true;
+        isSearchMode = true;
+      });
+
+      await locationPickedController.searchChanged(query);
+
+      if (mounted) {
+        setState(() {
+          isSearching = false;
+        });
+      }
+    });
+  }
 
   // Future<void> performSearch(String query) async {
   //   locationPickedController.searchChanged(query);
@@ -238,61 +237,61 @@ Future<void> performSearch(String query) async {
   //   }
   // }
 
-  Future<void> goToMapWithCoordinates(String address, {LatLng? placeLatLng}) async {
-  try {
-    appController.showLoading();
-    
-    LatLng? destination;
+  Future<void> goToMapWithCoordinates(
+    String address, {
+    LatLng? placeLatLng,
+  }) async {
+    try {
+      appController.showLoading();
 
-    // If we already have coordinates from Places API (from suggestions), use them directly
-    if (placeLatLng != null) {
-      debugPrint("✅ Using coordinates from Places API: ${placeLatLng.latitude}, ${placeLatLng.longitude}");
-      destination = placeLatLng;
-    } else {
-      // Otherwise, try to geocode the address
-      destination = await getCoordinatesFromAddress(address);
-    }
-    
-    if (destination != null) {
-      // 🔹 1. Make sure pickup is current location
-      if (locationController.currentLocation.value != null) {
-        locationController.setPickupLocation(
-          locationController.currentLocation.value!,
+      LatLng? destination;
+
+      // If we already have coordinates from Places API (from suggestions), use them directly
+      if (placeLatLng != null) {
+        debugPrint(
+          "✅ Using coordinates from Places API: ${placeLatLng.latitude}, ${placeLatLng.longitude}",
         );
+        destination = placeLatLng;
+      } else {
+        // Otherwise, try to geocode the address
+        destination = await getCoordinatesFromAddress(address);
       }
 
-      // 🔹 2. Set destination
-      locationController.setDestinationLocation(destination);
-      locationController.selectedAddress.value = address;
+      if (destination != null) {
+        // 🔹 1. Make sure pickup is current location
+        if (locationController.currentLocation.value != null) {
+          locationController.setPickupLocation(
+            locationController.currentLocation.value!,
+          );
+        }
 
-      // (everAll in LocationController will draw polyline + distance)
-      
-      appController.hideLoading();
-      appController.setCurrentScreen('map');
+        // 🔹 2. Set destination
+        locationController.setDestinationLocation(destination);
+        locationController.selectedAddress.value = address;
 
-      // 🔹 3. Go to map
-      Get.to(() => CarSelectionMapScreen());
-    } else {
+        // (everAll in LocationController will draw polyline + distance)
+
+        appController.hideLoading();
+        appController.setCurrentScreen('map');
+
+        // 🔹 3. Go to map
+        Get.to(() => CarSelectionMapScreen());
+      } else {
+        appController.hideLoading();
+        appController.showSnackbar(
+          'Location Not Found',
+          'Could not find "$address". Try adding more details.',
+          backgroundColor: Colors.orange,
+        );
+      }
+    } catch (e) {
       appController.hideLoading();
-      Get.snackbar(
-        'Location Not Found',
-        'Could not find "$address". Try adding more details.',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
+      debugPrint("❌ Error in goToMapWithCoordinates: $e");
+      appController.showErrorSnackbar(
+        'Something went wrong. Please try again.',
       );
     }
-  } catch (e) {
-    appController.hideLoading();
-    debugPrint("❌ Error in goToMapWithCoordinates: $e");
-    Get.snackbar(
-      'Error',
-      'Something went wrong. Please try again.',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
   }
-}
-
 
   Future<void> handleSavedLocationTap(String address) async {
     await goToMapWithCoordinates(address);
@@ -332,10 +331,7 @@ Future<void> performSearch(String query) async {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              BackButton(
-                color: Colors.white,
-                onPressed: () => Get.back(),
-              ),
+              BackButton(color: Colors.white, onPressed: () => Get.back()),
               Text(
                 'Search your destination',
                 style: TextStyle(color: Colors.white, fontSize: 16),
@@ -404,61 +400,71 @@ Future<void> performSearch(String query) async {
                   }
 
                   return ListView.builder(
-  itemCount: results.length,
-  itemBuilder: (context, index) {
-    final suggestion = results[index];
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final suggestion = results[index];
 
-    // Try to extract country from description (last part)
-    String country = '';
-    if ((suggestion.description).isNotEmpty) {
-      final parts = suggestion.description.split(',');
-      if (parts.isNotEmpty) {
-        country = parts.last.trim(); // e.g. "United States" / "Bangladesh"
-      }
-    }
-
-    return ListTile(
-      leading: const Icon(Icons.location_on, color: Colors.white),
-      title: Text(
-        suggestion.mainText,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
-      ),
-      subtitle: Row(
-        children: [
-          Expanded(
-            child: Text(
-              suggestion.secondaryText,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (country.isNotEmpty) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.white10,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                country,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-      onTap: () async {
-        await handleSuggestionTap(suggestion);
-      },
-    );
-  },
-);
-
+                      // Try to extract country from description (last part)
+                      String country = '';
+                      if ((suggestion.description).isNotEmpty) {
+                        final parts = suggestion.description.split(',');
+                        if (parts.isNotEmpty) {
+                          country = parts.last
+                              .trim(); // e.g. "United States" / "Bangladesh"
+                        }
+                      }
+                      return ListTile(
+                        leading: const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          suggestion.mainText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                        subtitle: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                suggestion.secondaryText,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (country.isNotEmpty) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white10,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  country,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        onTap: () async {
+                          await handleSuggestionTap(suggestion);
+                        },
+                      );
+                    },
+                  );
 
                   // return ListView.builder(
                   //   itemCount: results.length,

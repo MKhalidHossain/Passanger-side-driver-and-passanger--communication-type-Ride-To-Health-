@@ -388,9 +388,13 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                   ],
                                 ),
                               ),
-                              widget.selectedDriver != null
+                              (widget.selectedDriver?.service?.serviceImage
+                                              ?.trim()
+                                              .isNotEmpty ??
+                                          false)
                                   ? Image.network(
-                                      widget.selectedDriver!.service?.serviceImage ??'',
+                                      widget.selectedDriver!.service!
+                                          .serviceImage!,
                                       width: 80,
                                       fit: BoxFit.contain,
                                       errorBuilder: (_, __, ___) => Image.asset(

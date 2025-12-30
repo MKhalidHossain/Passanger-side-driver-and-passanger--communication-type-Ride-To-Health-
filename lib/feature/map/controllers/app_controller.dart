@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import '../../../helpers/custom_snackbar.dart';
 
 class AppController extends GetxController {
   // User information
@@ -101,33 +102,43 @@ class AppController extends GetxController {
   
   // Utility methods
   void showSnackbar(String title, String message, {Color? backgroundColor}) {
-    final overlayContext = Get.overlayContext;
-    if (overlayContext == null) {
-      print('⚠️ Snackbar skipped (no Overlay): $title - $message');
-      return;
-    }
-    Get.snackbar(
+    showAppSnackBar(
       title,
       message,
-      backgroundColor: backgroundColor ?? Colors.grey[800],
-      colorText: Colors.white,
+      isError: false,
+      backgroundColor: backgroundColor,
       snackPosition: SnackPosition.BOTTOM,
-      margin: EdgeInsets.all(16),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
     );
   }
   
   void showSuccessSnackbar(String message) {
-    showSnackbar('Success', message, backgroundColor: Colors.green);
+    showAppSnackBar(
+      'Success',
+      message,
+      isError: false,
+      backgroundColor: Colors.green,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
   
   void showErrorSnackbar(String message) {
-    showSnackbar('Error', message, backgroundColor: Colors.red);
+    showAppSnackBar(
+      'Error',
+      message,
+      isError: true,
+      backgroundColor: Colors.red,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
   
   void showInfoSnackbar(String message) {
-    showSnackbar('Info', message, backgroundColor: Colors.blue);
+    showAppSnackBar(
+      'Info',
+      message,
+      isError: false,
+      backgroundColor: Colors.blue,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
   
   // Dialog helpers

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../helpers/custom_snackbar.dart';
 import '../../controllers/locaion_controller.dart';
 import '../../controllers/booking_controller.dart'; // Assuming bookingController holds price/time
 import '../../controllers/app_controller.dart';// Import the search screen
@@ -195,12 +197,12 @@ class LocationConfirmationScreen extends StatelessWidget {
                         // Ensure both pickup and destination are selected before confirming
                         if (locationController.pickupLocation.value == null ||
                             locationController.destinationLocation.value == null) {
-                          Get.snackbar(
+                          showAppSnackBar(
                             'Error',
                             'Please select both pickup and destination locations.',
+                            isError: true,
                             snackPosition: SnackPosition.BOTTOM,
                             backgroundColor: Colors.red,
-                            colorText: Colors.white,
                           );
                           return;
                         }

@@ -505,25 +505,31 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.network(
-            image, // make sure 'image' is a valid URL string
-            fit: BoxFit.contain,
-            height: 40,
-            width: size.width * 0.20,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(
-                Icons.broken_image,
-                size: 40,
-                color: Colors.grey,
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              );
-            },
-          ),
+          image.trim().isEmpty
+              ? const Icon(
+                  Icons.broken_image,
+                  size: 40,
+                  color: Colors.grey,
+                )
+              : Image.network(
+                  image,
+                  fit: BoxFit.contain,
+                  height: 40,
+                  width: size.width * 0.20,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.broken_image,
+                      size: 40,
+                      color: Colors.grey,
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  },
+                ),
 
           //Icon(Icons.local_taxi, size: 32, color: Colors.white),
           const SizedBox(height: 8),
