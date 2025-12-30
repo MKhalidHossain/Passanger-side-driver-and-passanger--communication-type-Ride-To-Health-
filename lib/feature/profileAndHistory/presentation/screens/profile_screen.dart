@@ -7,9 +7,9 @@ import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/acc
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/edit_profile_screen.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/notifications_screen.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/terms_and_condition.dart';
-import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/wallet_screen.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../core/constants/app_colors.dart';
+import 'privacy_policy_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -253,7 +253,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icons.shield_outlined,
                   "Privacy Policy",
                   "Privacy policy",
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(PrivacyPolicyScreen());
+                  },
                 ),
                 _divider(),
                 _buildMenuItem(
