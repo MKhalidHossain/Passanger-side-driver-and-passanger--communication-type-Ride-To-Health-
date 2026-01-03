@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../helpers/remote/data/socket_client.dart';
 import '../../../home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import '../../../home/domain/reponse_model/request_ride_response_model.dart';

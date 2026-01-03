@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rideztohealth/feature/profileAndHistory/domain/model/notification_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 
 class NotificationsScreen extends StatefulWidget {

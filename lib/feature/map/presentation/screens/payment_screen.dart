@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../../helpers/custom_snackbar.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/booking_controller.dart';
-import 'chat_screen.dart';
 
 class PaymentScreen extends StatelessWidget {
   final BookingController bookingController = Get.find<BookingController>();

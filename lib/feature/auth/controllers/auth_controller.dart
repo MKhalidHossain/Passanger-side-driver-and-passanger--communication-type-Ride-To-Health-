@@ -6,19 +6,16 @@ import 'package:rideztohealth/feature/auth/domain/model/request_password_reset_r
 import 'package:rideztohealth/feature/auth/domain/model/reset_password_with_otp_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/model/verify_otp_response_model.dart';
 import 'package:rideztohealth/feature/auth/domain/request_model/change_password_request_model.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../app.dart';
 import '../../../helpers/custom_snackbar.dart';
 import '../../../helpers/remote/data/api_checker.dart';
 import '../../../helpers/remote/data/api_client.dart';
-
 import '../../../helpers/remote/data/socket_client.dart';
-import '../../../utils/app_constants.dart';
 import '../domain/model/login_user_response_model.dart';
 import '../domain/model/registration_user_response_model.dart';
 import '../presentation/screens/reset_password_screen.dart';
-import '../presentation/screens/tourist_or_local_screen.dart';
 import '../presentation/screens/user_login_screen.dart';
 import '../presentation/screens/user_signup_screen.dart';
 import '../presentation/screens/verify_otp_screen.dart';

@@ -5,6 +5,7 @@ import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/helpers/custom_snackbar.dart';
+import 'chat_screen.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/normal_custom_button.dart';
@@ -14,8 +15,7 @@ import '../../../profileAndHistory/presentation/screens/wallet_screen.dart';
 import '../../controllers/app_controller.dart';
 import '../../controllers/booking_controller.dart';
 import '../../controllers/locaion_controller.dart';
-import 'call_screen.dart';
-import 'chat_screen.dart';
+
 // import 'chat_screen.dart'; // Uncomment if you use these
 // import 'call_screen.dart'; // Uncomment if you use these
 // import 'payment_screen.dart'; // Uncomment if you use these// Import the new search screen

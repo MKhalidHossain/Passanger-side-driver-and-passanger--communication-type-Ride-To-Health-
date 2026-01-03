@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/history_screen.dart';
 import 'package:rideztohealth/feature/serviceFeature/presentation/screens/service_screen.dart';
 import 'package:rideztohealth/helpers/remote/data/socket_client.dart';

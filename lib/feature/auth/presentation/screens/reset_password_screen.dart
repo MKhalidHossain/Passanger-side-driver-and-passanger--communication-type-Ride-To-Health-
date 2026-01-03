@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:get/route_manager.dart';
-import 'package:rideztohealth/core/common/button/button_widget.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/validation/validators.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 import '../../../../core/widgets/wide_custom_button.dart';

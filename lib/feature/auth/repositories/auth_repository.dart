@@ -16,7 +16,7 @@ class AuthRepository implements AuthRepositoryInterface {
 
   @override
   Future accessAndRefreshToken(Pattern refreshToken) async {
-    return await apiClient.postData(Urls.refreshAccessToken, {}) ?? ();
+    return await apiClient.postData(Urls.refreshAccessToken, {});
   }
 
   @override

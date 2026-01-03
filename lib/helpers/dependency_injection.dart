@@ -8,6 +8,9 @@ import 'package:rideztohealth/feature/profileAndHistory/repositories/history_and
 import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service.dart';
 import 'package:rideztohealth/feature/profileAndHistory/services/history_and_profile_service_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'remote/data/api_client.dart';
+import 'remote/data/socket_client.dart';
+
 import '../core/constants/urls.dart';
 import '../feature/auth/controllers/auth_controller.dart';
 import '../feature/auth/repositories/auth_repository.dart';
@@ -21,8 +24,7 @@ import '../feature/home/services/home_service.dart';
 import '../feature/home/services/home_service_interface.dart';
 import '../feature/map/repository/location_repository_interface.dart';
 import '../feature/profileAndHistory/controllers/profile_and_history_controller.dart';
-import 'remote/data/api_client.dart';
-import 'remote/data/socket_client.dart';
+
 
 Future<void> initDI() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();

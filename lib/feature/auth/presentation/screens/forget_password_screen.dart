@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
-import 'package:rideztohealth/feature/auth/presentation/screens/verify_otp_screen.dart';
 import '../../../../core/utils/constants/app_colors.dart';
 import '../../../../core/validation/validators.dart';
 import '../../../../core/widgets/app_logo.dart';
