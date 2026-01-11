@@ -52,172 +52,171 @@ class UserLoginScreenState extends State<UserLoginScreen> {
 
     return GetBuilder<AuthController>(
       builder: (authController) {
-        return authController.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : AppScaffold(
-                body: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(minHeight: size.height),
-                            child: IntrinsicHeight(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 40),
-                                  AppLogo(),
-                                  const SizedBox(height: 32),
-                                  Center(
-                                    child: Text(
-                                      'Log In Your Account',
-                                      style: TextStyle(
-                                        color: AppColors.context(
-                                          context,
-                                        ).textColor,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 24,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-
-                                  _buildCustomTextField(
-                                    // title: 'Email',
-                                    context: context,
-                                    label: 'Email',
-                                    controller: _emailController,
-                                    icon: Icons.email_outlined,
-                                    focusNode: _emailFocus,
-                                    nextFocusNode: _passwordFocus,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: Validators.email,
-                                  ),
-
-                                  _buildCustomTextField(
-                                    // title: 'Password',
-                                    context: context,
-                                    label: 'Password',
-                                    controller: _passwordController,
-                                    icon: Icons.lock_outline,
-                                    focusNode: _passwordFocus,
-                                    nextFocusNode: null,
-                                    validator: Validators.password,
-                                    obscureText: _obscurePassword,
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _obscurePassword
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                        color: Colors.grey,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _obscurePassword = !_obscurePassword;
-                                        });
-                                      },
-                                    ),
-                                  ),
-
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Get.to(ForgetPasswordScreen());
-                                      },
-                                      child: 'Forgot Password ?'.text14Blue(),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 12),
-
-                                  WideCustomButton(
-                                    text: 'Sign in',
-                                    onPressed: () {
-                                      authController.login(
-                                        _emailController.text,
-                                        _passwordController.text,
-                                      );
-                                      // Get.to(() => AppMain());
-                                    },
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      'New To our Platform?'.text12White(),
-                                      TextButton(
-                                        child: Text(
-                                          "Sign Up Here",
-                                          style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  UserSignupScreen(),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: 16),
-                                  const SizedBox(height: 16),
-                                ],
+        return AppScaffold(
+          body: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: size.height),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 40),
+                            AppLogo(),
+                            const SizedBox(height: 32),
+                            Center(
+                              child: Text(
+                                'Log In Your Account',
+                                style: TextStyle(
+                                  color: AppColors.context(
+                                    context,
+                                  ).textColor,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 24,
+                                ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 12),
+
+                            _buildCustomTextField(
+                              // title: 'Email',
+                              context: context,
+                              label: 'Email',
+                              controller: _emailController,
+                              icon: Icons.email_outlined,
+                              focusNode: _emailFocus,
+                              nextFocusNode: _passwordFocus,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: Validators.email,
+                            ),
+
+                            _buildCustomTextField(
+                              // title: 'Password',
+                              context: context,
+                              label: 'Password',
+                              controller: _passwordController,
+                              icon: Icons.lock_outline,
+                              focusNode: _passwordFocus,
+                              nextFocusNode: null,
+                              validator: Validators.password,
+                              obscureText: _obscurePassword,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                            ),
+
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  Get.to(ForgetPasswordScreen());
+                                },
+                                child: 'Forgot Password ?'.text14Blue(),
+                              ),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            WideCustomButton(
+                              text: 'Sign in',
+                              isLoading: authController.isLoading,
+                              onPressed: () {
+                                authController.login(
+                                  _emailController.text,
+                                  _passwordController.text,
+                                );
+                                // Get.to(() => AppMain());
+                              },
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                'New To our Platform?'.text12White(),
+                                TextButton(
+                                  child: Text(
+                                    "Sign Up Here",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UserSignupScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+                            const SizedBox(height: 16),
+                          ],
                         ),
                       ),
                     ),
+                  ),
+                ),
+              ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Your Profile helps us customize your experience",
-                            style: TextStyle(
-                              color: AppColors.context(context).textColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/lockk.png',
-                                height: 16,
-                              ),
-                              Text(
-                                "Your data is secure and private",
-                                style: TextStyle(
-                                  color: AppColors.context(context).textColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Your Profile helps us customize your experience",
+                      style: TextStyle(
+                        color: AppColors.context(context).textColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/lockk.png',
+                          height: 16,
+                        ),
+                        Text(
+                          "Your data is secure and private",
+                          style: TextStyle(
+                            color: AppColors.context(context).textColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              );
+              ),
+              const SizedBox(height: 50),
+            ],
+          ),
+        );
       },
     );
   }

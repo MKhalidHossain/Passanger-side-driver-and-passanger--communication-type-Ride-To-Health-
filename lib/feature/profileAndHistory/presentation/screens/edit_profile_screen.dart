@@ -7,6 +7,7 @@ import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
 import 'package:shimmer/shimmer.dart';
+
 import '../../../../core/widgets/wide_custom_button.dart';
 
 class EditProfile extends StatefulWidget {
@@ -448,6 +449,8 @@ class _EditProfileState extends State<EditProfile> {
                                           Expanded(
                                             child: WideCustomButton(
                                               text: 'Save',
+                                              isLoading:
+                                                  profileController.isLoading,
                                               //color: Colors.red,
                                               onPressed: () async {
                                                 if (nameController

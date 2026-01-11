@@ -123,9 +123,9 @@ class _WalletScreenState extends State<WalletScreen> {
             _buildPaymentMethodsSection(),
             Spacer(),
             WideCustomButton(
-              text: _canStartPayment
-                  ? (_isProcessingPayment ? 'Processing...' : 'Continue to Pay')
-                  : 'Continue',
+              text: _canStartPayment ? 'Continue to Pay' : 'Continue',
+              isLoading: _isProcessingPayment,
+              loadingText: 'Processing...',
               onPressed: () {
                 if (_canStartPayment) {
                   if (_isProcessingPayment) return;

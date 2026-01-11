@@ -7,6 +7,8 @@ class WideCustomButton extends StatelessWidget {
   final IconData? sufixIcon;
   final double? height;
   final bool enabled;
+  final bool isLoading;
+  final String? loadingText;
 
   const WideCustomButton({
     super.key,
@@ -16,19 +18,24 @@ class WideCustomButton extends StatelessWidget {
     this.sufixIcon,
     this.height = 50,
     this.enabled = true,
+    this.isLoading = false,
+    this.loadingText,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isEnabled = enabled && !isLoading;
+    final String buttonText = isLoading ? (loadingText ?? 'Processing') : text;
+
     return GestureDetector(
-      onTap: enabled ? onPressed : null,
+      onTap: isEnabled ? onPressed : null,
       child: Container(
         height: height,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           // Make it red like in your design
-          gradient: enabled
+          gradient: isEnabled
               ? LinearGradient(
                   stops: [0.0, 0.4, 9.0],
                   colors: [
@@ -48,7 +55,7 @@ class WideCustomButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              text,
+              buttonText,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,

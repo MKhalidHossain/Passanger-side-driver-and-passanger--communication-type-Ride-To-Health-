@@ -606,6 +606,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                         WideCustomButton(
                           text: 'Choose car',
                           enabled: _selectedDriver != null,
+                          isLoading: appController.isLoading.value,
                           onPressed: () {
                             if (_selectedDriver == null &&
                                 _latestNearbyDrivers.isEmpty) {

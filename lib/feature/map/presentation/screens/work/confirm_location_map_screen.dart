@@ -464,6 +464,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 
                       WideCustomButton(
                         text: 'Confirm Location',
+                        isLoading: appController.isLoading.value,
                         onPressed: _handleConfirmLocation,
                       ),
                       // Container(
@@ -804,6 +805,5 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 //     );
 //   }
 // }
-
 
 

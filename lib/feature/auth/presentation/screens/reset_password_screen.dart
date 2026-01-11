@@ -219,6 +219,7 @@ class _RestartPasswordState extends State<ResetChangePassword> {
                             /// Send OTP Button
                             WideCustomButton(
                               text: 'Continue',
+                              isLoading: authController.isLoading,
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   if (!_passwordsMatch) {

@@ -131,6 +131,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                             /// Send OTP Button
                             WideCustomButton(
                               text: 'Send OTP',
+                              isLoading: authController.isLoading,
                               onPressed: () {
                                 authController.forgetPassword(
                                   _emailController.text,
