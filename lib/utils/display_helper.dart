@@ -14,7 +14,9 @@ void showCustomSnackBar(
   int seconds = 3,
   String? subMessage,
 }) {
-  Get.closeCurrentSnackbar();
+  if (Get.isSnackbarOpen) {
+    Get.closeCurrentSnackbar();
+  }
   Get.showSnackbar(
     GetSnackBar(
       dismissDirection: DismissDirection.horizontal,

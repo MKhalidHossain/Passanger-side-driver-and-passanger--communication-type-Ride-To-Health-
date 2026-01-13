@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
-import '../../map/domain/models/driver.dart';
+import 'payment_success_screen.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
  final NearestDriverData? selectedDriver;
@@ -79,7 +79,19 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     final lower = url.toLowerCase();
     if (lower.contains(_successKey)) {
       _handledResult = true;
-      Get.back(result: true);
+      final successRoute = Get.to<bool>(
+        () => PaymentSuccessScreen(
+          sessionId: widget.sessionId,
+          selectedDriver: widget.selectedDriver,
+        ),
+      );
+      if (successRoute == null) return;
+      successRoute.then((completed) {
+        if (!mounted) return;
+        if (completed == true) {
+          Get.back(result: true);
+        }
+      });
       return;
     }
     if (lower.contains(_cancelKey)) {

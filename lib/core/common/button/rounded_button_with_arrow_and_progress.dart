@@ -95,6 +95,8 @@ class _CircularPercentWidgetForButtonState
               ),
               child: Center(
                 child: widget.isIcon
+
+                
                     ? Icon(
                         Icons.arrow_forward,
                         color: Colors.white,

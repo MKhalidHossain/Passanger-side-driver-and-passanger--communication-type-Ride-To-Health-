@@ -21,7 +21,7 @@ class WalletScreen extends StatefulWidget {
    required this.selectedDriver,
   });
 
-  final double? rideAmount;
+  final String? rideAmount;
   final String? driverId;
   final String? stripeDriverId;
   final NearestDriverData? selectedDriver;
@@ -175,7 +175,7 @@ class _WalletScreenState extends State<WalletScreen> {
               style: TextStyle(color: Colors.grey[400], fontSize: 14),
             ),
             Text(
-              '\$${widget.rideAmount!.toStringAsFixed(2)}',
+              '\$${widget.rideAmount}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 26,
@@ -251,7 +251,7 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            '\$${amount.toStringAsFixed(2)}',
+            "\$$amount",
             style: TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -550,12 +550,17 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Future<void> _handleContinue() async {
-    final amount = widget.rideAmount;
+    final amountText = widget.rideAmount;
     final driverId = widget.driverId;
     final stripeDriverId = widget.stripeDriverId;
 
-    if (amount == null || driverId == null || stripeDriverId == null) {
+    if (amountText == null || driverId == null || stripeDriverId == null) {
       _showErrorMessage('Payment details are missing');
+      return;
+    }
+    final amount = double.tryParse(amountText);
+    if (amount == null) {
+      _showErrorMessage('Invalid amount');
       return;
     }
 

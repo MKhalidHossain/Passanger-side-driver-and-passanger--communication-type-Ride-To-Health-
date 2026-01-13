@@ -168,6 +168,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    // print("price check: ${widget.rideBookingInfoFromResponse?.data?.totalFare}");
     return Scaffold(
       body: Stack(
         children: [
@@ -463,7 +464,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               "Total".text16White500(),
-                              _calculatedPrice().text16White500(),
+                              "\$${widget.rideBookingInfoFromResponse?.data?.totalFare}".text16White500(),
                             ],
                           ),
                         ),
@@ -523,7 +524,9 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                 circularRadious: 30,
                                 text: "Continue",
                                 onPressed: () {
-                                  final fare = _calculatePriceValue();
+                                  final fare = widget.rideBookingInfoFromResponse?.data?.totalFare ?? _calculatePriceValue().toString();
+                                  
+                                  print("Fare: wallet screen: $fare");
                                   final driverId =
                                       widget.selectedDriver?.driver.id ??
                                       bookingController
@@ -549,7 +552,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                   Get.to(
                                     () => WalletScreen(
                                       
-                                      rideAmount: fare,
+                                      rideAmount: fare ?? "0.00",
                                       driverId: driverId,
                                       stripeDriverId: stripeDriverId, 
                                       selectedDriver: widget.selectedDriver ,
