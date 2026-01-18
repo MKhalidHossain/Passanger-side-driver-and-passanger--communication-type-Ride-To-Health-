@@ -146,18 +146,63 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
     );
   }
 
-  double _calculatePriceValue() {
+  bool _isCommissionActive(Commission? commission) {
+    if (commission == null) return false;
+    if (commission.isActive == false) return false;
+    if (commission.status != null && commission.status != 'active') {
+      return false;
+    }
+    final now = DateTime.now();
+    if (commission.startDate != null &&
+        now.isBefore(commission.startDate!)) {
+      return false;
+    }
+    if (commission.endDate != null && now.isAfter(commission.endDate!)) {
+      return false;
+    }
+    return commission.commission != null &&
+        commission.commission!.toDouble() > 0;
+  }
+
+  double _applyCommissionDiscount(
+    double originalPrice,
+    Commission? commission,
+  ) {
+    if (!_isCommissionActive(commission)) return originalPrice;
+    final discountValue = commission!.commission!.toDouble();
+    final discountType = commission.discountType?.toLowerCase().trim();
+
+    double discountedPrice;
+    if (discountType == 'percentage') {
+      discountedPrice = originalPrice * (1 - (discountValue / 100));
+    } else {
+      discountedPrice = originalPrice - discountValue;
+    }
+
+    return discountedPrice < 0 ? 0 : discountedPrice;
+  }
+
+  double _calculateOriginalPriceValue() {
     if (widget.selectedDriver == null) {
       return bookingController.estimatedPrice.value;
     }
     final service = widget.selectedDriver!.service;
     final distance = locationController.distance.value;
-    double price =
-        service?.baseFare.toDouble()?? 0.00 + (distance * (service?.perKmRate.toDouble()?? 0.00));
-    if ((service?.minimumFare ??0) > 0 && price < (service?.minimumFare ??0)) {
-      price = (service?.minimumFare.toDouble()?? 0.00);
+    double price = (service?.baseFare.toDouble() ?? 0.00) +
+        (distance * (service?.perKmRate.toDouble() ?? 0.00));
+    if ((service?.minimumFare ?? 0) > 0 && price < (service?.minimumFare ?? 0)) {
+      price = service?.minimumFare.toDouble() ?? 0.00;
     }
     return double.parse(price.toStringAsFixed(2));
+  }
+
+  double _calculatePriceValue() {
+    final originalPrice = _calculateOriginalPriceValue();
+    final discountedPrice = _applyCommissionDiscount(
+      originalPrice,
+      widget.selectedDriver?.commission,
+    );
+    return double.parse(discountedPrice.toStringAsFixed(2));
   }
 
   String _calculatedPrice() {
@@ -168,6 +213,13 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final originalPriceValue = _calculateOriginalPriceValue();
+    final discountedPriceValue = _calculatePriceValue();
+    final responsePriceValue = double.tryParse(
+      widget.rideBookingInfoFromResponse?.data?.totalFare ?? '',
+    );
+    final effectivePriceValue = responsePriceValue ?? discountedPriceValue;
+    final hasDiscount = effectivePriceValue < originalPriceValue;
     // print("price check: ${widget.rideBookingInfoFromResponse?.data?.totalFare}");
     return Scaffold(
       body: Stack(
@@ -460,11 +512,27 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              "Total".text16White500(),
-                              "\$${widget.rideBookingInfoFromResponse?.data?.totalFare}".text16White500(),
+                              if (hasDiscount)
+                                Text(
+                                  '\$${originalPriceValue.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  "Total".text16White500(),
+                                  "\$${effectivePriceValue.toStringAsFixed(2)}"
+                                      .text16White500(),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -524,7 +592,12 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                 circularRadious: 30,
                                 text: "Continue",
                                 onPressed: () {
-                                  final fare = widget.rideBookingInfoFromResponse?.data?.totalFare ?? _calculatePriceValue().toString();
+                                  final fare =
+                                      widget
+                                          .rideBookingInfoFromResponse
+                                          ?.data
+                                          ?.totalFare ??
+                                      _calculatePriceValue().toStringAsFixed(2);
                                   
                                   print("Fare: wallet screen: $fare");
                                   final driverId =

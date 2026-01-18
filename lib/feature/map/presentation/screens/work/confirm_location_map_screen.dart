@@ -40,7 +40,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 
   final AppController appController = Get.find<AppController>();
 
-  String _calculateEstimatedPrice(
+  double _calculateEstimatedPriceValue(
     double distanceKm, {
     num? baseFare,
     num? perKmRate,
@@ -55,7 +55,43 @@ class ConfirmYourLocationScreen extends StatelessWidget {
       price = price < minimumFare ? minimumFare.toDouble() : price;
     }
 
-    return price.toStringAsFixed(2);
+    return price;
+  }
+
+  bool _isCommissionActive(Commission? commission) {
+    if (commission == null) return false;
+    if (commission.isActive == false) return false;
+    if (commission.status != null && commission.status != 'active') {
+      return false;
+    }
+    final now = DateTime.now();
+    if (commission.startDate != null &&
+        now.isBefore(commission.startDate!)) {
+      return false;
+    }
+    if (commission.endDate != null && now.isAfter(commission.endDate!)) {
+      return false;
+    }
+    return commission.commission != null &&
+        commission.commission!.toDouble() > 0;
+  }
+
+  double _applyCommissionDiscount(
+    double originalPrice,
+    Commission? commission,
+  ) {
+    if (!_isCommissionActive(commission)) return originalPrice;
+    final discountValue = commission!.commission!.toDouble();
+    final discountType = commission.discountType?.toLowerCase().trim();
+
+    double discountedPrice;
+    if (discountType == 'percentage') {
+      discountedPrice = originalPrice * (1 - (discountValue / 100));
+    } else {
+      discountedPrice = originalPrice - discountValue;
+    }
+
+    return discountedPrice < 0 ? 0 : discountedPrice;
   }
 
   Future<void> _handleConfirmLocation() async {
@@ -79,12 +115,17 @@ class ConfirmYourLocationScreen extends StatelessWidget {
       return;
     }
 
-    final totalFare = _calculateEstimatedPrice(
+    final originalFareValue = _calculateEstimatedPriceValue(
       locationController.distance.value,
       baseFare: driverData.service?.baseFare,
       perKmRate: driverData.service?.perKmRate,
       minimumFare: driverData.service?.minimumFare,
     );
+    final discountedFareValue = _applyCommissionDiscount(
+      originalFareValue,
+      driverData.commission,
+    );
+    final totalFare = discountedFareValue.toStringAsFixed(2);
 
     final bookingInfo = RideBookingInfo(
       driverId: driverData.driver.id,
@@ -805,5 +846,4 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 //     );
 //   }
 // }
-
 
