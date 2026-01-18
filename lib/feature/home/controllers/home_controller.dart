@@ -49,6 +49,9 @@ class HomeController extends GetxController implements GetxService {
 
 
   bool isLoading = false;
+  
+  // String rideDuration
+
 
 
 Future<void> getAllServices() async {

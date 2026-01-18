@@ -11,9 +11,8 @@ import '../../../controllers/locaion_controller.dart';
 import 'confirm_location_map_screen.dart';
 
 class CarSelectionMapScreen extends StatefulWidget {
-  
   CarSelectionMapScreen({super.key, this.isshowCancelRideStatus = false});
- bool isshowCancelRideStatus;
+  bool isshowCancelRideStatus;
   @override
   State<CarSelectionMapScreen> createState() => _CarSelectionMapScreenState();
 }
@@ -35,9 +34,9 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
   NearestDriverData? _selectedDriver;
 
   // Calculate estimated time based on distance
-  String _calculateEstimatedTime(double distanceKm) {
+  String _calculateEstimatedTime(double distanceInMile) {
     // Assuming average speed of 30 km/h in city
-    double hours = distanceKm / 30;
+    double hours = distanceInMile / 30;
     int minutes = (hours * 60).round();
 
     if (minutes < 1) {
@@ -53,7 +52,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
 
   // Calculate estimated price based on distance
   String _calculateEstimatedPrice(
-    double distanceKm, {
+    double distanceInMile, {
     num? baseFare,
     num? perKmRate,
     num? minimumFare,
@@ -61,7 +60,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
     // Base fare + per km rate with graceful defaults
     final double resolvedBaseFare = (baseFare ?? 5).toDouble();
     final double resolvedPerKmRate = (perKmRate ?? 2.5).toDouble();
-    double price = resolvedBaseFare + (distanceKm * resolvedPerKmRate);
+    double price = resolvedBaseFare + (distanceInMile * resolvedPerKmRate);
 
     // Respect minimum fare when provided
     if (minimumFare != null) {
@@ -79,8 +78,17 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
       getCarData();
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.isshowCancelRideStatus ? showCustomSnackBar("Ride cancelled successfully", isError: false) : null;
+      widget.isshowCancelRideStatus
+          ? showCustomSnackBar("Ride cancelled successfully", isError: false)
+          : null;
     });
+
+    print(
+      "Time format korar por :${_calculateEstimatedTime(locationController.distance.value)}\n",
+    );
+    print(
+      " format korar age :${locationController.distance.value}\n",
+    );
 
     // 1. Call the function to get current location
     // locationController.getCurrentLocation();
@@ -353,6 +361,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
+
                                   Obx(
                                     () => Text(
                                       _calculateEstimatedTime(
@@ -389,10 +398,13 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                             final nearbyDrivers = model.data ?? [];
                             _latestNearbyDrivers = nearbyDrivers;
 
-                            final selectedDriverId = _selectedDriver?.driver?.id;
-                            final selectedStillExists = selectedDriverId != null &&
+                            final selectedDriverId =
+                                _selectedDriver?.driver?.id;
+                            final selectedStillExists =
+                                selectedDriverId != null &&
                                 nearbyDrivers.any(
-                                  (driver) => driver.driver.id == selectedDriverId,
+                                  (driver) =>
+                                      driver.driver.id == selectedDriverId,
                                 );
 
                             if (nearbyDrivers.length == 1) {
@@ -432,14 +444,16 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                 final user = driver.userId;
                                 final service = data.service;
 
-                                final carName = (service?.name.trim().isNotEmpty ?? false)
-                                    ? service!.name 
+                                final carName =
+                                    (service?.name.trim().isNotEmpty ?? false)
+                                    ? service!.name
                                     : vehicle?.model ?? "Unknown Car";
                                 final driverName = user?.fullName;
                                 final carDetails =
                                     "${vehicle?.taxiName ?? 'TAXI'} • Plate ${vehicle?.plateNumber ?? 'N/A'}";
                                 final carImage = service?.serviceImage ?? "";
-                                final eta = service?.estimatedArrivalTime != null
+                                final eta =
+                                    service?.estimatedArrivalTime != null
                                     ? "${service?.estimatedArrivalTime} min"
                                     : _calculateEstimatedTime(
                                         locationController.distance.value,
@@ -740,9 +754,9 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
 //   );
 
 //   // Calculate estimated time based on distance
-//   String _calculateEstimatedTime(double distanceKm) {
+//   String _calculateEstimatedTime(double distanceInMile) {
 //     // Assuming average speed of 30 km/h in city
-//     double hours = distanceKm / 30;
+//     double hours = distanceInMile / 30;
 //     int minutes = (hours * 60).round();
     
 //     if (minutes < 1) {
@@ -757,11 +771,11 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
 //   }
 
 //   // Calculate estimated price based on distance
-//   String _calculateEstimatedPrice(double distanceKm) {
+//   String _calculateEstimatedPrice(double distanceInMile) {
 //     // Base fare + per km rate
 //     double baseFare = 5.0;
 //     double perKmRate = 2.5;
-//     double price = baseFare + (distanceKm * perKmRate);
+//     double price = baseFare + (distanceInMile * perKmRate);
 //     return price.toStringAsFixed(2);
 //   }
 

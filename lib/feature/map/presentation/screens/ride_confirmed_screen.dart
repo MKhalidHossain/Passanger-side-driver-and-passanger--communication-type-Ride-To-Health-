@@ -551,7 +551,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                     
                                   Get.to(
                                     () => WalletScreen(
-                                      
+                                      rideId: widget.rideBookingInfoFromResponse?.data?.rideId ?? "",
                                       rideAmount: fare ?? "0.00",
                                       driverId: driverId,
                                       stripeDriverId: stripeDriverId, 

@@ -1,14 +1,15 @@
 class Urls {
   // Base URL
-  // static const String baseUrl = 'http://localhost:5001/api';
+  static const String baseUrl = 'http://localhost:5000/api';
   // static const String baseUrl = 'http://10.0.2.2:5001/api';
-  static const String baseUrl = 'https://api.rideztransportation.com/api';
-  // static const String baseUrl = 'http://10.10.5.94:5001/api';
+  // static const String baseUrl = 'https://api.rideztransportation.com/api';
+  // static const String baseUrl = 'http://10.10.5.85:5000/api';
   // static const String baseUrl = 'https://ridetohealth-backend.onrender.com/api';
 
-  // static const String socketUrl = 'http://10.10.5.94:5001';
+  static const String socketUrl = 'http://localhost:5000';
+  // static const String socketUrl = 'http://10.10.5.85:5000';
   // static const String socketUrl = 'http://10.0.2.2:5001';
-  static const String socketUrl = 'https://api.rideztransportation.com';
+  // static const String socketUrl = 'https://api.rideztransportation.com';
   // ------------------------ Authentication ------------------------
 
   static const String register = '/auth/register';

@@ -7,6 +7,7 @@ import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_desti
 import 'package:rideztohealth/feature/map/presentation/screens/work/finding_your_driver_screen.dart';
 import 'package:rideztohealth/feature/payment/domain/create_payment_request_model.dart';
 import 'package:rideztohealth/feature/payment/presentation/payment_webview_screen.dart';
+import '../../../map/controllers/locaion_controller.dart';
 import '../widgets/payment_method_card.dart';
 import 'add_card_screen.dart';
 import 'add_funds_screen.dart';
@@ -15,12 +16,13 @@ class WalletScreen extends StatefulWidget {
   const WalletScreen({
 
     super.key,
+    this.rideId,
     this.rideAmount,
     this.driverId,
     this.stripeDriverId,
    required this.selectedDriver,
   });
-
+  final String? rideId;
   final String? rideAmount;
   final String? driverId;
   final String? stripeDriverId;
@@ -36,6 +38,7 @@ class _WalletScreenState extends State<WalletScreen> {
     PaymentMethod('Stripe', 'assets/images/Stripe_Logo.png', true),
     // PaymentMethod('Visa', 'assets/images/Stripe_Logo.png', false),
   ];
+  final LocationController locationController = Get.find<LocationController>();
   late final HomeController _homeController;
   bool _isProcessingPayment = false;
 
@@ -50,6 +53,11 @@ class _WalletScreenState extends State<WalletScreen> {
   void initState() {
     super.initState();
     _homeController = Get.find<HomeController>();
+
+    print("ride Id from wallet screen: ${widget.rideId}");
+
+        locationController.getCurrentLocation();
+
   }
 
   @override
@@ -127,9 +135,11 @@ class _WalletScreenState extends State<WalletScreen> {
               isLoading: _isProcessingPayment,
               loadingText: 'Processing...',
               onPressed: () {
+                final rideDuration = locationController.distance.value.toString();
+                  print("ride duration from wallet screen: $rideDuration");
                 if (_canStartPayment) {
                   if (_isProcessingPayment) return;
-                  _handleContinue();
+                  _handleContinue(rideDuration);
                 } else {
                   _showRemoveCardDialog();
                 }
@@ -549,7 +559,7 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
-  Future<void> _handleContinue() async {
+  Future<void> _handleContinue(String rideDuration) async {
     final amountText = widget.rideAmount;
     final driverId = widget.driverId;
     final stripeDriverId = widget.stripeDriverId;
@@ -568,6 +578,8 @@ class _WalletScreenState extends State<WalletScreen> {
       setState(() => _isProcessingPayment = true);
       final response = await _homeController.createPayment(
         CreatePaymentRequestModel(
+          rideId: widget.rideId,
+          rideDuration: rideDuration,
           amount: _convertToMinorUnit(amount),
           driverId: driverId,
           stripeDriverId: stripeDriverId,
