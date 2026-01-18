@@ -61,22 +61,27 @@ class NearestDriverData {
   final Driver driver;
   final Vehicle? vehicle;
   final Service? service;
+  final Commission? commission;
 
   NearestDriverData({
     required this.driver,
     this.vehicle,
     this.service,
+    this.commission,
   });
 
   factory NearestDriverData.fromJson(Map<String, dynamic> json) {
     final driverMap = _asMap(json['driver']);
     final vehicleMap = _asMap(json['vehicle']);
     final serviceMap = _asMap(json['service']);
+    final commissionMap = _asMap(json['commission']);
 
     return NearestDriverData(
       driver: driverMap != null ? Driver.fromJson(driverMap) : Driver.empty(),
       vehicle: vehicleMap != null ? Vehicle.fromJson(vehicleMap) : null,
       service: serviceMap != null ? Service.fromJson(serviceMap) : null,
+      commission:
+          commissionMap != null ? Commission.fromJson(commissionMap) : null,
     );
   }
 
@@ -84,6 +89,7 @@ class NearestDriverData {
         'driver': driver.toJson(),
         if (vehicle != null) 'vehicle': vehicle!.toJson(),
         if (service != null) 'service': service!.toJson(),
+        if (commission != null) 'commission': commission!.toJson(),
       };
 }
 
@@ -496,6 +502,74 @@ class Service {
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         if (perMileRate != null) 'perMileRate': perMileRate,
+        '__v': v,
+      };
+}
+
+class Commission {
+  final String? id;
+  final String? title;
+  final String? description;
+  final String? discountType;
+  final num? commission;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? status;
+  final int? usedCount;
+  final String? applicableServices;
+  final bool? isActive;
+  final String? createdBy;
+  final DateTime? createdAt;
+  final int? v;
+
+  Commission({
+    this.id,
+    this.title,
+    this.description,
+    this.discountType,
+    this.commission,
+    this.startDate,
+    this.endDate,
+    this.status,
+    this.usedCount,
+    this.applicableServices,
+    this.isActive,
+    this.createdBy,
+    this.createdAt,
+    this.v,
+  });
+
+  factory Commission.fromJson(Map<String, dynamic> json) => Commission(
+        id: _asString(json['_id']),
+        title: _asString(json['title']),
+        description: _asString(json['description']),
+        discountType: _asString(json['discountType']),
+        commission: json['commission'] is num ? json['commission'] as num : null,
+        startDate: _asDateTime(json['startDate']),
+        endDate: _asDateTime(json['endDate']),
+        status: _asString(json['status']),
+        usedCount: json['usedCount'] is int ? json['usedCount'] as int : null,
+        applicableServices: _asString(json['applicableServices']),
+        isActive: json['isActive'] is bool ? json['isActive'] as bool : null,
+        createdBy: _asString(json['createdBy']),
+        createdAt: _asDateTime(json['createdAt']),
+        v: json['__v'] is int ? json['__v'] as int : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) '_id': id,
+        'title': title,
+        'description': description,
+        'discountType': discountType,
+        'commission': commission,
+        'startDate': startDate?.toIso8601String(),
+        'endDate': endDate?.toIso8601String(),
+        'status': status,
+        'usedCount': usedCount,
+        'applicableServices': applicableServices,
+        'isActive': isActive,
+        'createdBy': createdBy,
+        'createdAt': createdAt?.toIso8601String(),
         '__v': v,
       };
 }

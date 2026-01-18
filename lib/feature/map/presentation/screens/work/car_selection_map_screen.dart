@@ -51,7 +51,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
   }
 
   // Calculate estimated price based on distance
-  String _calculateEstimatedPrice(
+  double _calculateEstimatedPriceValue(
     double distanceInMile, {
     num? baseFare,
     num? perKmRate,
@@ -67,7 +67,43 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
       price = price < minimumFare ? minimumFare.toDouble() : price;
     }
 
-    return price.toStringAsFixed(2);
+    return price;
+  }
+
+  bool _isCommissionActive(Commission? commission) {
+    if (commission == null) return false;
+    if (commission.isActive == false) return false;
+    if (commission.status != null && commission.status != 'active') {
+      return false;
+    }
+    final now = DateTime.now();
+    if (commission.startDate != null &&
+        now.isBefore(commission.startDate!)) {
+      return false;
+    }
+    if (commission.endDate != null && now.isAfter(commission.endDate!)) {
+      return false;
+    }
+    return commission.commission != null &&
+        commission.commission!.toDouble() > 0;
+  }
+
+  double _applyCommissionDiscount(
+    double originalPrice,
+    Commission? commission,
+  ) {
+    if (!_isCommissionActive(commission)) return originalPrice;
+    final discountValue = commission!.commission!.toDouble();
+    final discountType = commission.discountType?.toLowerCase().trim();
+
+    double discountedPrice;
+    if (discountType == 'percentage') {
+      discountedPrice = originalPrice * (1 - (discountValue / 100));
+    } else {
+      discountedPrice = originalPrice - discountValue;
+    }
+
+    return discountedPrice < 0 ? 0 : discountedPrice;
   }
 
   @override
@@ -452,18 +488,26 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                 final carDetails =
                                     "${vehicle?.taxiName ?? 'TAXI'} • Plate ${vehicle?.plateNumber ?? 'N/A'}";
                                 final carImage = service?.serviceImage ?? "";
-                                final eta =
-                                    service?.estimatedArrivalTime != null
-                                    ? "${service?.estimatedArrivalTime} min"
-                                    : _calculateEstimatedTime(
-                                        locationController.distance.value,
-                                      );
-                                final price = _calculateEstimatedPrice(
-                                  locationController.distance.value,
-                                  baseFare: service?.baseFare,
-                                  perKmRate: service?.perKmRate,
-                                  minimumFare: service?.minimumFare,
-                                );
+                                final originalPriceValue =
+                                    _calculateEstimatedPriceValue(
+                                      locationController.distance.value,
+                                      baseFare: service?.baseFare,
+                                      perKmRate: service?.perKmRate,
+                                      minimumFare: service?.minimumFare,
+                                    );
+                                final discountedPriceValue =
+                                    _applyCommissionDiscount(
+                                      originalPriceValue,
+                                      data.commission,
+                                    );
+                                final hasDiscount =
+                                    discountedPriceValue < originalPriceValue;
+                                final price = (hasDiscount
+                                        ? discountedPriceValue
+                                        : originalPriceValue)
+                                    .toStringAsFixed(2);
+                                final originalPrice =
+                                    originalPriceValue.toStringAsFixed(2);
                                 final rating = driver.ratings.average
                                     .toStringAsFixed(1);
                                 final isSelected =
@@ -561,6 +605,16 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
+                                            if (hasDiscount)
+                                              Text(
+                                                '\$$originalPrice',
+                                                style: const TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: 12,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
                                             Text(
                                               '\$$price',
                                               style: const TextStyle(
