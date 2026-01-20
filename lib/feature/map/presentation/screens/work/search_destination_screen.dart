@@ -601,7 +601,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data! > 0) {
                   return Text(
-                    "${snapshot.data!.toStringAsFixed(1)}km",
+                    "${snapshot.data!.toStringAsFixed(1)}Miles",
                     style: TextStyle(color: Colors.white),
                   );
                 }

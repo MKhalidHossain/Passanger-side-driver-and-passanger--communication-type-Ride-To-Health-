@@ -410,7 +410,7 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                                           color: Colors.white,
                                           size: 16,
                                         ),
-                                        "${locationController.distance.value.toStringAsFixed(1)}km"
+                                        "${locationController.distance.value.toStringAsFixed(1)} Miles"
                                             .text12White(),
                                       ],
                                     ),

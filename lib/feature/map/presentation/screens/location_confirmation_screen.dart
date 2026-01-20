@@ -145,7 +145,7 @@ class LocationConfirmationScreen extends StatelessWidget {
                         Obx(() {
                           if (locationController.distance.value > 0) {
                             return Text(
-                              '${locationController.distance.value.toStringAsFixed(1)}km',
+                              '${locationController.distance.value.toStringAsFixed(1)}Miles',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,

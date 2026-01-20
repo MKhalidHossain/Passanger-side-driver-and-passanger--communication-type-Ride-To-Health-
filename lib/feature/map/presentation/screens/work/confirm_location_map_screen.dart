@@ -411,7 +411,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                                             null &&
                                         locationController.distance.value > 0) {
                                       return Text(
-                                        '${locationController.distance.value.toStringAsFixed(1)}km',
+                                        '${locationController.distance.value.toStringAsFixed(1)} Miles',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 15,

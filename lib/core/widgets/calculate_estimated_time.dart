@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class EstimatedTripInfo extends StatelessWidget {
-  final double distanceKm;
+  final double distanceMile;
 
   /// Fare config (all optional, with sensible defaults)
   final num? baseFare;
-  final num? perKmRate;
+  final num? perMileRate;
   final num? minimumFare;
 
   /// Optional styling / labels
@@ -19,9 +19,9 @@ class EstimatedTripInfo extends StatelessWidget {
 
   const EstimatedTripInfo({
     super.key,
-    required this.distanceKm,
+    required this.distanceMile,
     this.baseFare,
-    this.perKmRate,
+    this.perMileRate,
     this.minimumFare,
     this.timeLabel = 'Estimated time',
     this.priceLabel = 'Estimated price',
@@ -32,9 +32,9 @@ class EstimatedTripInfo extends StatelessWidget {
     this.crossAxisAlignment = CrossAxisAlignment.start,
   });
 
-  String _calculateEstimatedTime(double distanceKm) {
-    // Assuming average speed of 30 km/h in city
-    final double hours = distanceKm / 30;
+  String _calculateEstimatedTime(double distanceMile) {
+    // Assuming average speed of 30 mile/h in city
+    final double hours = distanceMile / 30;
     final int minutes = (hours * 60).round();
 
     if (minutes < 1) {
@@ -49,15 +49,15 @@ class EstimatedTripInfo extends StatelessWidget {
   }
 
   String _calculateEstimatedPrice(
-    double distanceKm, {
+    double distanceMile, {
     num? baseFare,
-    num? perKmRate,
+    num? perMileRate,
     num? minimumFare,
   }) {
     // Base fare + per km rate with graceful defaults
     final double resolvedBaseFare = (baseFare ?? 5).toDouble();
-    final double resolvedPerKmRate = (perKmRate ?? 2.5).toDouble();
-    double price = resolvedBaseFare + (distanceKm * resolvedPerKmRate);
+    final double resolvedPerMileRate = (perMileRate ?? 2.5).toDouble();
+    double price = resolvedBaseFare + (distanceMile * resolvedPerMileRate);
 
     // Respect minimum fare when provided
     if (minimumFare != null) {
@@ -69,11 +69,11 @@ class EstimatedTripInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String time = _calculateEstimatedTime(distanceKm);
+    final String time = _calculateEstimatedTime(distanceMile);
     final String price = _calculateEstimatedPrice(
-      distanceKm,
+      distanceMile,
       baseFare: baseFare,
-      perKmRate: perKmRate,
+      perMileRate: perMileRate,
       minimumFare: minimumFare,
     );
 

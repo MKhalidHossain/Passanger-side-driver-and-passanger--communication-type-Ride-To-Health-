@@ -372,7 +372,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                   const SizedBox(height: 4),
                                   Obx(
                                     () => Text(
-                                      '${locationController.distance.value.toStringAsFixed(1)} km',
+                                      '${locationController.distance.value.toStringAsFixed(1)} Miles',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
