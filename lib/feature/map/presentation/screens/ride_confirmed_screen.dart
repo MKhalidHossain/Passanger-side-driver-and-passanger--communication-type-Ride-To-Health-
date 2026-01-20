@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -243,6 +245,16 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
             polylines: locationController.polylines,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
+            scrollGesturesEnabled: true,
+            zoomGesturesEnabled: true,
+            rotateGesturesEnabled: true,
+            tiltGesturesEnabled: true,
+            zoomControlsEnabled: true,
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+              Factory<OneSequenceGestureRecognizer>(
+                () => EagerGestureRecognizer(),
+              ),
+            },
             onTap: (LatLng position) {
               locationController.setDestinationLocation(position);
             },

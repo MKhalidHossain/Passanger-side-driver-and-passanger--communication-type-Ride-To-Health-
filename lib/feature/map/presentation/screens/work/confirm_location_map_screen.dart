@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -198,6 +200,16 @@ class ConfirmYourLocationScreen extends StatelessWidget {
               polylines: locationController.polylines, // Display polyline
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
+              scrollGesturesEnabled: true,
+              zoomGesturesEnabled: true,
+              rotateGesturesEnabled: true,
+              tiltGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                Factory<OneSequenceGestureRecognizer>(
+                  () => EagerGestureRecognizer(),
+                ),
+              },
               onTap: (LatLng position) {
                 // Allow changing destination by tapping on the map
                 locationController.setDestinationLocation(position);
@@ -848,4 +860,3 @@ class ConfirmYourLocationScreen extends StatelessWidget {
 //     );
 //   }
 // }
-

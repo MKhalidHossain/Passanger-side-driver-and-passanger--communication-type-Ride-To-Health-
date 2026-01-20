@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -189,6 +191,16 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
               myLocationButtonEnabled: false,
               markers: locationController.markers.toSet(),
               polylines: locationController.polylines.toSet(),
+              scrollGesturesEnabled: true,
+              zoomGesturesEnabled: true,
+              rotateGesturesEnabled: true,
+              tiltGesturesEnabled: true,
+              zoomControlsEnabled: true,
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
+                Factory<OneSequenceGestureRecognizer>(
+                  () => EagerGestureRecognizer(),
+                ),
+              },
               onMapCreated: (GoogleMapController controller) {
                 locationController.setMapController(controller);
 
