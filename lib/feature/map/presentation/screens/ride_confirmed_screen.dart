@@ -8,7 +8,6 @@ import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
 import 'package:rideztohealth/helpers/custom_snackbar.dart';
 import 'chat_screen.dart';
-
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/normal_custom_button.dart';
 import '../../../../core/widgets/normal_custom_icon_button.dart';

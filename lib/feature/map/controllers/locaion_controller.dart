@@ -335,25 +335,25 @@ Future<void> _initCustomMarkers() async {
   }
 
   /// OLD straight-line polyline (kept as fallback)
-  void _generateStraightLinePolyline() {
-    polylines.clear();
-    if (pickupLocation.value != null && destinationLocation.value != null) {
-      const String polylineIdVal = 'route_polyline';
-      const PolylineId polylineId = PolylineId(polylineIdVal);
+  // void _generateStraightLinePolyline() {
+  //   polylines.clear();
+  //   if (pickupLocation.value != null && destinationLocation.value != null) {
+  //     const String polylineIdVal = 'route_polyline';
+  //     const PolylineId polylineId = PolylineId(polylineIdVal);
 
-      final Polyline polyline = Polyline(
-        polylineId: polylineId,
-        color: const Color(0xFFC0392B), // Red color for the polyline
-        points: [
-          pickupLocation.value!,
-          destinationLocation.value!,
-        ],
-        width: 5,
-        geodesic: true,
-      );
-      polylines.add(polyline);
-    }
-  }
+  //     final Polyline polyline = Polyline(
+  //       polylineId: polylineId,
+  //       color: const Color(0xFFC0392B), // Red color for the polyline
+  //       points: [
+  //         pickupLocation.value!,
+  //         destinationLocation.value!,
+  //       ],
+  //       width: 5,
+  //       geodesic: true,
+  //     );
+  //     polylines.add(polyline);
+  //   }
+  // }
 
   /// OLD straight-line distance (kept as fallback)
   void _calculateStraightLineDistance() {
@@ -418,12 +418,12 @@ Future<void> _initCustomMarkers() async {
         distance.value = (distanceMeters / 1000.0).toPrecision(1);
       } else {
         // Fallback to straight line if API fails or no route
-        _generateStraightLinePolyline();
+        // _generateStraightLinePolyline();
         _calculateStraightLineDistance();
       }
     } catch (e) {
       // Fallback in case of error
-      _generateStraightLinePolyline();
+      // _generateStraightLinePolyline();
       _calculateStraightLineDistance();
     }
   }
