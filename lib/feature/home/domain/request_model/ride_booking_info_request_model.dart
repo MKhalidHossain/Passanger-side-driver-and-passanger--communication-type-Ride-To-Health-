@@ -3,12 +3,13 @@ class RideBookingInfo {
   final Location pickupLocation;
   final Location dropoffLocation;
   final String totalFare;
+  final String? rideDuration;
 
   RideBookingInfo({
     required this.driverId,
     required this.pickupLocation,
     required this.dropoffLocation,
-    required this.totalFare,
+    required this.totalFare, this.rideDuration,
   });
 
   factory RideBookingInfo.fromJson(Map<String, dynamic> json) {
@@ -17,6 +18,7 @@ class RideBookingInfo {
       pickupLocation: Location.fromJson(json['pickupLocation']),
       dropoffLocation: Location.fromJson(json['dropoffLocation']),
       totalFare: json['totalFare'],
+      rideDuration: json['rideDuration'],
     );
   }
 
@@ -26,6 +28,7 @@ class RideBookingInfo {
       'pickupLocation': pickupLocation.toJson(),
       'dropoffLocation': dropoffLocation.toJson(),
       'totalFare': totalFare,
+      'rideDuration': rideDuration,
     };
   }
 }

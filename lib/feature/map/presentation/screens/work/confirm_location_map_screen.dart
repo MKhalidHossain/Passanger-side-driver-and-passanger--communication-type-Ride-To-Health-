@@ -18,6 +18,7 @@ import 'finding_your_driver_screen.dart';
 // ignore: use_key_in_widget_constructors
 class ConfirmYourLocationScreen extends StatelessWidget {
 
+
   ConfirmYourLocationScreen({
     super.key, this.selectedDriver, 
 
@@ -142,6 +143,7 @@ class ConfirmYourLocationScreen extends StatelessWidget {
             : 'Destination',
       ),
       totalFare: totalFare,
+      rideDuration: locationController.distance.value.toStringAsFixed(2),
     );
 
     appController.showLoading();
