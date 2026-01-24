@@ -6,7 +6,7 @@ import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/model/get_profile_response_model.dart';
 import 'package:rideztohealth/feature/profileAndHistory/domain/request_model/update_profile_request_model.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 import '../../../../core/widgets/wide_custom_button.dart';
 
@@ -270,19 +270,14 @@ class _EditProfileState extends State<EditProfile> {
                                                             return child;
 
                                                           // Shimmer effect while loading
-                                                          return Shimmer.fromColors(
-                                                            baseColor: Colors
-                                                                .grey
-                                                                .shade300,
-                                                            highlightColor:
-                                                                Colors
-                                                                    .grey
-                                                                    .shade100,
-                                                            child: Container(
+                                                          return const ShimmerSkeleton(
+                                                            child: SizedBox(
                                                               width: 170,
                                                               height: 170,
-                                                              color:
-                                                                  Colors.white,
+                                                              child: ColoredBox(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
                                                             ),
                                                           );
                                                         },
@@ -654,9 +649,7 @@ class _ProfileShimmerLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+    return ShimmerSkeleton(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

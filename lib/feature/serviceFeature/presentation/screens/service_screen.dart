@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 import '../../../../core/widgets/promo_banner_widget.dart';
 
@@ -64,7 +65,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
         final services = homeController.getAllCategoryResponseModel.data ?? [];
 
       return homeController.isLoading 
-      ? const Center(child: CircularProgressIndicator()) 
+      ? _buildLoadingShimmer(context)
       : Scaffold(
       body: SafeArea(
         child: Padding(
@@ -209,5 +210,51 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
 
     } );
+  }
+
+  Widget _buildLoadingShimmer(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ShimmerLine(width: 140, height: 20),
+              const SizedBox(height: 8),
+              const ShimmerLine(width: 240, height: 14),
+              const SizedBox(height: 16),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.2,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const ShimmerBox(
+                          width: 60,
+                          height: 60,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        const SizedBox(height: 10),
+                        ShimmerLine(width: 110, height: 12),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              const ShimmerBox(width: double.infinity, height: 120),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

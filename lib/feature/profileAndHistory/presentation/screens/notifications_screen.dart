@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rideztohealth/feature/profileAndHistory/controllers/profile_and_history_controller.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 class NotificationsScreen extends StatefulWidget {
   @override
@@ -51,11 +52,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const SizedBox(height: 20),
                   Expanded(
                     child: controller.notificationsLoading
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
+                        ? _buildNotificationsShimmer()
                         : _buildNotificationsList(controller),
                   ),
                 ],
@@ -209,5 +206,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final parsed = DateTime.tryParse(date);
     if (parsed == null) return '';
     return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildNotificationsShimmer() {
+    return ListView.separated(
+      itemCount: 6,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white10,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const ShimmerCircle(size: 40),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    ShimmerLine(width: 180, height: 14),
+                    SizedBox(height: 8),
+                    ShimmerLine(width: 220, height: 12),
+                    SizedBox(height: 6),
+                    ShimmerLine(width: 120, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

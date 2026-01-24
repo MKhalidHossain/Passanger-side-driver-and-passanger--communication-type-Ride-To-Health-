@@ -7,7 +7,7 @@ import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/acc
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/edit_profile_screen.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/notifications_screen.dart';
 import 'package:rideztohealth/feature/profileAndHistory/presentation/screens/terms_and_condition.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import '../../../../core/constants/app_colors.dart';
 import 'privacy_policy_screen.dart';
 
@@ -43,12 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// 🔹 When data is loading, show shimmer placeholders for each section
   Widget _buildProfileShimmer(BuildContext context) {
-    final baseColor = Colors.grey.shade300;
-    final highlightColor = Colors.grey.shade100;
-
-    return Shimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+    return ShimmerSkeleton(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -159,10 +154,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
-                            return Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(color: Colors.white),
+                            return const ShimmerSkeleton(
+                              child: ColoredBox(color: Colors.white),
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {

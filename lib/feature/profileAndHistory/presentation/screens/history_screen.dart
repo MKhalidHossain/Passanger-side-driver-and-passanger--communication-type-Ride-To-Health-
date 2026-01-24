@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 import '../../../../core/utils/date_time_formatter.dart';
 import '../../../home/presentation/widgets/recent_single_contianer.dart';
@@ -19,7 +20,7 @@ class HistoryScreen extends StatelessWidget {
         final recentTrips =
             homeController.getRecentTripsResponseModel.value.data?.rides  ?? [];
         return homeController.isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? _buildLoadingShimmer(context)
             : SafeArea(
                 bottom: false,
                 child: Scaffold(
@@ -81,6 +82,31 @@ class HistoryScreen extends StatelessWidget {
                 ),
               );
       },
+    );
+  }
+
+  Widget _buildLoadingShimmer(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          title: const ShimmerLine(width: 160, height: 18),
+          backgroundColor: Colors.transparent,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: const [
+              ShimmerBox(width: double.infinity, height: 70),
+              SizedBox(height: 16),
+              ShimmerBox(width: double.infinity, height: 70),
+              SizedBox(height: 16),
+              ShimmerBox(width: double.infinity, height: 70),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

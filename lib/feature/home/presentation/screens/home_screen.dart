@@ -10,6 +10,7 @@ import 'package:rideztohealth/feature/map/presentation/screens/work/search_desti
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/promo_banner_widget.dart';
+import '../../../../core/widgets/shimmer/shimmer_skeleton.dart';
 import '../../../profileAndHistory/presentation/screens/saved_places_screen.dart';
 import '../../../serviceFeature/presentation/screens/service_screen.dart';
 import '../widgets/saved_pleaces_single_container.dart';
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             homeController.getSavedPlacesResponseModel.data ?? [];
       
         return homeController.isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? _buildHomeShimmer(context)
             : Scaffold(
                 body: SafeArea(
                   child: Padding(
@@ -526,8 +527,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
-                    return const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                    return const ShimmerBox(
+                      width: 40,
+                      height: 40,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     );
                   },
                 ),
@@ -586,4 +589,79 @@ class _HomeScreenState extends State<HomeScreen> {
   //     ],
   //   ),
   // );
+
+  Widget _buildHomeShimmer(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              Row(
+                children: [
+                  const ShimmerCircle(size: 32),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      ShimmerLine(width: 130, height: 14),
+                      SizedBox(height: 6),
+                      ShimmerLine(width: 90, height: 12),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const ShimmerBox(width: double.infinity, height: 48),
+              const SizedBox(height: 16),
+              const ShimmerLine(width: 120, height: 16),
+              const SizedBox(height: 16),
+              Column(
+                children: const [
+                  ShimmerBox(width: double.infinity, height: 70),
+                  SizedBox(height: 12),
+                  ShimmerBox(width: double.infinity, height: 70),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  ShimmerLine(width: 120, height: 16),
+                  ShimmerLine(width: 60, height: 12),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Column(
+                children: const [
+                  ShimmerBox(width: double.infinity, height: 70),
+                  SizedBox(height: 12),
+                  ShimmerBox(width: double.infinity, height: 70),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const ShimmerLine(width: 140, height: 16),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 110,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => const ShimmerBox(
+                    width: 140,
+                    height: 110,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
+                  itemCount: 3,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const ShimmerBox(width: double.infinity, height: 120),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

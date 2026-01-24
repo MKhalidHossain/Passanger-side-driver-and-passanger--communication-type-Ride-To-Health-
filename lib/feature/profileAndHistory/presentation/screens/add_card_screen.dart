@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:flutter/services.dart';
 
 class AddCardScreen extends StatefulWidget {
@@ -291,12 +292,11 @@ class _AddCardScreenState extends State<AddCardScreen> {
           elevation: 2,
         ),
         child: _isLoading
-            ? SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
+            ? const Center(
+                child: ShimmerBox(
+                  width: 120,
+                  height: 16,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
               )
             : Text(

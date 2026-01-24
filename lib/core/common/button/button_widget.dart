@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 import '../../themes/app_color.dart';
 import '../../themes/text_style.dart';
@@ -31,13 +32,10 @@ extension ButtonStyleExtensions on BuildContext {
           ),
         ),
         child: isLoading
-            ? SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                ),
+            ? const ShimmerBox(
+                width: 60,
+                height: 14,
+                borderRadius: BorderRadius.all(Radius.circular(6)),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -158,4 +156,3 @@ class SecondaryButton extends StatelessWidget {
 //                     : Colors.black,
 //               ),
 //             ),
-

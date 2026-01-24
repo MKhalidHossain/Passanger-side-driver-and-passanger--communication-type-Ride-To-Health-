@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
 import 'package:rideztohealth/feature/home/domain/reponse_model/get_search_destination_for_find_Nearest_drivers_response_model.dart';
@@ -561,7 +562,21 @@ class ConfirmYourLocationScreen extends StatelessWidget {
               Container(
                 color: Colors.black54,
                 child: Center(
-                  child: CircularProgressIndicator(color: Colors.red),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        ShimmerBox(width: 180, height: 14),
+                        SizedBox(height: 12),
+                        ShimmerBox(width: 240, height: 12),
+                      ],
+                    ),
+                  ),
                 ),
               ),
           ],

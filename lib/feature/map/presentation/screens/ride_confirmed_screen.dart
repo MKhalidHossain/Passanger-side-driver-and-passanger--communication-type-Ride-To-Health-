@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/extensions/text_extensions.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
@@ -662,7 +663,21 @@ class _RideConfirmedScreenState extends State<RideConfirmedScreen> {
                 ? Container(
                     color: Colors.black54,
                     child: Center(
-                      child: CircularProgressIndicator(color: Colors.red),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            ShimmerBox(width: 180, height: 14),
+                            SizedBox(height: 12),
+                            ShimmerBox(width: 240, height: 12),
+                          ],
+                        ),
+                      ),
                     ),
                   )
                 : SizedBox.shrink();

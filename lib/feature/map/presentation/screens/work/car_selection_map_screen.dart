@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rideztohealth/core/widgets/wide_custom_button.dart';
 import 'package:rideztohealth/feature/home/controllers/home_controller.dart';
@@ -436,9 +437,7 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                                     null;
 
                             if (isBusy) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
+                              return _buildDriverLoadingShimmer();
                             }
 
                             final model = homeController
@@ -790,14 +789,41 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
             if (appController.isLoading.value)
               Container(
                 color: Colors.black54,
-                child: const Center(
-                  child: CircularProgressIndicator(color: Colors.red),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        ShimmerBox(width: 180, height: 14),
+                        SizedBox(height: 12),
+                        ShimmerBox(width: 240, height: 12),
+                      ],
+                    ),
+                  ),
                 ),
               ),
           ],
         ),
       );
     });
+  }
+
+  Widget _buildDriverLoadingShimmer() {
+    return Column(
+      children: const [
+        SizedBox(height: 12),
+        ShimmerBox(width: double.infinity, height: 60),
+        SizedBox(height: 12),
+        ShimmerBox(width: double.infinity, height: 60),
+        SizedBox(height: 12),
+        ShimmerBox(width: double.infinity, height: 60),
+      ],
+    );
   }
 }
 

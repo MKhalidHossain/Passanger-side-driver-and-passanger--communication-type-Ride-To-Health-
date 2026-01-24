@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../controllers/app_controller.dart';
@@ -378,7 +379,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
             if (isSearching)
               Padding(
                 padding: EdgeInsets.all(16),
-                child: CircularProgressIndicator(color: Colors.red),
+                child: _buildSearchShimmer(),
               )
             else
               Expanded(
@@ -609,6 +610,33 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchShimmer() {
+    return Column(
+      children: List.generate(
+        5,
+        (index) => Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: Row(
+            children: const [
+              ShimmerCircle(size: 28),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ShimmerLine(width: 200, height: 14),
+                    SizedBox(height: 6),
+                    ShimmerLine(width: 160, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

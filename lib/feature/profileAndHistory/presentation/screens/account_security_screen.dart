@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 import 'package:rideztohealth/core/constants/app_colors.dart';
 import 'package:rideztohealth/core/widgets/app_scaffold.dart';
 import 'package:rideztohealth/feature/auth/controllers/auth_controller.dart';
@@ -160,13 +161,12 @@ class _AccountSecurityScreenState extends State<AccountSecurityScreen> {
                           ),
                         ),
                         child: controller.changePasswordIsLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                            ? const Center(
+                                child: ShimmerBox(
+                                  width: 120,
+                                  height: 16,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8),
                                   ),
                                 ),
                               )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rideztohealth/core/widgets/shimmer/shimmer_skeleton.dart';
 
 import '../../../../helpers/custom_snackbar.dart';
 import '../../controllers/locaion_controller.dart';
@@ -222,7 +223,11 @@ class LocationConfirmationScreen extends StatelessWidget {
                   ),
                 ),
                 child: Obx(() => appController.isLoading.value
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const ShimmerBox(
+                        width: 120,
+                        height: 16,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      )
                     : const Text(
                         'Confirm Location',
                         style: TextStyle(
