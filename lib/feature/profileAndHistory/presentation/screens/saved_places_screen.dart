@@ -120,16 +120,50 @@ class _SavedPlaceScreenState extends State<SavedPlaceScreen> {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            children: const [
-              SizedBox(height: 16),
-              ShimmerBox(width: double.infinity, height: 70),
-              SizedBox(height: 16),
-              ShimmerBox(width: double.infinity, height: 70),
-              SizedBox(height: 16),
-              ShimmerBox(width: double.infinity, height: 70),
+            children: [
+              const SizedBox(height: 16),
+              _buildSavedPlaceItemShimmer(),
+              const SizedBox(height: 16),
+              _buildSavedPlaceItemShimmer(),
+              const SizedBox(height: 16),
+              _buildSavedPlaceItemShimmer(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSavedPlaceItemShimmer() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: Row(
+        children: const [
+          ShimmerCircle(size: 36),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLine(width: 160, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 200, height: 12),
+              ],
+            ),
+          ),
+          SizedBox(width: 12),
+          ShimmerBox(
+            width: 70,
+            height: 24,
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+        ],
       ),
     );
   }

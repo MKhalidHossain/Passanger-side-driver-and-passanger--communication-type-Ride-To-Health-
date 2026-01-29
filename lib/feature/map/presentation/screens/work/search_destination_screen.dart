@@ -635,6 +635,8 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                   ],
                 ),
               ),
+              SizedBox(width: 12),
+              ShimmerLine(width: 48, height: 12),
             ],
           ),
         ),

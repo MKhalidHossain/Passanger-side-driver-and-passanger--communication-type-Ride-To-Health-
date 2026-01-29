@@ -234,23 +234,66 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   ),
                   itemCount: 6,
                   itemBuilder: (context, index) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const ShimmerBox(
-                          width: 60,
-                          height: 60,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
-                        const SizedBox(height: 10),
-                        ShimmerLine(width: 110, height: 12),
-                      ],
+                    return Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white12, width: 1),
+                      ),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ShimmerBox(
+                            width: 60,
+                            height: 60,
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                          SizedBox(height: 10),
+                          ShimmerLine(width: 110, height: 12),
+                        ],
+                      ),
                     );
                   },
                 ),
               ),
               const SizedBox(height: 16),
-              const ShimmerBox(width: double.infinity, height: 120),
+              Container(
+                width: double.infinity,
+                height: 120,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white10,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ShimmerLine(width: 180, height: 14),
+                          SizedBox(height: 8),
+                          ShimmerLine(width: 120, height: 12),
+                          SizedBox(height: 16),
+                          ShimmerBox(
+                            width: 90,
+                            height: 28,
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    ShimmerBox(
+                      width: 70,
+                      height: 70,
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

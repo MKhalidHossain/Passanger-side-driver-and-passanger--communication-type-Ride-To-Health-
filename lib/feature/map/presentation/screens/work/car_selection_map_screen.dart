@@ -799,9 +799,11 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        ShimmerBox(width: 180, height: 14),
+                        ShimmerCircle(size: 32),
                         SizedBox(height: 12),
-                        ShimmerBox(width: 240, height: 12),
+                        ShimmerLine(width: 180, height: 14),
+                        SizedBox(height: 8),
+                        ShimmerLine(width: 240, height: 12),
                       ],
                     ),
                   ),
@@ -815,14 +817,56 @@ class _CarSelectionMapScreenState extends State<CarSelectionMapScreen> {
 
   Widget _buildDriverLoadingShimmer() {
     return Column(
-      children: const [
-        SizedBox(height: 12),
-        ShimmerBox(width: double.infinity, height: 60),
-        SizedBox(height: 12),
-        ShimmerBox(width: double.infinity, height: 60),
-        SizedBox(height: 12),
-        ShimmerBox(width: double.infinity, height: 60),
+      children: [
+        const SizedBox(height: 12),
+        _buildDriverCardShimmer(),
+        const SizedBox(height: 12),
+        _buildDriverCardShimmer(),
+        const SizedBox(height: 12),
+        _buildDriverCardShimmer(),
       ],
+    );
+  }
+
+  Widget _buildDriverCardShimmer() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: Row(
+        children: const [
+          ShimmerBox(
+            width: 80,
+            height: 60,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+          ),
+          SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLine(width: 160, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 140, height: 12),
+                SizedBox(height: 6),
+                ShimmerLine(width: 120, height: 12),
+              ],
+            ),
+          ),
+          SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ShimmerLine(width: 50, height: 14),
+              SizedBox(height: 6),
+              ShimmerLine(width: 40, height: 12),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

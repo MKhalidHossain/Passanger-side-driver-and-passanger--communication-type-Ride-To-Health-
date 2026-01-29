@@ -571,9 +571,11 @@ class ConfirmYourLocationScreen extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        ShimmerBox(width: 180, height: 14),
+                        ShimmerCircle(size: 32),
                         SizedBox(height: 12),
-                        ShimmerBox(width: 240, height: 12),
+                        ShimmerLine(width: 180, height: 14),
+                        SizedBox(height: 8),
+                        ShimmerLine(width: 240, height: 12),
                       ],
                     ),
                   ),

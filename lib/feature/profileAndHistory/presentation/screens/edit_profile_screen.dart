@@ -169,125 +169,95 @@ class _EditProfileState extends State<EditProfile> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.1),
-                                            spreadRadius: 2,
-                                            blurRadius: 4,
-                                            offset: Offset(
-                                              0,
-                                              2,
-                                            ), // changes position of shadow
-                                          ),
-                                        ],
-                                      ),
-                                      child:
-                                          // widget.userProfile.avatar != null &&
-                                          //         widget
-                                          //             .userProfile
-                                          //             .avatar!
-                                          //             .isNotEmpty
-                                          // ? Image.network(
-                                          //   widget.userProfile.avatar!,
-                                          //   width: 170,
-                                          //   height: 170,
-                                          //   fit: BoxFit.cover,
-                                          //   errorBuilder:
-                                          //       (context, error, stackTrace) =>
-                                          //           Image.asset(
-                                          //             'assets/images/person.png',
-                                          //             width: 170,
-                                          //             height: 170,
-                                          //             fit: BoxFit.cover,
-                                          //           ),
-                                          // )
-                                          //:
+                                    SizedBox(
+                                      width: 170,
+                                      height: 170,
+                                      child: Stack(
+                                        children: [
                                           Container(
-                                            padding: const EdgeInsets.all(2),
                                             decoration: BoxDecoration(
-                                              color: Colors.red,
+                                              color: Colors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(16),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Color(
-                                                    0xffCE0000,
-                                                  ).withOpacity(0.8),
-                                                  // Color(0xFFCE0000),
-                                                  Color(
-                                                    0xff7B0100,
-                                                  ).withOpacity(0.8),
-                                                ],
-                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.1),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 4,
+                                                  offset: Offset(
+                                                    0,
+                                                    2,
+                                                  ), // changes position of shadow
+                                                ),
+                                              ],
                                             ),
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(
-                                                16,
-                                              ), // adjust for how round you want it
-                                          child: Builder(
-                                            builder: (context) {
-                                              if (_localImageFile != null) {
-                                                return Image.file(
-                                                  _localImageFile!,
-                                                  width: 170,
-                                                  height: 170,
-                                                  fit: BoxFit.cover,
-                                                );
-                                              }
-                                              final imageUrl = widget
-                                                  .userProfile
-                                                  ?.profileImage;
-
-                                                  if (imageUrl == null ||
-                                                      imageUrl.isEmpty) {
-                                                    // Fallback placeholder if no profile image
-                                                    return Center(
-                                                      child: Icon(
-                                                        Icons.person_outline,
-                                                        size: 90,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    );
-                                                  }
-
-                                                  return Image.network(
-                                                    imageUrl,
-                                                    width: 170,
-                                                    height: 170,
-                                                    fit: BoxFit.cover,
-                                                    loadingBuilder:
-                                                        (
-                                                          context,
-                                                          child,
-                                                          loadingProgress,
-                                                        ) {
-                                                          if (loadingProgress ==
-                                                              null)
-                                                            return child;
-
-                                                          // Shimmer effect while loading
-                                                          return const ShimmerSkeleton(
-                                                            child: SizedBox(
-                                                              width: 170,
-                                                              height: 170,
-                                                              child: ColoredBox(
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
+                                            child:
+                                                // widget.userProfile.avatar != null &&
+                                                //         widget
+                                                //             .userProfile
+                                                //             .avatar!
+                                                //             .isNotEmpty
+                                                // ? Image.network(
+                                                //   widget.userProfile.avatar!,
+                                                //   width: 170,
+                                                //   height: 170,
+                                                //   fit: BoxFit.cover,
+                                                //   errorBuilder:
+                                                //       (context, error, stackTrace) =>
+                                                //           Image.asset(
+                                                //             'assets/images/person.png',
+                                                //             width: 170,
+                                                //             height: 170,
+                                                //             fit: BoxFit.cover,
+                                                //           ),
+                                                // )
+                                                //:
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ),
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        Color(
+                                                          0xffCE0000,
+                                                        ).withOpacity(0.8),
+                                                        // Color(0xFFCE0000),
+                                                        Color(
+                                                          0xff7B0100,
+                                                        ).withOpacity(0.8),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          16,
+                                                        ), // adjust for how round you want it
+                                                    child: Builder(
+                                                      builder: (context) {
+                                                        if (_localImageFile !=
+                                                            null) {
+                                                          return Image.file(
+                                                            _localImageFile!,
+                                                            width: 170,
+                                                            height: 170,
+                                                            fit: BoxFit.cover,
                                                           );
-                                                        },
-                                                    errorBuilder:
-                                                        (
-                                                          context,
-                                                          error,
-                                                          stackTrace,
-                                                        ) {
-                                                          // Placeholder if image fails to load
+                                                        }
+                                                        final imageUrl =
+                                                            widget
+                                                                .userProfile
+                                                                ?.profileImage;
+
+                                                        if (imageUrl == null ||
+                                                            imageUrl.isEmpty) {
+                                                          // Fallback placeholder if no profile image
                                                           return Center(
                                                             child: Icon(
                                                               Icons
@@ -297,21 +267,104 @@ class _EditProfileState extends State<EditProfile> {
                                                                   Colors.grey,
                                                             ),
                                                           );
-                                                        },
-                                                  );
-                                                },
+                                                        }
+
+                                                        return Image.network(
+                                                          imageUrl,
+                                                          width: 170,
+                                                          height: 170,
+                                                          fit: BoxFit.cover,
+                                                          loadingBuilder:
+                                                              (
+                                                                context,
+                                                                child,
+                                                                loadingProgress,
+                                                              ) {
+                                                                if (loadingProgress ==
+                                                                    null)
+                                                                  return child;
+
+                                                                // Shimmer effect while loading
+                                                                return const ShimmerSkeleton(
+                                                                  child: SizedBox(
+                                                                    width: 170,
+                                                                    height: 170,
+                                                                    child:
+                                                                        ColoredBox(
+                                                                      color:
+                                                                          kShimmerFillColor,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                          errorBuilder:
+                                                              (
+                                                                context,
+                                                                error,
+                                                                stackTrace,
+                                                              ) {
+                                                                // Placeholder if image fails to load
+                                                                return Center(
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .person_outline,
+                                                                    size: 90,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                );
+                                                              },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                  // ClipRRect(
+                                                  //   borderRadius: BorderRadius.circular(16),
+                                                  //   child: Image.asset(
+                                                  //     'assets/images/user6.png',
+                                                  //     fit: BoxFit.cover,
+                                                  //     width: 170,
+                                                  //     height: 170,
+                                                  //   ),
+                                                  // ),
+                                                ),
+                                          ),
+                                          if (isEditing)
+                                            Positioned(
+                                              bottom: 6,
+                                              right: 6,
+                                              child: Material(
+                                                color: Colors.red.shade700,
+                                                shape: const CircleBorder(),
+                                                child: InkWell(
+                                                  customBorder:
+                                                      const CircleBorder(),
+                                                  onTap: _pickProfileImage,
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          6,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color:
+                                                            Colors.white,
+                                                        width: 0.5,
+                                                      ),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.image_outlined,
+                                                      size: 18,
+                                                      color:
+                                                          Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            // ClipRRect(
-                                            //   borderRadius: BorderRadius.circular(16),
-                                            //   child: Image.asset(
-                                            //     'assets/images/user6.png',
-                                            //     fit: BoxFit.cover,
-                                            //     width: 170,
-                                            //     height: 170,
-                                            //   ),
-                                            // ),
-                                          ),
+                                        ],
+                                      ),
                                     ),
                                     const SizedBox(height: 10),
                                     //(
@@ -325,23 +378,6 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                               ),
 
-                              Positioned(
-                                top: 120,
-                                bottom: 0,
-                                left: 170,
-
-                                child: isEditing
-                                    ? GestureDetector(
-                                        onTap: _pickProfileImage,
-                                        child: Image.asset(
-                                          'assets/icons/edit.png',
-                                          // fit: BoxFit.fitWidth,
-                                          height: 35,
-                                          width: 35,
-                                        ),
-                                      )
-                                    : Container(),
-                              ),
                             ],
                           ),
                         ),
@@ -354,7 +390,7 @@ class _EditProfileState extends State<EditProfile> {
                                 _buildCustomTextField(
                                   title: 'Name',
                                   context: context,
-                                  label: 'Alex Johnson',
+                                  label: ' ex: Khalid Hossain',
                                   controller: nameController,
                                   icon: Icons.person,
                                   focusNode: nameFocus,
@@ -369,7 +405,7 @@ class _EditProfileState extends State<EditProfile> {
                                 _buildCustomTextField(
                                   title: 'Country',
                                   context: context,
-                                  label: 'Bangladesh',
+                                  label: 'Enter your country',
                                   controller: countryController,
                                   icon: Icons.flag,
                                   focusNode: countryFocus,
@@ -382,7 +418,7 @@ class _EditProfileState extends State<EditProfile> {
                                 _buildCustomTextField(
                                   title: 'City',
                                   context: context,
-                                  label: 'City',
+                                  label: 'Enter your City',
                                   controller: cityController,
                                   icon: Icons.location_city,
                                   focusNode: cityFocus,
@@ -616,7 +652,7 @@ Widget _buildCustomTextField({
             child: Icon(icon, color: Colors.grey, size: 24),
           ),
           hintText: label,
-          hintStyle: const TextStyle(color: Colors.grey),
+          hintStyle:  TextStyle(color: Colors.grey.withOpacity(0.7)),
           filled: true,
           fillColor: Colors.grey.withOpacity(0.1),
           enabledBorder: OutlineInputBorder(
@@ -649,53 +685,64 @@ class _ProfileShimmerLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShimmerSkeleton(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Profile Image shimmer
-            Container(
-              height: 100,
-              width: 100,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 8),
+              Row(
+                children: const [
+                  ShimmerCircle(size: 32),
+                  SizedBox(width: 12),
+                  ShimmerLine(width: 140, height: 18),
+                  Spacer(),
+                  ShimmerLine(width: 32, height: 12),
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-
-            // Name shimmer
-            Container(height: 18, width: 120, color: Colors.white),
-            const SizedBox(height: 8),
-
-            // Email shimmer
-            Container(height: 14, width: 180, color: Colors.white),
-            const SizedBox(height: 24),
-
-            // Address shimmer
-            Row(
-              children: [
-                Container(height: 20, width: 20, color: Colors.white),
-                const SizedBox(width: 10),
-                Expanded(child: Container(height: 14, color: Colors.white)),
-              ],
-            ),
-            const SizedBox(height: 30),
-
-            // Button shimmer
-            Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 20),
+              const ShimmerBox(
+                width: 170,
+                height: 170,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              const ShimmerLine(width: 160, height: 18),
+              const SizedBox(height: 24),
+              _buildFieldShimmer(),
+              _buildFieldShimmer(),
+              _buildFieldShimmer(),
+              _buildFieldShimmer(),
+              _buildFieldShimmer(),
+              const SizedBox(height: 8),
+              const ShimmerBox(
+                width: double.infinity,
+                height: 48,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFieldShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        ShimmerLine(width: 90, height: 12),
+        SizedBox(height: 8),
+        ShimmerBox(
+          width: double.infinity,
+          height: 48,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        SizedBox(height: 20),
+      ],
     );
   }
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-const Color _defaultBaseColor = Color(0xFFE0E0E0);
-const Color _defaultHighlightColor = Color(0xFFF5F5F5);
+const Color kShimmerBaseColor = Color(0xFF2F343C);
+const Color kShimmerHighlightColor = Color(0xFF3B414A);
+const Color kShimmerFillColor = Color(0xFF2F343C);
 
 class ShimmerSkeleton extends StatelessWidget {
   final Widget child;
@@ -12,8 +13,8 @@ class ShimmerSkeleton extends StatelessWidget {
   const ShimmerSkeleton({
     super.key,
     required this.child,
-    this.baseColor = _defaultBaseColor,
-    this.highlightColor = _defaultHighlightColor,
+    this.baseColor = kShimmerBaseColor,
+    this.highlightColor = kShimmerHighlightColor,
   });
 
   @override
@@ -30,12 +31,14 @@ class ShimmerBox extends StatelessWidget {
   final double width;
   final double height;
   final BorderRadius borderRadius;
+  final Color color;
 
   const ShimmerBox({
     super.key,
     required this.width,
     required this.height,
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
+    this.color = kShimmerFillColor,
   });
 
   @override
@@ -45,7 +48,7 @@ class ShimmerBox extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: color,
           borderRadius: borderRadius,
         ),
       ),
@@ -55,8 +58,13 @@ class ShimmerBox extends StatelessWidget {
 
 class ShimmerCircle extends StatelessWidget {
   final double size;
+  final Color color;
 
-  const ShimmerCircle({super.key, required this.size});
+  const ShimmerCircle({
+    super.key,
+    required this.size,
+    this.color = kShimmerFillColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +72,8 @@ class ShimmerCircle extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: color,
           shape: BoxShape.circle,
         ),
       ),
@@ -77,12 +85,14 @@ class ShimmerLine extends StatelessWidget {
   final double width;
   final double height;
   final BorderRadius borderRadius;
+  final Color color;
 
   const ShimmerLine({
     super.key,
     required this.width,
     this.height = 12,
     this.borderRadius = const BorderRadius.all(Radius.circular(6)),
+    this.color = kShimmerFillColor,
   });
 
   @override
@@ -92,7 +102,7 @@ class ShimmerLine extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: color,
           borderRadius: borderRadius,
         ),
       ),

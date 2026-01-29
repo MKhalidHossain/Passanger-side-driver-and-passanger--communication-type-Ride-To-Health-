@@ -612,17 +612,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              const ShimmerBox(width: double.infinity, height: 48),
+              const ShimmerBox(
+                width: double.infinity,
+                height: 48,
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+              ),
               const SizedBox(height: 16),
               const ShimmerLine(width: 120, height: 16),
               const SizedBox(height: 16),
-              Column(
-                children: const [
-                  ShimmerBox(width: double.infinity, height: 70),
-                  SizedBox(height: 12),
-                  ShimmerBox(width: double.infinity, height: 70),
-                ],
-              ),
+              _buildTripShimmerCard(),
+              const SizedBox(height: 12),
+              _buildTripShimmerCard(),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -632,13 +632,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              Column(
-                children: const [
-                  ShimmerBox(width: double.infinity, height: 70),
-                  SizedBox(height: 12),
-                  ShimmerBox(width: double.infinity, height: 70),
-                ],
-              ),
+              _buildSavedPlaceShimmerCard(),
+              const SizedBox(height: 12),
+              _buildSavedPlaceShimmerCard(),
               const SizedBox(height: 16),
               const ShimmerLine(width: 140, height: 16),
               const SizedBox(height: 16),
@@ -646,21 +642,138 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 110,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) => const ShimmerBox(
-                    width: 140,
-                    height: 110,
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
+                  itemBuilder: (context, index) => _buildServiceShimmerCard(),
                   separatorBuilder: (context, index) =>
                       const SizedBox(width: 12),
                   itemCount: 3,
                 ),
               ),
               const SizedBox(height: 24),
-              const ShimmerBox(width: double.infinity, height: 120),
+              _buildPromoShimmerCard(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTripShimmerCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: Row(
+        children: const [
+          ShimmerCircle(size: 40),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLine(width: 180, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 140, height: 12),
+                SizedBox(height: 6),
+                ShimmerLine(width: 90, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSavedPlaceShimmerCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: Row(
+        children: const [
+          ShimmerCircle(size: 36),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLine(width: 160, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 200, height: 12),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceShimmerCard() {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ShimmerBox(
+            width: 50,
+            height: 50,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          SizedBox(height: 10),
+          ShimmerLine(width: 90, height: 12),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPromoShimmerCard() {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: const [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShimmerLine(width: 180, height: 14),
+                SizedBox(height: 8),
+                ShimmerLine(width: 120, height: 12),
+                SizedBox(height: 16),
+                ShimmerBox(
+                  width: 90,
+                  height: 28,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 16),
+          ShimmerBox(
+            width: 70,
+            height: 70,
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+        ],
       ),
     );
   }

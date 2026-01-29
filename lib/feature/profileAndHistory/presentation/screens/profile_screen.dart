@@ -43,54 +43,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// 🔹 When data is loading, show shimmer placeholders for each section
   Widget _buildProfileShimmer(BuildContext context) {
-    return ShimmerSkeleton(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16),
-          Center(
-            child: Container(height: 24, width: 150, color: Colors.white10),
-          ),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white10,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        const Center(child: ShimmerLine(width: 150, height: 18)),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: const [
+              ShimmerCircle(size: 80),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(height: 20, width: 120, color: Colors.white10),
-                    const SizedBox(height: 8),
-                    Container(height: 16, width: 180, color: Colors.white10),
+                    ShimmerLine(width: 140, height: 16),
+                    SizedBox(height: 8),
+                    ShimmerLine(width: 200, height: 12),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: 6,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (_, __) => _buildProfileMenuShimmerItem(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileMenuShimmerItem() {
+    return Container(
+      height: 65,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: const [
+          ShimmerCircle(size: 32),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShimmerLine(width: 160, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 220, height: 12),
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: 6,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (_, __) => Container(
-                height: 65,
-                decoration: BoxDecoration(
-                  color: Colors.white10,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
+          ShimmerLine(width: 16, height: 12),
         ],
       ),
     );
@@ -155,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
                             return const ShimmerSkeleton(
-                              child: ColoredBox(color: Colors.white),
+                              child: ColoredBox(color: kShimmerFillColor),
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {

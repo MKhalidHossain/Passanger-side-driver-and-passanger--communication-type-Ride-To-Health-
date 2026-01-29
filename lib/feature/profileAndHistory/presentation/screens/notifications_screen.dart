@@ -228,14 +228,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    ShimmerLine(width: 180, height: 14),
+                    ShimmerLine(width: 200, height: 14),
                     SizedBox(height: 8),
-                    ShimmerLine(width: 220, height: 12),
+                    ShimmerLine(width: 240, height: 12),
                     SizedBox(height: 6),
-                    ShimmerLine(width: 120, height: 12),
+                    ShimmerLine(width: 160, height: 12),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
+              const ShimmerCircle(size: 10),
             ],
           ),
         );

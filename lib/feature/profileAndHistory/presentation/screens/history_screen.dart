@@ -97,15 +97,45 @@ class HistoryScreen extends StatelessWidget {
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            children: const [
-              ShimmerBox(width: double.infinity, height: 70),
-              SizedBox(height: 16),
-              ShimmerBox(width: double.infinity, height: 70),
-              SizedBox(height: 16),
-              ShimmerBox(width: double.infinity, height: 70),
+            children: [
+              _buildHistoryItemShimmer(),
+              const SizedBox(height: 16),
+              _buildHistoryItemShimmer(),
+              const SizedBox(height: 16),
+              _buildHistoryItemShimmer(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryItemShimmer() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white12, width: 1),
+      ),
+      child: Row(
+        children: const [
+          ShimmerCircle(size: 40),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerLine(width: 200, height: 14),
+                SizedBox(height: 6),
+                ShimmerLine(width: 140, height: 12),
+                SizedBox(height: 6),
+                ShimmerLine(width: 100, height: 12),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

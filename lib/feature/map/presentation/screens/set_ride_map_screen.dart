@@ -265,9 +265,11 @@ class SetRideMapScreen extends StatelessWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: const [
-                              ShimmerBox(width: 160, height: 14),
+                              ShimmerCircle(size: 32),
                               SizedBox(height: 12),
-                              ShimmerBox(width: 220, height: 12),
+                              ShimmerLine(width: 160, height: 14),
+                              SizedBox(height: 8),
+                              ShimmerLine(width: 220, height: 12),
                             ],
                           ),
                         ),
